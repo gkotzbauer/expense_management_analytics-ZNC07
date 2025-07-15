@@ -36,7 +36,7 @@ function App() {
 
   return (
     <div>
-      <h1>Expense Data (Pre-loaded)</h1>
+      <h1>Midlothian Margin Performance Dashboard</h1>
       {error && <div style={{ color: "red" }}>{error}</div>}
       <table style={{ margin: "0 auto", borderCollapse: "collapse" }}>
         <tbody>
