@@ -58,7 +58,7 @@ function App() {
       options: {
         responsive: true,
         plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, stepSize: 1 } }
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     })
   }, [data])
@@ -74,19 +74,44 @@ function App() {
       <table style={{ margin: "0 auto", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            {data[0] && Object.keys(data[0]).map((col, idx) => (
-              <th key={idx} style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{col}</th>
-            ))}
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Category</th>
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Expenses for Most Recent Month</th>
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Most Recent Month vs. Avg. of Prior Months</th>
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Margin Risk Assessment</th>
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Expense Growth Alignment</th>
+            <th style={{ border: "1px solid #ccc", padding: "4px 8px" }}>Suggested Action</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              {Object.values(row).map((cell, j) => (
-                <td key={j} style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{cell}</td>
-              ))}
-            </tr>
-          ))}
+          {(() => {
+            // Order for Suggested Action
+            const actionOrder = [
+              "Investigate – Potential Risk",
+              "Efficient Scaling",
+              "Productivity Gain",
+              "Strong Cost Control",
+              "Review Volatility",
+              "Stable – No Action",
+              "No Comparison",
+              "Below Threshold"
+            ];
+            // Sort data by action order
+            const sorted = [...data].sort((a, b) => {
+              const aIdx = actionOrder.indexOf(a["Efficiency Alert"] || "")
+              const bIdx = actionOrder.indexOf(b["Efficiency Alert"] || "")
+              return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx)
+            });
+            return sorted.map((row, i) => (
+              <tr key={i}>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Category"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["May"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Anchor vs Prior Avg ($)"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Margin Risk Assessment"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Expense Growth Alignment"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Efficiency Alert"]}</td>
+              </tr>
+            ))
+          })()}
         </tbody>
       </table>
     </div>
