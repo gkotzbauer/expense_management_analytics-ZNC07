@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midlothian Margin Performance Dashboard</title>
+    <title>High Point Margin Performance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -448,7 +448,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Midlothian Margin Performance Dashboard</h1>
+            <h1>📊 High Point Margin Performance Dashboard</h1>
             <p>Comprehensive margin insights to drive performance optimization and profitability management</p>
             <button onclick="window.dashboard.loadPreloadedData()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
                 🔄 Refresh Data
@@ -485,7 +485,11 @@
                 <h2>🎯 Key Insights</h2>
                 <div class="insight-item" id="expenseOutpacedInsight">
                     <span style="font-size: 1.2rem;">⚠️ </span>
-                    <strong>Expense Growth Outpaced Profit Growth:</strong> <span id="expenseOutpacedText">Loading...</span>
+                    <strong>Expenses Grew Faster Than Profit:</strong> <span id="expenseOutpacedText">Loading...</span>
+                </div>
+                <div class="insight-item" id="expenseGrewDespiteDeclineInsight">
+                    <span style="font-size: 1.2rem;">⚠️ </span>
+                    <strong>Expenses Grew Even Though Profit Declined:</strong> <span id="expenseGrewDespiteDeclineText">Loading...</span>
                 </div>
                 <div class="insight-item" id="topVarianceInsight">
                     <span style="font-size: 1.2rem;">📈 </span>
@@ -498,6 +502,10 @@
                 <div class="insight-item" id="marketingROIInsight">
                     <span style="font-size: 1.2rem;">💰 </span>
                     <strong>Marketing Spend Efficiency:</strong> <span id="marketingROIText">Loading...</span>
+                </div>
+                <div class="insight-item" id="outpacingProfitInsight">
+                    <span style="font-size: 1.2rem;">🚀 </span>
+                    <strong>Consistently Outpacing Profit Growth:</strong> <span id="outpacingProfitText">Loading...</span>
                 </div>
                 
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #718096;">
@@ -517,7 +525,7 @@
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #718096;">
                     <h4 style="color: #2d3748; margin-bottom: 10px;"><strong>Margin Risk Assessment Definitions</strong></h4>
                     <ul style="padding-left: 20px; line-height: 1.6;">
-                        <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins. </li>
+                        <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins.</li>
                         <li><strong>Margin Risk:</strong> Expenses are rising faster than profit, or are increasing while profit is flat or declining. This expense appears to be threat to margins that warrants immediate investigation and action.</li>
                         <li><strong>Below Threshold:</strong> Small or one-off expenses with a six-month average under $500. These are too minor to impact margin management or warrant regular review.</li>
                         <li><strong>Neutral:</strong> Expenses and profit are changing at similar rates, or neither cost nor profit are moving in a way that indicates significant risk or improvement. No immediate concern - keep under review.</li>
@@ -542,34 +550,36 @@
                             <th style="width: 140px;">Category</th>
                             <th class="center-column" style="width: 140px;">Expenses for Most Recent Month</th>
                             <th class="center-column" style="width: 170px;">Most Recent Month vs. Avg. of Prior Months</th>
-                            <th class="center-column">Ratio Change (%)</th>
-                            <th class="center-column">Performance Diagnostic</th>
+                            <th class="center-column">Margin Risk Assessment</th>
                             <th class="center-column">Expense Growth Alignment</th>
+                            <th class="center-column">Suggested Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #718096;">
-                    <h4 style="color: #2d3748; margin-bottom: 10px;"><strong>Performance Diagnostic Definitions</strong></h4>
+                    <h4 style="color: #2d3748; margin-bottom: 10px;"><strong>Margin Risk Assessment Definitions</strong></h4>
                     <ul style="padding-left: 20px; line-height: 1.6;">
-                        <li><strong>"Margin Risk – Investigate":</strong> Expense category showing significant increase requiring immediate management attention</li>
-                        <li><strong>"Cost Spike – Monitor":</strong> Expense category with notable patterns that should be closely monitored</li>
-                        <li><strong>"Stable or Fixed – Low Concern":</strong> Expense category maintaining consistent, predictable cost patterns</li>
-                        <li><strong>"Neutral – Keep Watching":</strong> Expense category with moderate changes requiring ongoing observation</li>
+                        <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins.</li>
+                        <li><strong>Margin Risk:</strong> Expenses are rising faster than profit, or are increasing while profit is flat or declining. This expense appears to be threat to margins that warrants immediate investigation and action.</li>
+                        <li><strong>Below Threshold:</strong> Small or one-off expenses with a six-month average under $500. These are too minor to impact margin management or warrant regular review.</li>
+                        <li><strong>Neutral:</strong> Expenses and profit are changing at similar rates, or neither cost nor profit are moving in a way that indicates significant risk or improvement. No immediate concern - keep under review.</li>
                     </ul>
                     
                     <h4 style="color: #2d3748; margin-bottom: 10px; margin-top: 20px;"><strong>June vs. Jan-May Mean</strong></h4>
                     <p style="padding-left: 20px; line-height: 1.6;">The dollar‐amount difference between June's expense and the average expense over January–May.</p>
                     
-                    <h4 style="color: #2d3748; margin-bottom: 10px; margin-top: 20px;"><strong>Expense vs Profit Growth Ratio</strong></h4>
+                    <h4 style="color: #2d3748; margin-bottom: 10px; margin-top: 20px;"><strong>Suggested Action</strong></h4>
                     <ul style="padding-left: 20px; line-height: 1.6;">
-                        <li><strong>&gt;1 ⇒</strong> Expense grew faster than profit</li>
-                        <li><strong>&lt;1 ⇒</strong> Expense grew slower than profit</li>
-                        <li><strong>=1 ⇒</strong> Matched growth</li>
+                        <li><strong>Investigate – Potential Risk:</strong> Expense is rising faster than profit, or profit is flat/declining while expense rises; review required.</li>
+                        <li><strong>Efficient Scaling:</strong> Expense and profit are rising (or falling) at nearly the same rate; cost structure is scaling well—no action needed.</li>
+                        <li><strong>Productivity Gain:</strong> Profit has increased while expense stayed flat; strong result—consider sustaining or investing further.</li>
+                        <li><strong>Strong Cost Control:</strong> Expense has declined (or remained flat) while profit is stable or rising; excellent cost management.</li>
+                        <li><strong>Review Volatility:</strong> Expenses and profit are not moving in a consistent or expected pattern; review for anomalies or instability.</li>
+                        <li><strong>Stable – No Action:</strong> Both profit and expense are declining together; status quo—no immediate action needed.</li>
+                        <li><strong>No Comparison:</strong> Not enough prior data to evaluate change; no action possible.</li>
+                        <li><strong>Below Threshold:</strong> Expense is minor (average < $500a one-time expense.</li>
                     </ul>
-                    
-                    <h4 style="color: #2d3748; margin-bottom: 10px; margin-top: 20px;"><strong>Ratio Change (%)</strong></h4>
-                    <p style="padding-left: 20px; line-height: 1.6;">Relative change from the mean of prior months vs. recent month (e.g. 0.2 ⇒ 20% increase)</p>
                 </div>
             </div>
 
@@ -676,7 +686,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Margin Risk – Investigate",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 1
@@ -708,7 +718,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Margin Risk – Investigate",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 2
@@ -740,7 +750,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Below Threshold",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 3
@@ -772,7 +782,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Below Threshold",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 4
@@ -804,7 +814,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Below Threshold",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 5
@@ -836,7 +846,7 @@
                     "Best Performing (Cost Decline Rank)": "",
                     "Efficiency Alert": "Below Threshold",
                     "Elasticity Classification": "Below Threshold",
-                    "Margin Risk": "Below Threshold",
+                    "Margin Risk Assessment": "Below Threshold",
                     "Performance Diagnostic Assignment": "Below Threshold",
                     "Marketing Spend Efficiency": "",
                     "Ranking Priority": 6
@@ -1050,8 +1060,8 @@
                             "May": parseFloat(obj['May']) || 0,
                             "Jun 2025": parseFloat(obj['Jun 2025']) || 0,
                             "Anchor vs Prior Avg ($)": parseFloat(obj['Anchor vs Prior Avg ($)']) || 0,
-                            "Performance Diagnostic Summary": String(obj['Performance Diagnostic Assignment'] || '').trim(),
-                            "Margin Leverage Classification": obj['Margin Risk'] === true ? 'High Risk' : 'Normal Risk',
+                            "Performance Diagnostic Summary": String(obj['Margin Risk Assessment'] || '').trim(),
+                            "Margin Leverage Classification": obj['Margin Risk Assessment'] === true ? 'High Risk' : 'Normal Risk',
                             "Ratio_Change_Anchor_vs_MeanPrior": parseFloat(obj['Ratio_Change_Anchor_vs_MeanPrior']) || 0,
                             "Fixed Cost Estimate": parseFloat(obj['Fixed Cost Estimate']) || 0,
                             "Marginal Cost per $1 GP": parseFloat(obj['Marginal Cost per $1 GP']) || 0,
@@ -1349,28 +1359,29 @@
                     return;
                 }
 
-                const performancePriority = {
-                    '🟠 Cost Spike – Monitor': 1,
-                    'Cost Spike – Monitor': 1,
-                    '🔴 Margin Risk – Investigate': 2,
-                    'Margin Risk – Investigate': 2,
-                    '🟢 Stable or Fixed – Low Concern': 3,
-                    'Stable or Fixed – Low Concern': 3,
-                    '🗾 Neutral – Keep Watching': 4,
-                    'Neutral – Keep Watching': 4
+                const suggestedActionPriority = {
+                    'Investigate - Potential Risk': 1,
+                    'Efficient Scaling': 2,
+                    'Productivity Gain': 3,
+                    'Strong Cost Control': 4,
+                    'Review Volatility': 5,
+                    'No Comparison': 6,
+                    'Stable - No Action': 7,
+                    'Below Threshold': 8
                 };
 
                 const sortedData = [...tableData].sort((a, b) => {
-                    const aPriority = performancePriority[a['Performance Diagnostic Summary']] || 999;
-                    const bPriority = performancePriority[b['Performance Diagnostic Summary']] || 999;
+                    const aAction = a['Efficiency Alert'] || 'N/A';
+                    const bAction = b['Efficiency Alert'] || 'N/A';
+                    const aPriority = suggestedActionPriority[aAction] || 999;
+                    const bPriority = suggestedActionPriority[bAction] || 999;
                     
                     if (aPriority !== bPriority) {
                         return aPriority - bPriority;
                     }
                     
-                    const aVariance = Math.abs(a['Anchor vs Prior Avg ($)'] || 0);
-                    const bVariance = Math.abs(b['Anchor vs Prior Avg ($)'] || 0);
-                    return bVariance - aVariance;
+                    // Within the same action group, sort by category name
+                    return (a.Category || '').localeCompare(b.Category || '');
                 });
 
                 let tableHTML = '';
@@ -1388,10 +1399,6 @@
                     const anchorPriorValue = item['Anchor vs Prior Avg ($)'] || 0;
                     tableHTML += `<td class="center-column">${Math.round(anchorPriorValue).toLocaleString()}</td>`;
                     
-                    // Ratio Change (%)
-                    const ratioChangeValue = item['Ratio_Change_Anchor_vs_MeanPrior'] || 0;
-                    tableHTML += `<td class="center-column">${Math.round(ratioChangeValue * 100)}%</td>`;
-                    
                     // Performance Diagnostic
                     tableHTML += `<td class="center-column">${item['Performance Diagnostic Summary'] || 'N/A'}</td>`;
                     
@@ -1400,6 +1407,10 @@
                     console.log(`Table row for ${item.Category}: Expense Growth Alignment = "${expenseGrowthAlignment}"`);
                     console.log(`Full item for ${item.Category}:`, item);
                     tableHTML += `<td class="center-column">${expenseGrowthAlignment}</td>`;
+
+                    // Suggested Action (using Efficiency Alert)
+                    const suggestedAction = item['Efficiency Alert'] || 'N/A';
+                    tableHTML += `<td class="center-column">${suggestedAction}</td>`;
 
                     tableHTML += '</tr>';
                 });
@@ -1415,12 +1426,10 @@
                     item.Category.toLowerCase().trim() !== 'gross profit'
                 );
 
-                // Expense Growth Outpaced Profit Growth
+                // Expenses Grew Faster Than Profit (using Expense Growth Alignment)
                 const outpacedCategories = insightData.filter(item => {
-                    const efficiencyAlert = String(item['Efficiency Alert'] || '').trim();
-                    return efficiencyAlert === 'Expense Outpaced Profit + Sensitive' || 
-                           efficiencyAlert === 'Expense Outpaced Profit' ||
-                           efficiencyAlert === 'Expense Outpaced Profit and Responsive';
+                    const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
+                    return growthAlignment === 'Expenses Grew Faster Than Profit';
                 });
                 
                 const expenseOutpacedElement = document.getElementById('expenseOutpacedText');
@@ -1429,7 +1438,23 @@
                         const categoryNames = outpacedCategories.map(item => item.Category);
                         expenseOutpacedElement.textContent = `(${outpacedCategories.length}) ${categoryNames.join(', ')}`;
                     } else {
-                        expenseOutpacedElement.textContent = '(0) No categories found';
+                        expenseOutpacedElement.textContent = '(0) No expense category in the most recent month fits this metric.';
+                    }
+                }
+
+                // Expenses Grew Even Though Profit Declined (using Expense Growth Alignment)
+                const grewDespiteDeclineCategories = insightData.filter(item => {
+                    const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
+                    return growthAlignment === 'Expenses Grew Even Though Profit Declined';
+                });
+                
+                const expenseGrewDespiteDeclineElement = document.getElementById('expenseGrewDespiteDeclineText');
+                if (expenseGrewDespiteDeclineElement) {
+                    if (grewDespiteDeclineCategories.length > 0) {
+                        const categoryNames = grewDespiteDeclineCategories.map(item => item.Category);
+                        expenseGrewDespiteDeclineElement.textContent = `(${grewDespiteDeclineCategories.length}) ${categoryNames.join(', ')}`;
+                    } else {
+                        expenseGrewDespiteDeclineElement.textContent = '(0) No expense category in the most recent month fits this metric.';
                     }
                 }
 
@@ -1475,7 +1500,7 @@
                             .join(', ');
                         topMarginElement.textContent = formattedList;
                     } else {
-                        topMarginElement.textContent = 'No expense in the most recent month fits this metric';
+                        topMarginElement.textContent = '(0) No expense category in the most recent month fits this metric.';
                     }
                 }
 
@@ -1507,6 +1532,18 @@
                         roiElement.textContent = formattedList;
                     } else {
                         roiElement.textContent = 'No marketing efficiency data available';
+                    }
+                }
+
+                // Consistently Outpacing Profit Growth (Elasticity Classification = 'Over-scaled')
+                const outpacingProfitCategories = this.filteredData.filter(item => String(item['Elasticity Classification'] || '').trim() === 'Over-scaled');
+                const outpacingProfitElement = document.getElementById('outpacingProfitText');
+                if (outpacingProfitElement) {
+                    if (outpacingProfitCategories.length > 0) {
+                        const categoryNames = outpacingProfitCategories.map(item => item.Category);
+                        outpacingProfitElement.textContent = `(${outpacingProfitCategories.length}) ${categoryNames.join(', ')}`;
+                    } else {
+                        outpacingProfitElement.textContent = '(0) No expense category in the most recent month fits this metric.';
                     }
                 }
             },
