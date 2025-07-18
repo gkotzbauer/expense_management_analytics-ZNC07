@@ -583,6 +583,24 @@
                 </div>
             </div>
 
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>📋 Most Recent Month Growth & Risk Drivers</h2>
+                </div>
+                <table id="growthRiskTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 180px; border: 1px solid #ccc; padding: 4px 8px;">Category</th>
+                            <th class="center-column" style="width: 180px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Outpaced Growth</th>
+                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Did Not Decline with Profit</th>
+                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Opposite Direction than Profit</th>
+                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;">Potential $ Loss Due to Excess Spending</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
             <div class="projection-container">
                 <div class="projection-header">
                     <h2>�� Expense Projection Based on Gross Profit Forecast</h2>
@@ -1619,6 +1637,25 @@
                     tableHTML += '</tr>';
                 });
 
+                tbody.innerHTML = tableHTML;
+            },
+
+            updateGrowthRiskTable: function() {
+                const table = document.getElementById('growthRiskTable');
+                if (!table) return;
+                const tbody = table.querySelector('tbody');
+                if (!tbody) return;
+                const data = this.filteredData || [];
+                let tableHTML = '';
+                data.forEach(item => {
+                    tableHTML += '<tr>';
+                    tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
+                    tableHTML += `<td class="center-column">${item['Outpaces Growth (Count)'] || 0}</td>`;
+                    tableHTML += `<td class="center-column">${item['Not Keeping Up with Decline (Count)'] || 0}</td>`;
+                    tableHTML += `<td class="center-column">${item['Opposite Direction (Count)'] || 0}</td>`;
+                    tableHTML += `<td class="center-column">${item['Total Excess Costs'] ? '$' + Number(item['Total Excess Costs']).toLocaleString() : '$0'}</td>`;
+                    tableHTML += '</tr>';
+                });
                 tbody.innerHTML = tableHTML;
             },
 
