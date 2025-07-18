@@ -23,7 +23,8 @@ function App() {
         // Map 'Margin Risk Assessment' to 'Performance Diagnostic Summary'
         const mappedData = jsonData.map(row => ({
           ...row,
-          "Performance Diagnostic Summary": row["Margin Risk Assessment"] || "Unknown"
+          "Performance Diagnostic Summary": row["Margin Risk Assessment"] || "Unknown",
+          "Elasticity Classification": String(row["Elasticity Classification"] || "").trim()
         }))
         setData(mappedData)
       } catch (err: any) {
