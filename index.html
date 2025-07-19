@@ -1490,9 +1490,9 @@
                     // Category
                     tableHTML += `<td>${item.Category || 'N/A'}</td>`;
                     
-                    // Expenses for Most Recent Month (now from 'May')
-                    const mayExpenses = item['May'] || 0;
-                    tableHTML += `<td class="center-column">${Math.round(mayExpenses).toLocaleString()}</td>`;
+                    // Expenses for Most Recent Month (now from 'Jun 2025')
+                    const junExpenses = item['Jun 2025'] || 0;
+                    tableHTML += `<td class="center-column">${Math.round(junExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
                     const anchorPriorValue = item['Anchor vs Prior Avg ($)'] || 0;
@@ -1605,13 +1605,16 @@
                     }
                 }
 
-                // Marketing Spend Efficiency - ONLY include Total Marketing & Advertising and Advertising & Marketing Fund
+                // Marketing Spend Efficiency - include 614000 Marketing & Advertising, Total 614000 Marketing, Advertising, and 614200 Internet & Social media
                 const marketingEfficiencyCategories = this.filteredData.filter(item => {
                     const efficiency = item['Marketing Spend Efficiency'];
                     const hasEfficiencyData = efficiency && efficiency.toString().trim() !== '';
                     const cat = (item.Category || '').toLowerCase().trim();
-                    const isMarketingSpecial = cat === 'total marketing & advertising' || cat === 'advertising & marketing fund';
-                    // ONLY include the two specific marketing categories
+                    const isMarketingSpecial = cat === '614000 marketing & advertising' || 
+                                             cat === 'total 614000 marketing' || 
+                                             cat === 'advertising' || 
+                                             cat === '614200 internet & social media';
+                    // Include the specific marketing categories
                     return hasEfficiencyData && isMarketingSpecial;
                 });
                 const roiElement = document.getElementById('marketingROIText');

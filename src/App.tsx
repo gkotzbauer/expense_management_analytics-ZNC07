@@ -105,7 +105,7 @@ function App() {
             return sorted.map((row, i) => (
               <tr key={i}>
                 <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Category"]}</td>
-                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["May"]}</td>
+                <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Jun 2025"]}</td>
                 <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Anchor vs Prior Avg ($)"]}</td>
                 <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Margin Risk Assessment"]}</td>
                 <td style={{ border: "1px solid #ccc", padding: "4px 8px" }}>{row["Expense Growth Alignment"]}</td>
