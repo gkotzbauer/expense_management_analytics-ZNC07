@@ -1236,11 +1236,24 @@
                             console.log('Chunk2 data loaded for Growth & Risk Drivers section only');
                             console.log('Number of chunk2 records:', chunk2Data.length);
                             console.log('First chunk2 record:', chunk2Data[0]);
-                            // Store chunk2 data separately - don't merge with main data
-                            this.chunk2Data = chunk2Data;
+                            console.log('Chunk2 columns available:', Object.keys(chunk2Data[0]));
                             
-                            // Update only the Growth & Risk Drivers table
-                            this.updateGrowthRiskTable();
+                            // Check if this actually has the chunk2 columns we need
+                            const hasChunk2Columns = chunk2Data[0]['% of Months Outpaced Growth'] !== undefined || 
+                                                   chunk2Data[0]['Total Excess Costs (5% Buffer)'] !== undefined;
+                            
+                            if (hasChunk2Columns) {
+                                console.log('✅ Chunk2 data has the correct columns');
+                                // Store chunk2 data separately - don't merge with main data
+                                this.chunk2Data = chunk2Data;
+                                
+                                // Update only the Growth & Risk Drivers table
+                                this.updateGrowthRiskTable();
+                            } else {
+                                console.log('❌ Chunk2 data does NOT have the expected columns - this might be the wrong file');
+                                console.log('Expected columns: % of Months Outpaced Growth, Total Excess Costs (5% Buffer)');
+                                console.log('Actual columns:', Object.keys(chunk2Data[0]));
+                            }
                         } else {
                             console.log('Chunk2 data is empty or null');
                         }
