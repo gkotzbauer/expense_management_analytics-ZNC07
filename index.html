@@ -1200,14 +1200,18 @@
             },
 
             loadChunk2Data: function() {
+                console.log('=== LOADING CHUNK2 DATA ===');
                 // Sources for the chunk2 file
                 const chunk2Sources = [
                     `/Midlothian-expense-analysis-chunk2.xlsx?t=${Date.now()}&v=${Date.now()}`,
                     `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${Date.now()}&v=${Date.now()}`
                 ];
                 
+                console.log('Trying chunk2 sources:', chunk2Sources);
+                
                 // Try to load chunk2 data (optional - won't break if it fails)
                 chunk2Sources.forEach(source => {
+                    console.log('Attempting to fetch from:', source);
                     fetch(source, {
                         method: 'GET',
                         headers: {
@@ -1217,26 +1221,32 @@
                         }
                     })
                     .then(response => {
+                        console.log('Response status for', source, ':', response.status);
                         if (response.ok) {
                             return response.arrayBuffer();
                         }
-                        throw new Error('Failed to fetch chunk2');
+                        throw new Error(`Failed to fetch chunk2 from ${source} - Status: ${response.status}`);
                     })
                     .then(arrayBuffer => {
                         console.log('Successfully fetched chunk2 file, parsing...');
                         const chunk2Data = this.parseExcel(arrayBuffer);
+                        console.log('Parsed chunk2 data:', chunk2Data);
                         
                         if (chunk2Data && chunk2Data.length > 0) {
                             console.log('Chunk2 data loaded for Growth & Risk Drivers section only');
+                            console.log('Number of chunk2 records:', chunk2Data.length);
+                            console.log('First chunk2 record:', chunk2Data[0]);
                             // Store chunk2 data separately - don't merge with main data
                             this.chunk2Data = chunk2Data;
                             
                             // Update only the Growth & Risk Drivers table
                             this.updateGrowthRiskTable();
+                        } else {
+                            console.log('Chunk2 data is empty or null');
                         }
                     })
                     .catch(error => {
-                        console.log('No chunk2 data available for Growth & Risk Drivers:', error);
+                        console.log('Error loading chunk2 data from', source, ':', error);
                     });
                 });
             },
