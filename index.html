@@ -1130,6 +1130,12 @@
                     `/public/expense-analysis.xlsx?t=${timestamp}&v=${Date.now()}`
                 ];
                 
+                // Sources for the chunk2 file
+                const chunk2Sources = [
+                    `/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
+                    `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`
+                ];
+                
                 const tryFetch = async (url) => {
                     try {
                         console.log('Trying to fetch from:', url);
@@ -1180,17 +1186,83 @@
                 
                 // Try each source until one works
                 const attemptLoad = async () => {
+                    let mainDataLoaded = false;
+                    
+                    // Load main data first
                     for (const source of sources) {
                         const success = await tryFetch(source);
                         if (success) {
-                            console.log('Successfully loaded fresh data from:', source);
-                            return;
+                            console.log('Successfully loaded main data from:', source);
+                            mainDataLoaded = true;
+                            break;
                         }
                     }
                     
-                    // If all sources fail, show error
-                    console.error('Failed to load data from all sources');
-                    this.showUploadError('Failed to load pre-loaded data. Please check your connection and try again.');
+                    if (!mainDataLoaded) {
+                        console.error('Failed to load main data from all sources');
+                        this.showUploadError('Failed to load pre-loaded data. Please check your connection and try again.');
+                        return;
+                    }
+                    
+                    // Try to load chunk2 data (optional - won't break if it fails)
+                    let chunk2Data = null;
+                    for (const source of chunk2Sources) {
+                        try {
+                            console.log('Trying to fetch chunk2 from:', source);
+                            const response = await fetch(source, {
+                                method: 'GET',
+                                headers: {
+                                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                    'Pragma': 'no-cache',
+                                    'Expires': '0'
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                const arrayBuffer = await response.arrayBuffer();
+                                console.log('Successfully fetched chunk2 file, parsing...');
+                                chunk2Data = this.parseExcel(arrayBuffer);
+                                console.log('Successfully loaded chunk2 data from:', source);
+                                break;
+                            }
+                        } catch (error) {
+                            console.error('Error fetching chunk2 from', source, ':', error);
+                        }
+                    }
+                    
+                    // Merge chunk2 data if available
+                    if (chunk2Data && chunk2Data.length > 0) {
+                        console.log('Merging chunk2 data with main data...');
+                        const mergedData = this.originalData.map(item => {
+                            const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
+                            if (chunk2Item) {
+                                return { ...item, ...chunk2Item };
+                            }
+                            return item;
+                        });
+                        
+                        this.originalData = mergedData;
+                        this.filteredData = [...mergedData];
+                        
+                        // Update model data
+                        this.modelData = mergedData.filter(item => {
+                            const hasModelData = item["Fixed Cost Estimate"] !== 0 || item["Marginal Cost per $1 GP"] !== 0;
+                            const isNotExcluded = !this.isExcludedFromProjections(item.Category);
+                            return hasModelData && isNotExcluded;
+                        }).map(item => ({
+                            "Category": item.Category,
+                            "Fixed Cost Estimate": item["Fixed Cost Estimate"],
+                            "Marginal Cost per $1 GP": item["Marginal Cost per $1 GP"]
+                        }));
+                        
+                        console.log('Data merged successfully. Total records:', mergedData.length);
+                    } else {
+                        console.log('No chunk2 data available, using main data only');
+                    }
+                    
+                    // Initialize dashboard with whatever data we have
+                    this.initializeDashboard();
+                    this.showUploadSuccess('Pre-loaded Data (Fresh)', this.originalData.length);
                 };
                 
                 attemptLoad();
