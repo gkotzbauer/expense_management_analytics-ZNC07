@@ -591,9 +591,9 @@
                     <thead>
                         <tr>
                             <th style="width: 180px; border: 1px solid #ccc; padding: 4px 8px;">Category</th>
-                            <th class="center-column" style="width: 180px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Outpaced Growth</th>
-                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Did Not Decline with Profit</th>
-                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;"># of Months Opposite Direction than Profit</th>
+                            <th class="center-column" style="width: 180px; border: 1px solid #ccc; padding: 4px 8px;">% of Months Outpaced Growth</th>
+                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;">% of Months Did Not Decline with Profit</th>
+                            <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;">% of Months Opposite Direction than Profit</th>
                             <th class="center-column" style="width: 220px; border: 1px solid #ccc; padding: 4px 8px;">Potential $ Loss Due to Excess Spending</th>
                         </tr>
                     </thead>
@@ -1130,6 +1130,12 @@
                     `/public/expense-analysis.xlsx?t=${timestamp}&v=${Date.now()}`
                 ];
                 
+                // Sources for the chunk2 file
+                const chunk2Sources = [
+                    `/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
+                    `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`
+                ];
+                
                 const tryFetch = async (url) => {
                     try {
                         console.log('Trying to fetch from:', url);
@@ -1180,17 +1186,80 @@
                 
                 // Try each source until one works
                 const attemptLoad = async () => {
+                    let mainData = null;
+                    let chunk2Data = null;
+                    
+                    // Load main data
                     for (const source of sources) {
                         const success = await tryFetch(source);
                         if (success) {
-                            console.log('Successfully loaded fresh data from:', source);
-                            return;
+                            console.log('Successfully loaded main data from:', source);
+                            mainData = this.originalData;
+                            break;
                         }
                     }
                     
-                    // If all sources fail, show error
-                    console.error('Failed to load data from all sources');
-                    this.showUploadError('Failed to load pre-loaded data. Please check your connection and try again.');
+                    // Load chunk2 data
+                    for (const source of chunk2Sources) {
+                        try {
+                            console.log('Trying to fetch chunk2 from:', source);
+                            const response = await fetch(source, {
+                                method: 'GET',
+                                headers: {
+                                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                    'Pragma': 'no-cache',
+                                    'Expires': '0'
+                                }
+                            });
+                            
+                            if (response.ok) {
+                                const arrayBuffer = await response.arrayBuffer();
+                                console.log('Successfully fetched chunk2 file, parsing...');
+                                chunk2Data = this.parseExcel(arrayBuffer);
+                                console.log('Successfully loaded chunk2 data from:', source);
+                                break;
+                            }
+                        } catch (error) {
+                            console.error('Error fetching chunk2 from', source, ':', error);
+                        }
+                    }
+                    
+                    // Merge data if both loaded successfully
+                    if (mainData && chunk2Data) {
+                        // Merge chunk2 data into main data based on Category
+                        const mergedData = mainData.map(item => {
+                            const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
+                            if (chunk2Item) {
+                                return { ...item, ...chunk2Item };
+                            }
+                            return item;
+                        });
+                        
+                        this.originalData = mergedData;
+                        this.filteredData = [...mergedData];
+                        
+                        // Update model data
+                        this.modelData = mergedData.filter(item => {
+                            const hasModelData = item["Fixed Cost Estimate"] !== 0 || item["Marginal Cost per $1 GP"] !== 0;
+                            const isNotExcluded = !this.isExcludedFromProjections(item.Category);
+                            return hasModelData && isNotExcluded;
+                        }).map(item => ({
+                            "Category": item.Category,
+                            "Fixed Cost Estimate": item["Fixed Cost Estimate"],
+                            "Marginal Cost per $1 GP": item["Marginal Cost per $1 GP"]
+                        }));
+                        
+                        this.initializeDashboard();
+                        this.showUploadSuccess('Pre-loaded Data (Fresh)', mergedData.length);
+                    } else if (mainData) {
+                        // Only main data loaded
+                        this.initializeDashboard();
+                        this.showUploadSuccess('Pre-loaded Data (Fresh)', mainData.length);
+                    } else {
+                        // If all sources fail, show error
+                        console.error('Failed to load data from all sources');
+                        this.showUploadError('Failed to load pre-loaded data. Please check your connection and try again.');
+                    }
                 };
                 
                 attemptLoad();
@@ -1206,6 +1275,7 @@
                     this.setupFilters();
                     this.updateCharts();
                     this.updateTable();
+                    this.updateGrowthRiskTable();
                     
                     setTimeout(() => {
                         this.updateInsights();
@@ -1290,6 +1360,7 @@
 
                 this.updateCharts();
                 this.updateTable();
+                this.updateGrowthRiskTable();
                 
                 if (this.isInitialized) {
                     this.updateInsights();
@@ -1650,10 +1721,10 @@
                 data.forEach(item => {
                     tableHTML += '<tr>';
                     tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
-                    tableHTML += `<td class="center-column">${item['Outpaces Growth (Count)'] || 0}</td>`;
-                    tableHTML += `<td class="center-column">${item['Not Keeping Up with Decline (Count)'] || 0}</td>`;
-                    tableHTML += `<td class="center-column">${item['Opposite Direction (Count)'] || 0}</td>`;
-                    tableHTML += `<td class="center-column">${item['Total Excess Costs'] ? '$' + Number(item['Total Excess Costs']).toLocaleString() : '$0'}</td>`;
+                    tableHTML += `<td class="center-column">${item['% of Months Outpaced Growth'] ? Number(item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${item['% of Months Did Not Decline with Profit'] ? Number(item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${item['% of Months Opposite Direction than Profit'] ? Number(item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${item['Total Excess Costs (5% Buffer)'] ? '$' + Number(item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
                     tableHTML += '</tr>';
                 });
                 tbody.innerHTML = tableHTML;
