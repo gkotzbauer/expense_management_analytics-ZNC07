@@ -67,6 +67,27 @@ app.get('/api/files', (req, res) => {
   res.json({ files: excelFiles });
 });
 
+// API endpoint to get the chunk2 file
+app.get('/api/chunk2', (req, res) => {
+  const publicDir = path.join(__dirname, '..', 'public');
+  const filePath = path.join(publicDir, 'Midlothian-expense-analysis-chunk2.xlsx');
+  
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'Chunk2 file not found' });
+  }
+  
+  console.log(`Serving chunk2 file: Midlothian-expense-analysis-chunk2.xlsx`);
+  
+  // Set cache-busting headers to prevent caching
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Last-Modified', new Date().toUTCString());
+  
+  // Send the file
+  res.sendFile(filePath);
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Backend server is running' });
