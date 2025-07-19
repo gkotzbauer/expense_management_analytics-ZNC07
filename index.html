@@ -1166,7 +1166,7 @@
                                     "Marginal Cost per $1 GP": item["Marginal Cost per $1 GP"]
                                 }));
                                 
-                                // Try to load chunk2 data after main data is loaded
+                                // Try to load chunk2 data after main data is loaded (separate, won't affect main data)
                                 this.loadChunk2Data();
                                 
                                 this.initializeDashboard();
@@ -1227,37 +1227,16 @@
                         const chunk2Data = this.parseExcel(arrayBuffer);
                         
                         if (chunk2Data && chunk2Data.length > 0) {
-                            console.log('Merging chunk2 data with main data...');
-                            const mergedData = this.originalData.map(item => {
-                                const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
-                                if (chunk2Item) {
-                                    return { ...item, ...chunk2Item };
-                                }
-                                return item;
-                            });
+                            console.log('Chunk2 data loaded for Growth & Risk Drivers section only');
+                            // Store chunk2 data separately - don't merge with main data
+                            this.chunk2Data = chunk2Data;
                             
-                            this.originalData = mergedData;
-                            this.filteredData = [...mergedData];
-                            
-                            // Update model data
-                            this.modelData = mergedData.filter(item => {
-                                const hasModelData = item["Fixed Cost Estimate"] !== 0 || item["Marginal Cost per $1 GP"] !== 0;
-                                const isNotExcluded = !this.isExcludedFromProjections(item.Category);
-                                return hasModelData && isNotExcluded;
-                            }).map(item => ({
-                                "Category": item.Category,
-                                "Fixed Cost Estimate": item["Fixed Cost Estimate"],
-                                "Marginal Cost per $1 GP": item["Marginal Cost per $1 GP"]
-                            }));
-                            
-                            console.log('Data merged successfully. Total records:', mergedData.length);
-                            
-                            // Update the Growth & Risk Drivers table with new data
+                            // Update only the Growth & Risk Drivers table
                             this.updateGrowthRiskTable();
                         }
                     })
                     .catch(error => {
-                        console.log('No chunk2 data available, using main data only:', error);
+                        console.log('No chunk2 data available for Growth & Risk Drivers:', error);
                     });
                 });
             },
@@ -1513,13 +1492,7 @@
                     item.Category.toLowerCase().trim() !== 'gross profit'
                 );
 
-                // Debug: Check what columns are available
-                if (insightData.length > 0) {
-                    console.log('=== INSIGHTS DEBUG ===');
-                    console.log('Available columns in first insight item:', Object.keys(insightData[0]));
-                    console.log('First insight item:', insightData[0]);
-                    console.log('=== END INSIGHTS DEBUG ===');
-                }
+
 
                 // Expenses Grew Faster Than Profit (using Expense Growth Alignment)
                 const outpacedCategories = insightData.filter(item => {
@@ -1721,15 +1694,22 @@
                 if (!table) return;
                 const tbody = table.querySelector('tbody');
                 if (!tbody) return;
-                const data = this.filteredData || [];
+                
+                // Use chunk2 data if available, otherwise use main data with empty values
+                const chunk2Data = this.chunk2Data || [];
+                const mainData = this.filteredData || [];
+                
                 let tableHTML = '';
-                data.forEach(item => {
+                mainData.forEach(item => {
+                    // Find matching chunk2 data for this category
+                    const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
+                    
                     tableHTML += '<tr>';
                     tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
-                    tableHTML += `<td class="center-column">${item['% of Months Outpaced Growth'] ? Number(item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${item['% of Months Did Not Decline with Profit'] ? Number(item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${item['% of Months Opposite Direction than Profit'] ? Number(item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${item['Total Excess Costs (5% Buffer)'] ? '$' + Number(item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Outpaced Growth'] ? Number(chunk2Item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Did Not Decline with Profit'] ? Number(chunk2Item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Opposite Direction than Profit'] ? Number(chunk2Item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['Total Excess Costs (5% Buffer)'] ? '$' + Number(chunk2Item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
                     tableHTML += '</tr>';
                 });
                 tbody.innerHTML = tableHTML;
