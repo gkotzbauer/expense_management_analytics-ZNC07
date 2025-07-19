@@ -893,6 +893,15 @@
                     '430000 medical services (pc)'
                 ];
                 
+                // New exclusion patterns for income, profit, fee, services - doctors, and medical services
+                const newExclusions = [
+                    'income',
+                    'profit',
+                    'fee',
+                    'services - doctors',
+                    'medical services (pc)'
+                ];
+                
                 // Check exact matches
                 if (exactExclusions.includes(category)) {
                     return true;
@@ -900,6 +909,13 @@
                 
                 // Check pattern matches
                 for (let pattern of patternExclusions) {
+                    if (category.includes(pattern)) {
+                        return true;
+                    }
+                }
+                
+                // Check new exclusion patterns
+                for (let pattern of newExclusions) {
                     if (category.includes(pattern)) {
                         return true;
                     }
