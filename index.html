@@ -893,11 +893,12 @@
                     '430000 medical services (pc)'
                 ];
                 
-                // New exclusion patterns for income, profit, fee, services - doctors, and medical services
+                // New exclusion patterns for income, profit, fee, fees, services - doctors, and medical services
                 const newExclusions = [
                     'income',
                     'profit',
                     'fee',
+                    'fees',
                     'services - doctors',
                     'medical services (pc)'
                 ];
@@ -917,6 +918,7 @@
                 // Check new exclusion patterns
                 for (let pattern of newExclusions) {
                     if (category.includes(pattern)) {
+                        console.log(`Excluding category "${categoryName}" due to pattern "${pattern}"`);
                         return true;
                     }
                 }
@@ -1457,11 +1459,15 @@
                 if (!tbody) return;
 
                 // Filter out excluded categories from the table display
-                const tableData = this.filteredData.filter(item => 
-                    !this.isExcludedFromProjections(item.Category) &&
-                    item.Category.toLowerCase().trim() !== 'net ordinary income' &&
-                    item.Category.toLowerCase().trim() !== 'gross profit'
-                );
+                const tableData = this.filteredData.filter(item => {
+                    const isExcluded = this.isExcludedFromProjections(item.Category);
+                    if (isExcluded) {
+                        console.log(`Excluding from table: "${item.Category}"`);
+                    }
+                    return !isExcluded &&
+                        item.Category.toLowerCase().trim() !== 'net ordinary income' &&
+                        item.Category.toLowerCase().trim() !== 'gross profit';
+                });
 
                 // Debug: print keys of first row
                 if (tableData.length > 0) {
@@ -1646,7 +1652,13 @@
                 }
 
                 // Consistently Outpacing Profit Growth (Elasticity Classification = 'Over-scaled')
-                const outpacingProfitCategories = this.filteredData.filter(item => String(item['Elasticity Classification'] || '').trim() === 'Over-scaled');
+                const outpacingProfitCategories = this.filteredData.filter(item => {
+                    const isExcluded = this.isExcludedFromProjections(item.Category);
+                    if (isExcluded) {
+                        console.log(`Excluding from Consistently Outpacing Profit Growth: "${item.Category}"`);
+                    }
+                    return !isExcluded && String(item['Elasticity Classification'] || '').trim() === 'Over-scaled';
+                });
                 const outpacingProfitElement = document.getElementById('outpacingProfitText');
                 if (outpacingProfitElement) {
                     if (outpacingProfitCategories.length > 0) {
@@ -1739,7 +1751,13 @@
                 
                 // Use chunk2 data if available, otherwise use main data with empty values
                 const chunk2Data = this.chunk2Data || [];
-                const mainData = this.filteredData || [];
+                const mainData = this.filteredData.filter(item => {
+                    const isExcluded = this.isExcludedFromProjections(item.Category);
+                    if (isExcluded) {
+                        console.log(`Excluding from Growth & Risk Drivers: "${item.Category}"`);
+                    }
+                    return !isExcluded;
+                }) || [];
                 
                 // Debug logging
                 console.log('=== GROWTH RISK DEBUG ===');
