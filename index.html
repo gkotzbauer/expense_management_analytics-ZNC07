@@ -1572,24 +1572,14 @@
                     }
                 }
 
-                // Marketing Spend Efficiency - always include Total Marketing & Advertising and Advertising & Marketing Fund
+                // Marketing Spend Efficiency - ONLY include Total Marketing & Advertising and Advertising & Marketing Fund
                 const marketingEfficiencyCategories = this.filteredData.filter(item => {
                     const efficiency = item['Marketing Spend Efficiency'];
                     const hasEfficiencyData = efficiency && efficiency.toString().trim() !== '';
                     const cat = (item.Category || '').toLowerCase().trim();
                     const isMarketingSpecial = cat === 'total marketing & advertising' || cat === 'advertising & marketing fund';
-                    // Include if it has efficiency data AND either:
-                    // 1. It's not excluded (regular expense categories), OR
-                    // 2. It's specifically a marketing total category
-                    const isNotExcluded = !this.isExcludedFromProjections(item.Category);
-                    return hasEfficiencyData && (isNotExcluded || isMarketingSpecial);
-                });
-                // Ensure both special marketing categories are always included if present
-                ['total marketing & advertising', 'advertising & marketing fund'].forEach(specialCat => {
-                    const found = this.originalData.find(item => (item.Category || '').toLowerCase().trim() === specialCat);
-                    if (found && found['Marketing Spend Efficiency'] && !marketingEfficiencyCategories.some(item => (item.Category || '').toLowerCase().trim() === specialCat)) {
-                        marketingEfficiencyCategories.push(found);
-                    }
+                    // ONLY include the two specific marketing categories
+                    return hasEfficiencyData && isMarketingSpecial;
                 });
                 const roiElement = document.getElementById('marketingROIText');
                 if (roiElement) {
@@ -1699,6 +1689,16 @@
                 const chunk2Data = this.chunk2Data || [];
                 const mainData = this.filteredData || [];
                 
+                // Debug logging
+                console.log('=== GROWTH RISK DEBUG ===');
+                console.log('Chunk2 data available:', chunk2Data.length > 0);
+                console.log('Main data available:', mainData.length > 0);
+                if (chunk2Data.length > 0) {
+                    console.log('First chunk2 item:', chunk2Data[0]);
+                    console.log('Chunk2 columns:', Object.keys(chunk2Data[0]));
+                }
+                console.log('=== END GROWTH RISK DEBUG ===');
+                
                 let tableHTML = '';
                 mainData.forEach(item => {
                     // Find matching chunk2 data for this category
@@ -1706,10 +1706,10 @@
                     
                     tableHTML += '<tr>';
                     tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Outpaced Growth'] ? Number(chunk2Item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Did Not Decline with Profit'] ? Number(chunk2Item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Opposite Direction than Profit'] ? Number(chunk2Item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['Total Excess Costs (5% Buffer)'] ? '$' + Number(chunk2Item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Outpaced Growth'] !== undefined && chunk2Item['% of Months Outpaced Growth'] !== null && chunk2Item['% of Months Outpaced Growth'] !== '' ? Number(chunk2Item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Did Not Decline with Profit'] !== undefined && chunk2Item['% of Months Did Not Decline with Profit'] !== null && chunk2Item['% of Months Did Not Decline with Profit'] !== '' ? Number(chunk2Item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Opposite Direction than Profit'] !== undefined && chunk2Item['% of Months Opposite Direction than Profit'] !== null && chunk2Item['% of Months Opposite Direction than Profit'] !== '' ? Number(chunk2Item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['Total Excess Costs (5% Buffer)'] !== undefined && chunk2Item['Total Excess Costs (5% Buffer)'] !== null && chunk2Item['Total Excess Costs (5% Buffer)'] !== '' ? '$' + Number(chunk2Item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
                     tableHTML += '</tr>';
                 });
                 tbody.innerHTML = tableHTML;
