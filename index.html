@@ -1513,6 +1513,14 @@
                     item.Category.toLowerCase().trim() !== 'gross profit'
                 );
 
+                // Debug: Check what columns are available
+                if (insightData.length > 0) {
+                    console.log('=== INSIGHTS DEBUG ===');
+                    console.log('Available columns in first insight item:', Object.keys(insightData[0]));
+                    console.log('First insight item:', insightData[0]);
+                    console.log('=== END INSIGHTS DEBUG ===');
+                }
+
                 // Expenses Grew Faster Than Profit (using Expense Growth Alignment)
                 const outpacedCategories = insightData.filter(item => {
                     const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
