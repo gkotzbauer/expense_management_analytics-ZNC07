@@ -1241,7 +1241,9 @@
                             
                             // Check if this actually has the chunk2 columns we need
                             const hasChunk2Columns = chunk2Data[0]['% of Months Outpaced Growth'] !== undefined || 
-                                                   chunk2Data[0]['Total Excess Costs (5% Buffer)'] !== undefined;
+                                                   chunk2Data[0]['Total Excess Costs (5% Buffer)'] !== undefined ||
+                                                   chunk2Data[0]['Outpaces Growth (Count)'] !== undefined ||
+                                                   chunk2Data[0]['Not Keeping Up with Decline (Count)'] !== undefined;
                             
                             if (hasChunk2Columns) {
                                 console.log('✅ Chunk2 data has the correct columns');
@@ -1252,8 +1254,9 @@
                                 this.updateGrowthRiskTable();
                             } else {
                                 console.log('❌ Chunk2 data does NOT have the expected columns - this might be the wrong file');
-                                console.log('Expected columns: % of Months Outpaced Growth, Total Excess Costs (5% Buffer)');
-                                console.log('Actual columns:', Object.keys(chunk2Data[0]));
+                                                            console.log('Expected columns: % of Months Outpaced Growth, Total Excess Costs (5% Buffer)');
+                            console.log('Actual columns:', Object.keys(chunk2Data[0]));
+                            console.log('All chunk2 column names:', Object.keys(chunk2Data[0]).join(', '));
                             }
                         } else {
                             console.log('Chunk2 data is empty or null');
