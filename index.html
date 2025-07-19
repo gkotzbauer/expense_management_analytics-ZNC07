@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midlothian Margin Performance Dashboard</title>
+    <title>RMT Margin Performance Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -448,7 +448,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Midlothian Margin Performance Dashboard</h1>
+            <h1>📊 RMT Margin Performance Dashboard</h1>
             <p>Comprehensive margin insights to drive performance optimization and profitability management</p>
             <button onclick="window.dashboard.loadPreloadedData()" style="margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
                 🔄 Refresh Data
@@ -1157,6 +1157,17 @@
                             
                             const data = this.parseExcel(arrayBuffer);
                             if (data && data.length > 0) {
+                                // Debug: Log the first item to see what columns are available
+                                console.log('=== MAIN DATA DEBUG ===');
+                                console.log('First item from main data:', data[0]);
+                                console.log('Main data columns:', Object.keys(data[0]));
+                                console.log('Growth & Risk columns in main data:');
+                                console.log('- % of Months Outpaced Growth:', data[0]['% of Months Outpaced Growth']);
+                                console.log('- % of Months Did Not Decline with Profit:', data[0]['% of Months Did Not Decline with Profit']);
+                                console.log('- % of Months Opposite Direction than Profit:', data[0]['% of Months Opposite Direction than Profit']);
+                                console.log('- Total Excess Costs (5% Buffer):', data[0]['Total Excess Costs (5% Buffer)']);
+                                console.log('=== END MAIN DATA DEBUG ===');
+                                
                                 this.originalData = data;
                                 this.filteredData = [...data];
                                 
@@ -1209,8 +1220,9 @@
                 // Sources for the chunk2 file - same pattern as main file
                 const timestamp = new Date().getTime();
                 const chunk2Sources = [
-                    `/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
-                    `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`
+                    `/RMT-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
+                    `/public/RMT-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
+                    `/api/chunk2?t=${timestamp}&v=${Date.now()}`
                 ];
                 
                 console.log('Trying chunk2 sources:', chunk2Sources);
@@ -1717,22 +1729,87 @@
                 if (chunk2Data.length > 0) {
                     console.log('First chunk2 item:', chunk2Data[0]);
                     console.log('Chunk2 columns:', Object.keys(chunk2Data[0]));
+                    
+                    // Log all column names to help identify the correct ones
+                    const allColumns = Object.keys(chunk2Data[0]);
+                    console.log('All available columns in chunk2:', allColumns);
+                    
+                    // Look for columns that might contain the data we need
+                    const excessCostColumns = allColumns.filter(col => 
+                        col.toLowerCase().includes('excess') || 
+                        col.toLowerCase().includes('cost') || 
+                        col.toLowerCase().includes('loss') ||
+                        col.toLowerCase().includes('buffer')
+                    );
+                    console.log('Potential excess cost columns:', excessCostColumns);
                 }
                 console.log('=== END GROWTH RISK DEBUG ===');
                 
                 let tableHTML = '';
+                let hasData = false;
+                
                 mainData.forEach(item => {
                     // Find matching chunk2 data for this category
                     const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
                     
+                    // Use chunk2 data if available, otherwise fall back to main data
+                    const dataSource = chunk2Item || item;
+                    
+                    // Try to find the correct column names for excess costs
+                    let excessCostValue = 0;
+                    if (dataSource) {
+                        // Try multiple possible column names for excess costs
+                        const possibleExcessColumns = [
+                            'Total Excess Costs (5% Buffer)',
+                            'Excess Costs (5% Buffer)',
+                            'Total Excess Costs',
+                            'Excess Costs',
+                            'Potential Loss',
+                            'Excess Spending'
+                        ];
+                        
+                        for (const colName of possibleExcessColumns) {
+                            if (dataSource[colName] !== undefined && dataSource[colName] !== null && dataSource[colName] !== '') {
+                                excessCostValue = Number(dataSource[colName]);
+                                console.log(`Found excess cost value for ${item.Category} in column "${colName}":`, excessCostValue);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Get percentage values, using chunk2 data if available, otherwise main data
+                    const outpacedGrowth = dataSource['% of Months Outpaced Growth'];
+                    const didNotDecline = dataSource['% of Months Did Not Decline with Profit'];
+                    const oppositeDirection = dataSource['% of Months Opposite Direction than Profit'];
+                    
+                    // Check if we have any meaningful data
+                    if (outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' && outpacedGrowth > 0) {
+                        hasData = true;
+                    }
+                    if (didNotDecline !== undefined && didNotDecline !== null && didNotDecline !== '' && didNotDecline > 0) {
+                        hasData = true;
+                    }
+                    if (oppositeDirection !== undefined && oppositeDirection !== null && oppositeDirection !== '' && oppositeDirection > 0) {
+                        hasData = true;
+                    }
+                    if (excessCostValue > 0) {
+                        hasData = true;
+                    }
+                    
                     tableHTML += '<tr>';
                     tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Outpaced Growth'] !== undefined && chunk2Item['% of Months Outpaced Growth'] !== null && chunk2Item['% of Months Outpaced Growth'] !== '' ? Number(chunk2Item['% of Months Outpaced Growth']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Did Not Decline with Profit'] !== undefined && chunk2Item['% of Months Did Not Decline with Profit'] !== null && chunk2Item['% of Months Did Not Decline with Profit'] !== '' ? Number(chunk2Item['% of Months Did Not Decline with Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['% of Months Opposite Direction than Profit'] !== undefined && chunk2Item['% of Months Opposite Direction than Profit'] !== null && chunk2Item['% of Months Opposite Direction than Profit'] !== '' ? Number(chunk2Item['% of Months Opposite Direction than Profit']).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${chunk2Item && chunk2Item['Total Excess Costs (5% Buffer)'] !== undefined && chunk2Item['Total Excess Costs (5% Buffer)'] !== null && chunk2Item['Total Excess Costs (5% Buffer)'] !== '' ? '$' + Number(chunk2Item['Total Excess Costs (5% Buffer)']).toLocaleString() : '$0'}</td>`;
+                    tableHTML += `<td class="center-column">${outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' ? Number(outpacedGrowth).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${didNotDecline !== undefined && didNotDecline !== null && didNotDecline !== '' ? Number(didNotDecline).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${oppositeDirection !== undefined && oppositeDirection !== null && oppositeDirection !== '' ? Number(oppositeDirection).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${excessCostValue > 0 ? '$' + excessCostValue.toLocaleString() : '$0'}</td>`;
                     tableHTML += '</tr>';
                 });
+                
+                // If no meaningful data found, show a message
+                if (!hasData) {
+                    tableHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #718096; font-style: italic;">Growth & Risk Drivers data not available. This section requires additional data that may not be present in the current file.</td></tr>';
+                }
+                
                 tbody.innerHTML = tableHTML;
             },
 
