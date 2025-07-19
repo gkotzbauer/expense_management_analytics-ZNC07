@@ -1202,15 +1202,18 @@
             loadChunk2Data: function() {
                 console.log('=== LOADING CHUNK2 DATA ===');
                 // Sources for the chunk2 file - same pattern as main file
+                const timestamp = new Date().getTime();
                 const chunk2Sources = [
-                    `/Midlothian-expense-analysis-chunk2.xlsx?t=${Date.now()}&v=${Date.now()}`,
-                    `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${Date.now()}&v=${Date.now()}`
+                    `/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
+                    `/public/Midlothian-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`
                 ];
                 
                 console.log('Trying chunk2 sources:', chunk2Sources);
                 
                 // Try to load chunk2 data (optional - won't break if it fails)
+                let chunk2Loaded = false;
                 chunk2Sources.forEach(source => {
+                    if (chunk2Loaded) return; // Stop if already loaded
                     console.log('Attempting to fetch from:', source);
                     fetch(source, {
                         method: 'GET',
@@ -1244,18 +1247,20 @@
                                                    chunk2Data[0]['Outpaces Growth (Count)'] !== undefined ||
                                                    chunk2Data[0]['Not Keeping Up with Decline (Count)'] !== undefined;
                             
-                            if (hasChunk2Columns) {
+                                                        if (hasChunk2Columns) {
                                 console.log('✅ Chunk2 data has the correct columns');
                                 // Store chunk2 data separately - don't merge with main data
                                 this.chunk2Data = chunk2Data;
+                                chunk2Loaded = true;
                                 
                                 // Update only the Growth & Risk Drivers table
                                 this.updateGrowthRiskTable();
                             } else {
                                 console.log('❌ Chunk2 data does NOT have the expected columns - this might be the wrong file');
-                                                            console.log('Expected columns: % of Months Outpaced Growth, Total Excess Costs (5% Buffer)');
-                            console.log('Actual columns:', Object.keys(chunk2Data[0]));
-                            console.log('All chunk2 column names:', Object.keys(chunk2Data[0]).join(', '));
+                                console.log('Expected columns: % of Months Outpaced Growth, Total Excess Costs (5% Buffer)');
+                                console.log('Actual columns:', Object.keys(chunk2Data[0]));
+                                console.log('All chunk2 column names:', Object.keys(chunk2Data[0]).join(', '));
+                                console.log('❌ NOT storing this data as chunk2 data - it appears to be the wrong file');
                             }
                         } else {
                             console.log('Chunk2 data is empty or null');
