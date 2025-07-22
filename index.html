@@ -2011,17 +2011,22 @@
             renderStatusSummaryChart: function() {
                 const data = this.statusSummaryData || [];
                 if (!data.length) return;
-                const months = [], revenue = [], yoy = [];
+                const months = [], revenue = [], expenses = [], yoy = [];
+                let minYOY = null, maxYOY = null;
                 data.forEach(row => {
-                    if (row['Month'] && row['Revenue 2025'] !== undefined && row['% YOY Change'] !== undefined) {
+                    if (row['Month'] && row['Revenue 2025'] !== undefined && row['% YOY Change'] !== undefined && row['Expenses 2025'] !== undefined) {
                         months.push(row['Month']);
                         revenue.push(Number(row['Revenue 2025']) || 0);
+                        expenses.push(Number(row['Expenses 2025']) || 0);
                         let pct = row['% YOY Change'];
                         if (typeof pct === 'string' && pct.includes('%')) pct = pct.replace('%','');
-                        yoy.push(Number(pct) || 0);
+                        const pctVal = Number(pct) || 0;
+                        yoy.push(pctVal);
+                        if (minYOY === null || pctVal < minYOY) minYOY = pctVal;
+                        if (maxYOY === null || pctVal > maxYOY) maxYOY = pctVal;
                     }
                 });
-                if (!months.length || !revenue.length || !yoy.length) return;
+                if (!months.length || !revenue.length || !yoy.length || !expenses.length) return;
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
                 if (window.statusSummaryChartInstance) window.statusSummaryChartInstance.destroy();
@@ -2036,6 +2041,15 @@
                                 data: revenue,
                                 backgroundColor: '#667eea',
                                 yAxisID: 'y',
+                                stack: 'main',
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Expenses 2025',
+                                data: expenses,
+                                backgroundColor: '#48bb78',
+                                yAxisID: 'y',
+                                stack: 'main',
                             },
                             {
                                 type: 'line',
@@ -2057,7 +2071,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Revenue 2025' },
+                                title: { display: true, text: 'Revenue/Expenses 2025' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + v.toLocaleString() }
                             },
@@ -2065,7 +2079,9 @@
                                 type: 'linear',
                                 position: 'right',
                                 title: { display: true, text: '% YOY Change' },
-                                beginAtZero: true,
+                                beginAtZero: false,
+                                min: minYOY !== null ? Math.floor(minYOY) : undefined,
+                                max: maxYOY !== null ? Math.ceil(maxYOY) : undefined,
                                 grid: { drawOnChartArea: false },
                                 ticks: { callback: v => Math.round(v) + '%' }
                             }
