@@ -2115,8 +2115,9 @@
                     const m = row[monthKey], m24 = row[margin2024Key], m25 = row[margin2025Key];
                     if (m && m24 !== undefined && m25 !== undefined && m24 !== '' && m25 !== '') {
                         marginMonths.push(m);
-                        margin2024.push(Number(m24) || 0);
-                        margin2025.push(Number(m25) || 0);
+                        // Convert to whole percent, e.g., -0.597 -> -60
+                        margin2024.push(Math.round(Number(m24) * 100));
+                        margin2025.push(Math.round(Number(m25) * 100));
                         validRows++;
                     } else {
                         console.log(`Margin Summary: Skipping row ${i+1} due to missing values.`, row);
@@ -2125,7 +2126,7 @@
                 if (!validRows) {
                     console.log('Margin Summary: No valid rows found for chart.');
                     const ctx = document.getElementById('marginSummaryChart');
-                    if (ctx) ctx.parentElement.innerHTML = '<div style=\"color:#e53e3e;padding:2em;\">No valid margin chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid margin chart data found.<br>Check column names and data in the summary Excel file.</div>';
                     return;
                 }
                 const ctx = document.getElementById('marginSummaryChart');
@@ -2159,9 +2160,12 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Margin' },
+                                title: { display: true, text: 'Margin (%)' },
                                 beginAtZero: true,
-                                ticks: { callback: v => '$' + v.toLocaleString() }
+                                ticks: {
+                                    callback: v => Math.round(v) + '%',
+                                    stepSize: 10
+                                }
                             }
                         }
                     }
