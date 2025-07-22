@@ -2025,7 +2025,7 @@
                 const monthKey = keys['month'];
                 const revKey = keys['revenue 2025'];
                 const expKey = keys['expenses 2025'];
-                const yoyKey = keys['% yoy change'];
+                const yoyKey = keys['% yoy expenses change'];
                 if (!monthKey || !revKey || !expKey || !yoyKey) {
                     console.log('Status Summary: Required columns not found. Keys:', Object.keys(firstRow));
                     return;
@@ -2080,7 +2080,7 @@
                             },
                             {
                                 type: 'line',
-                                label: '% YOY Change',
+                                label: '% YOY Expenses Change',
                                 data: yoy,
                                 borderColor: '#fd7900',
                                 backgroundColor: '#fd7900',
@@ -2105,12 +2105,15 @@
                             y1: {
                                 type: 'linear',
                                 position: 'right',
-                                title: { display: true, text: '% YOY Change' },
+                                title: { display: true, text: '% YOY Expenses Change' },
                                 beginAtZero: false,
-                                min: minYOY !== null ? Math.floor(minYOY) : undefined,
-                                max: maxYOY !== null ? Math.ceil(maxYOY) : undefined,
+                                min: -10,
+                                max: maxYOY !== null ? Math.ceil(Math.max(maxYOY, 0) / 10) * 10 : 10,
                                 grid: { drawOnChartArea: false },
-                                ticks: { callback: v => Math.round(v) + '%' }
+                                ticks: {
+                                    stepSize: 10,
+                                    callback: v => Math.round(v) + '%'
+                                }
                             }
                         }
                     }
