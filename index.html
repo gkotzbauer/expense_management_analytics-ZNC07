@@ -484,11 +484,8 @@
             <div class="insights-section" id="statusSummarySection">
                 <h2>🎯 Status Summary</h2>
                 <div style="display: flex; align-items: flex-start; gap: 32px;">
-                    <div style="min-width: 400px; max-width: 500px;">
-                        <canvas id="statusSummaryChart" width="400" height="260"></canvas>
-                    </div>
-                    <div id="statusSummaryItems" style="flex:1;">
-                        <span>Loading...</span>
+                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
+                        <canvas id="statusSummaryChart" width="650" height="520"></canvas>
                     </div>
                 </div>
             </div>
@@ -2070,7 +2067,7 @@
                                 title: { display: true, text: '% YOY Change' },
                                 beginAtZero: true,
                                 grid: { drawOnChartArea: false },
-                                ticks: { callback: v => v + '%' }
+                                ticks: { callback: v => Math.round(v) + '%' }
                             }
                         }
                     }
