@@ -481,8 +481,20 @@
                 </div>
             </div>
 
+            <div class="insights-section" id="statusSummarySection">
+                <h2>🎯 Status Summary</h2>
+                <div style="display: flex; align-items: flex-start; gap: 32px;">
+                    <div style="min-width: 400px; max-width: 500px;">
+                        <canvas id="statusSummaryChart" width="400" height="260"></canvas>
+                    </div>
+                    <div id="statusSummaryItems" style="flex:1;">
+                        <span>Loading...</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="insights-section">
-                <h2>🎯 Key Insights</h2>
+                <h2>�� Key Insights</h2>
                 <div class="insight-item" id="expenseOutpacedInsight">
                     <span style="font-size: 1.2rem;">⚠️ </span>
                     <strong>Expenses Grew Faster Than Profit:</strong> <span id="expenseOutpacedText">Loading...</span>
@@ -527,7 +539,7 @@
                     <ul style="padding-left: 20px; line-height: 1.6;">
                         <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins.</li>
                         <li><strong>Margin Risk:</strong> Expenses are rising faster than profit, or are increasing while profit is flat or declining. This expense appears to be threat to margins that warrants immediate investigation and action.</li>
-                        <li><strong>Below Threshold:</strong> An expense category will be assigned “Below Threshold” if its average monthly expense is below $500 or if it’s a one-time expense.</li>
+                        <li><strong>Below Threshold:</strong> An expense category will be assigned "Below Threshold" if its average monthly expense is below $500 or if it's a one-time expense.</li>
                         <li><strong>Neutral:</strong> Expenses and profit are changing at similar rates, or neither cost nor profit are moving in a way that indicates significant risk or improvement. No immediate concern - keep under review.</li>
                     </ul>
                 </div>
@@ -562,7 +574,7 @@
                     <ul style="padding-left: 20px; line-height: 1.6;">
                         <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins.</li>
                         <li><strong>Margin Risk:</strong> Expenses are rising faster than profit, or are increasing while profit is flat or declining. This expense appears to be threat to margins that warrants immediate investigation and action.</li>
-                        <li><strong>Below Threshold:</strong> An expense category will be assigned “Below Threshold” if its average monthly expense is below $500 or if it’s a one-time expense.</li>
+                        <li><strong>Below Threshold:</strong> An expense category will be assigned "Below Threshold" if its average monthly expense is below $500 or if it's a one-time expense.</li>
                         <li><strong>Neutral:</strong> Expenses and profit are changing at similar rates, or neither cost nor profit are moving in a way that indicates significant risk or improvement. No immediate concern - keep under review.</li>
                     </ul>
                     
@@ -1941,6 +1953,128 @@
                         </div>
                     `;
                 }
+            },
+
+            loadStatusSummaryData: function() {
+                const fileName = 'Summary RMT Rev & Expense Data for Dashboard.xlsx';
+                const publicPath = `/public/${fileName}`;
+                const rootPath = `/${fileName}`;
+                const sources = [publicPath, rootPath];
+                const statusSummaryDiv = document.getElementById('statusSummaryItems');
+                if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span>Loading...</span>';
+
+                const tryFetch = async (url) => {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) return false;
+                        const arrayBuffer = await response.arrayBuffer();
+                        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                        if (jsonData && jsonData.length > 0) {
+                            this.statusSummaryData = jsonData;
+                            this.renderStatusSummary();
+                            this.renderStatusSummaryChart();
+                            return true;
+                        }
+                    } catch (e) {
+                        return false;
+                    }
+                    return false;
+                };
+
+                (async () => {
+                    for (const src of sources) {
+                        const ok = await tryFetch(src);
+                        if (ok) return;
+                    }
+                    if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span style="color:#e53e3e">No summary data found.</span>';
+                })();
+            },
+
+            renderStatusSummary: function() {
+                const statusSummaryDiv = document.getElementById('statusSummaryItems');
+                if (!statusSummaryDiv) return;
+                const data = this.statusSummaryData || [];
+                if (!data.length) {
+                    statusSummaryDiv.innerHTML = '<span>No summary data available.</span>';
+                    return;
+                }
+                let html = '<ul style="padding-left:20px;line-height:1.7;">';
+                data.forEach(row => {
+                    Object.entries(row).forEach(([k, v]) => {
+                        html += `<li><strong>${k}:</strong> ${v}</li>`;
+                    });
+                });
+                html += '</ul>';
+                statusSummaryDiv.innerHTML = html;
+            },
+
+            renderStatusSummaryChart: function() {
+                const data = this.statusSummaryData || [];
+                if (!data.length) return;
+                const months = [], revenue = [], yoy = [];
+                data.forEach(row => {
+                    if (row['Month'] && row['Revenue 2025'] !== undefined && row['% YOY Change'] !== undefined) {
+                        months.push(row['Month']);
+                        revenue.push(Number(row['Revenue 2025']) || 0);
+                        let pct = row['% YOY Change'];
+                        if (typeof pct === 'string' && pct.includes('%')) pct = pct.replace('%','');
+                        yoy.push(Number(pct) || 0);
+                    }
+                });
+                if (!months.length || !revenue.length || !yoy.length) return;
+                const ctx = document.getElementById('statusSummaryChart');
+                if (!ctx) return;
+                if (window.statusSummaryChartInstance) window.statusSummaryChartInstance.destroy();
+                window.statusSummaryChartInstance = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                type: 'bar',
+                                label: 'Revenue 2025',
+                                data: revenue,
+                                backgroundColor: '#667eea',
+                                yAxisID: 'y',
+                            },
+                            {
+                                type: 'line',
+                                label: '% YOY Change',
+                                data: yoy,
+                                borderColor: '#fd7900',
+                                backgroundColor: '#fd7900',
+                                yAxisID: 'y1',
+                                tension: 0.2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#fd7900',
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: false,
+                        plugins: { legend: { display: true } },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                position: 'left',
+                                title: { display: true, text: 'Revenue 2025' },
+                                beginAtZero: true,
+                                ticks: { callback: v => '$' + v.toLocaleString() }
+                            },
+                            y1: {
+                                type: 'linear',
+                                position: 'right',
+                                title: { display: true, text: '% YOY Change' },
+                                beginAtZero: true,
+                                grid: { drawOnChartArea: false },
+                                ticks: { callback: v => v + '%' }
+                            }
+                        }
+                    }
+                });
             }
         };
 
@@ -1949,6 +2083,7 @@
             window.dashboard.init();
             // Automatically load pre-loaded data
             window.dashboard.loadPreloadedData();
+            window.dashboard.loadStatusSummaryData();
         });
     </script>
 </body>
