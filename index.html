@@ -2010,23 +2010,52 @@
 
             renderStatusSummaryChart: function() {
                 const data = this.statusSummaryData || [];
-                if (!data.length) return;
+                if (!data.length) {
+                    console.log('Status Summary: No data loaded.');
+                    return;
+                }
+                // Normalize headers for robustness
+                const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
+                // Find actual keys
+                const firstRow = data[0] || {};
+                const keys = Object.keys(firstRow).reduce((acc, k) => {
+                    acc[normalize(k)] = k;
+                    return acc;
+                }, {});
+                const monthKey = keys['month'];
+                const revKey = keys['revenue 2025'];
+                const expKey = keys['expenses 2025'];
+                const yoyKey = keys['% yoy change'];
+                if (!monthKey || !revKey || !expKey || !yoyKey) {
+                    console.log('Status Summary: Required columns not found. Keys:', Object.keys(firstRow));
+                    return;
+                }
                 const months = [], revenue = [], expenses = [], yoy = [];
                 let minYOY = null, maxYOY = null;
-                data.forEach(row => {
-                    if (row['Month'] && row['Revenue 2025'] !== undefined && row['% YOY Change'] !== undefined && row['Expenses 2025'] !== undefined) {
-                        months.push(row['Month']);
-                        revenue.push(Number(row['Revenue 2025']) || 0);
-                        expenses.push(Number(row['Expenses 2025']) || 0);
-                        let pct = row['% YOY Change'];
+                let validRows = 0;
+                data.forEach((row, i) => {
+                    const m = row[monthKey], r = row[revKey], e = row[expKey], y = row[yoyKey];
+                    if (m && r !== undefined && e !== undefined && y !== undefined && r !== '' && e !== '' && y !== '') {
+                        months.push(m);
+                        revenue.push(Number(r) || 0);
+                        expenses.push(Number(e) || 0);
+                        let pct = y;
                         if (typeof pct === 'string' && pct.includes('%')) pct = pct.replace('%','');
                         const pctVal = Number(pct) || 0;
                         yoy.push(pctVal);
                         if (minYOY === null || pctVal < minYOY) minYOY = pctVal;
                         if (maxYOY === null || pctVal > maxYOY) maxYOY = pctVal;
+                        validRows++;
+                    } else {
+                        console.log(`Status Summary: Skipping row ${i+1} due to missing values.`, row);
                     }
                 });
-                if (!months.length || !revenue.length || !yoy.length || !expenses.length) return;
+                if (!validRows) {
+                    console.log('Status Summary: No valid rows found for chart.');
+                    const ctx = document.getElementById('statusSummaryChart');
+                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid summary chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                    return;
+                }
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
                 if (window.statusSummaryChartInstance) window.statusSummaryChartInstance.destroy();
