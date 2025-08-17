@@ -2410,9 +2410,65 @@
                     return;
                 }
 
-                // Process the data and render tables
-                // This will depend on the structure of your Excel file
-                console.log('Rendering financial performance section with loaded data');
+                // Process the new data structure
+                const expenseAnalysisData = [];
+                const cashflowData = [];
+                
+                this.financialPerformanceData.forEach(row => {
+                    if (row.Category === 'YOY Expense & Profitability Analysis') {
+                        expenseAnalysisData.push({
+                            title: row.Metric_Name,
+                            responsibility: row.Responsibility,
+                            val2024: parseFloat(row.Value_2024_Jan_July) || 0,
+                            val2025: parseFloat(row.Value_2025_Jan_July) || 0,
+                            growth: parseFloat(row.Growth_Rate_Decimal) || 0
+                        });
+                    } else if (row.Category === 'Remaining Year Cashflow Projections') {
+                        // Handle cashflow data - need to group by month
+                        const month = this.extractMonthFromMetricName(row.Metric_Name);
+                        if (month) {
+                            let cashflowItem = cashflowData.find(item => item.month === month);
+                            if (!cashflowItem) {
+                                cashflowItem = { month: month, visitAvg: 0, visitProj: 0, expenses: 0, revenue: 0, profit: 0, cashPosition: 0 };
+                                cashflowData.push(cashflowItem);
+                            }
+                            
+                            // Map the data based on metric name
+                            if (row.Metric_Name.includes('Visit Average')) {
+                                cashflowItem.visitAvg = parseFloat(row.Value_2024_Jan_July) || 0;
+                            } else if (row.Metric_Name.includes('Visit Projection')) {
+                                cashflowItem.visitProj = parseFloat(row.Value_2025_Jan_July) || 0;
+                            } else if (row.Metric_Name.includes('Expected Expenses')) {
+                                cashflowItem.expenses = parseFloat(row.Value_2025_Jan_July) || 0;
+                            } else if (row.Metric_Name.includes('Expected Revenue')) {
+                                cashflowItem.revenue = parseFloat(row.Value_2025_Jan_July) || 0;
+                            } else if (row.Metric_Name.includes('Expected Profit')) {
+                                cashflowItem.profit = parseFloat(row.Value_2025_Jan_July) || 0;
+                            } else if (row.Metric_Name.includes('Cash Position')) {
+                                cashflowItem.cashPosition = parseFloat(row.Value_2025_Jan_July) || 0;
+                            }
+                        }
+                    }
+                });
+
+                // Sort cashflow data by month order
+                const monthOrder = ['August', 'September', 'October', 'November', 'December'];
+                cashflowData.sort((a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month));
+
+                this.renderExpenseAnalysisTable(expenseAnalysisData);
+                this.renderCashflowTable(cashflowData);
+                this.updateKeyMetrics(expenseAnalysisData);
+            },
+
+            // Extract month from metric name
+            extractMonthFromMetricName: function(metricName) {
+                const months = ['August', 'September', 'October', 'November', 'December'];
+                for (const month of months) {
+                    if (metricName.includes(month)) {
+                        return month;
+                    }
+                }
+                return null;
             },
 
             // Format currency values

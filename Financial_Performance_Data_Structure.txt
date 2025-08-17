@@ -1,47 +1,44 @@
-Financial Performance Data.xlsx - Expected Structure
+Financial Performance Data.xlsx - ACTUAL Structure (Updated)
 
-Sheet 1: Expense Analysis
+Sheet 1: Single table with all data
 Columns:
-- Title (e.g., "Total Expenses", "Total Revenue", "Visit Count")
+- Metric_ID (e.g., "TOTAL_EXPENSES", "TOTAL_REVENUE")
+- Metric_Name (e.g., "Total Expenses", "Total Revenue")
+- Category (e.g., "YOY Expense & Profitability Analysis", "Remaining Year Cashflow Projections")
 - Responsibility (e.g., "Team", "Owner Controlled", "RCM/Marketing")
-- Val2024 (2024 values)
-- Val2025 (2025 values)
-- Growth (growth rate as decimal, e.g., 0.354 for 35.4%)
+- Value_2024_Jan_July (2024 values)
+- Value_2025_Jan_July (2025 values)
+- Growth_Rate_Decimal (growth rate as decimal, e.g., -0.1208)
+- Growth_Rate_Percentage (growth rate as percentage, e.g., -12)
+- Unit_Type (e.g., "Currency", "Count")
+- Data_Source (e.g., "P&L Total Expenses", "Dashboard Template")
 
-Sample Data:
-Title,Responsibility,Val2024,Val2025,Growth
-Total Expenses,Team,896645,788324,-0.121
-Total Revenue,Team,689105,933263,0.354
-Visit Count,RCM/Marketing,6488,8156,0.257
-Standard Commitments,Owner Controlled,233683,172552,-0.262
-Variable Operational Costs,Ops - Clinical Administrator Controlled,485095,411129,-0.152
-Marketing & Advertising,Owner Controlled,67696,75774,0.119
-Revenue Proportional,% of visits/revenue,109089,133509,0.224
-Supply $ per Visit,Ops - Clinical Administrator Controlled,16,9,-0.468
-Total Expense per visit,Ops - Clinical Administrator Controlled,138,97,-0.301
-Revenue per Visit,RCM/Marketing,106,114,0.077
-Profit per Visit,Team,-32,18,-1.556
+Sample Data Structure:
+Metric_ID,Metric_Name,Category,Responsibility,Value_2024_Jan_July,Value_2025_Jan_July,Growth_Rate_Decimal,Growth_Rate_Percentage,Unit_Type,Data_Source
+TOTAL_EXPENSES,Total Expenses,YOY Expense & Profitability Analysis,Team,896645,788324,-0.1208,-12,Currency,P&L Total Expenses
+TOTAL_REVENUE,Total Revenue,YOY Expense & Profitability Analysis,Team,689105,933263,0.3543,35,Currency,P&L Total Revenue
+VISIT_COUNT,Visit Count,YOY Expense & Profitability Analysis,RCM/Marketing,6488,8156,0.2571,26,Count,Dashboard Template
+STANDARD_COMMITMENTS,Standard Commitments,YOY Expense & Profitability Analysis,Owner Controlled,233683,172552,-0.2616,-26,Currency,P&L Assignment: Standard Commitments
+VARIABLE_OPERATIONAL_COSTS,Variable Operational Costs,YOY Expense & Profitability Analysis,Ops - Clinical Administrator Controlled,485095,411129,-0.1525,-15,Currency,P&L Assignment: Ops - Clinical Administrator Controlled
+MARKETING_ADVERTISING,Marketing & Advertising,YOY Expense & Profitability Analysis,Owner Controlled,67696,75774,0.1193,12,Currency,P&L Assignment: Owner Controlled
+REVENUE_PROPORTIONAL,Revenue Proportional,YOY Expense & Profitability Analysis,% of visits/revenue,109089,133509,0.2239,22,Currency,P&L Assignment: Revenue Proportional
+SUPPLY_PER_VISIT,Supply $ per Visit,YOY Expense & Profitability Analysis,Ops - Clinical Administrator Controlled,16,9,-0.4375,-44,Currency,Calculated: Supplies / Visit Count
+TOTAL_EXPENSE_PER_VISIT,Total Expense per visit,YOY Expense & Profitability Analysis,Ops - Clinical Administrator Controlled,138,97,-0.2971,-30,Currency,Calculated: Total Expenses / Visit Count
+REVENUE_PER_VISIT,Revenue per Visit,YOY Expense & Profitability Analysis,RCM/Marketing,106,114,0.0755,8,Currency,Calculated: Total Revenue / Visit Count
+PROFIT_PER_VISIT,Profit per Visit,YOY Expense & Profitability Analysis,Team,-32,18,-1.5625,-156,Currency,Calculated: (Total Revenue - Total Expenses) / Visit Count
 
-Sheet 2: Cashflow Projections
-Columns:
-- Month (e.g., "August", "September")
-- VisitAvg (2023/24 visit average)
-- VisitProj (2025 visit projection)
-- Expenses (expected expenses)
-- Revenue (expected revenue)
-- Profit (expected profit)
-- CashPosition (projected cash position)
-
-Sample Data:
-Month,VisitAvg,VisitProj,Expenses,Revenue,Profit,CashPosition
-August,840,1056,102064,120829,18765,293765
-September,865,1087,105102,124425,19324,313089
-October,915,1150,111177,131618,20441,333530
-November,950,1194,115430,136652,21223,354752
-December,1175,1477,142768,169017,26249,381001
+Cashflow Projections (same table, different Category):
+CASHFLOW_AUG_VISIT_AVG,August 2023/2024 Visit Average,Remaining Year Cashflow Projections,Historical,840,,NULL,NULL,Count,Dashboard Template Cashflow
+CASHFLOW_AUG_VISIT_PROJ,August 2025 Visit Projection,Remaining Year Cashflow Projections,Forecast,,1056,NULL,NULL,Count,Dashboard Template Cashflow
+CASHFLOW_AUG_EXPENSES,August 2025 Expected Expenses,Remaining Year Cashflow Projections,Forecast,,102064,NULL,NULL,Currency,Dashboard Template Cashflow
+CASHFLOW_AUG_REVENUE,August 2025 Expected Revenue,Remaining Year Cashflow Projections,Forecast,,120829,NULL,NULL,Currency,Dashboard Template Cashflow
+CASHFLOW_AUG_PROFIT,August 2025 Expected Profit,Remaining Year Cashflow Projections,Forecast,,18765,NULL,NULL,Currency,Dashboard Template Cashflow
+CASHFLOW_AUG_CASH_POSITION,August 2025 End of Month Cash Position,Remaining Year Cashflow Projections,Forecast,,293765,NULL,NULL,Currency,Dashboard Template Cashflow
 
 Notes:
-- The dashboard will automatically use fallback data if this file is not found
-- Column names should match exactly (case-sensitive)
+- The dashboard now automatically parses this single-table structure
+- Category column distinguishes between expense analysis and cashflow projections
+- Cashflow data is automatically grouped by month
 - All numeric values should be numbers, not text
 - The dashboard will handle missing data gracefully
+- Place the file in your public/ folder as "Financial Performance Data.xlsx"
