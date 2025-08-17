@@ -469,83 +469,81 @@
         </div>
 
         <!-- Financial Performance Overview Section -->
-        <div id="financialPerformanceSection" class="bg-white rounded-lg shadow-sm mb-8">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">📊 Financial Performance Overview</h2>
-                <p class="text-sm text-gray-600 mt-1">Performance analysis for Jan-July 2024 vs 2025</p>
-            </div>
+        <div class="insights-section">
+            <h2>📊 Financial Performance Overview</h2>
+            <p style="color: #718096; margin-bottom: 20px;">Performance analysis for Jan-July 2024 vs 2025</p>
             
             <!-- Key Metrics Summary -->
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-blue-50 rounded-lg p-6 border-l-4 border-blue-500">
-                        <div class="flex items-center justify-between">
+            <div style="margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div style="background: #f7fafc; border-radius: 10px; padding: 20px; border-left: 4px solid #667eea;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Total Revenue</p>
-                                <p class="text-2xl font-bold text-gray-900" id="totalRevenue">$933K</p>
-                                <div class="mt-1 text-green-600 flex items-center">
-                                    <span class="mr-1">↗</span>35.4%
+                                <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Total Revenue</p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="totalRevenue">$933K</p>
+                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;">
+                                    <span style="margin-right: 5px;">↗</span>35.4%
                                 </div>
                             </div>
-                            <div class="text-blue-500 text-2xl">💰</div>
+                            <div style="font-size: 2rem; color: #667eea;">💰</div>
                         </div>
                     </div>
                     
-                    <div class="bg-green-50 rounded-lg p-6 border-l-4 border-green-500">
-                        <div class="flex items-center justify-between">
+                    <div style="background: #f7fafc; border-radius: 10px; padding: 20px; border-left: 4px solid #48bb78;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Total Expenses</p>
-                                <p class="text-2xl font-bold text-gray-900" id="totalExpenses">$788K</p>
-                                <div class="mt-1 text-red-600 flex items-center">
-                                    <span class="mr-1">↘</span>12.1%
+                                <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Total Expenses</p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="totalExpenses">$788K</p>
+                                <div style="color: #e53e3e; font-size: 0.9rem; margin-top: 5px;">
+                                    <span style="margin-right: 5px;">↘</span>12.1%
                                 </div>
                             </div>
-                            <div class="text-green-500 text-2xl">📊</div>
+                            <div style="font-size: 2rem; color: #48bb78;">📊</div>
                         </div>
                     </div>
 
-                    <div class="bg-purple-50 rounded-lg p-6 border-l-4 border-purple-500">
-                        <div class="flex items-center justify-between">
+                    <div style="background: #f7fafc; border-radius: 10px; padding: 20px; border-left: 4px solid #805ad5;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Visit Count</p>
-                                <p class="text-2xl font-bold text-gray-900" id="visitCount">8,156</p>
-                                <div class="mt-1 text-green-600 flex items-center">
-                                    <span class="mr-1">↗</span>25.7%
+                                <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Visit Count</p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="visitCount">8,156</p>
+                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;">
+                                    <span style="margin-right: 5px;">↗</span>25.7%
                                 </div>
                             </div>
-                            <div class="text-purple-500 text-2xl">👥</div>
+                            <div style="font-size: 2rem; color: #805ad5;">👥</div>
                         </div>
                     </div>
 
-                    <div class="bg-orange-50 rounded-lg p-6 border-l-4 border-orange-500">
-                        <div class="flex items-center justify-between">
+                    <div style="background: #f7fafc; border-radius: 10px; padding: 20px; border-left: 4px solid #ed8936;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Profit per Visit</p>
-                                <p class="text-2xl font-bold text-gray-900" id="profitPerVisit">$18</p>
-                                <div class="mt-1 text-red-600 flex items-center">
-                                    <span class="mr-1">↘</span>155.6%
+                                <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Profit per Visit</p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="profitPerVisit">$18</p>
+                                <div style="color: #e53e3e; font-size: 0.9rem; margin-top: 5px;">
+                                    <span style="margin-right: 5px;">↘</span>155.6%
                                 </div>
                             </div>
-                            <div class="text-orange-500 text-2xl">💰</div>
+                            <div style="font-size: 2rem; color: #ed8936;">💰</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- YOY Expense & Profitability Analysis -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">YOY Expense & Profitability Analysis</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200" id="expenseAnalysisTable">
-                            <thead class="bg-gray-50">
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; font-size: 1.3rem; font-weight: 600;">YOY Expense & Profitability Analysis</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;" id="expenseAnalysisTable">
+                            <thead style="background: #f7fafc;">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsibility</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2024 Jan-July</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2025 Jan-July</th>
-                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
+                                    <th style="padding: 12px; text-align: left; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Metric</th>
+                                    <th style="padding: 12px; text-align: left; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Responsibility</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2024 Jan-July</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2025 Jan-July</th>
+                                    <th style="padding: 12px; text-align: center; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Growth</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody style="background: white;">
                                 <!-- Table rows will be populated by JavaScript -->
                             </tbody>
                         </table>
@@ -554,25 +552,25 @@
 
                 <!-- Remaining Year Cashflow Projections -->
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <span class="mr-2">📅</span>
+                    <h3 style="color: #2d3748; margin-bottom: 20px; font-size: 1.3rem; font-weight: 600;">
+                        <span style="margin-right: 10px;">📅</span>
                         Remaining Year Cashflow Projections
                     </h3>
-                    <p class="text-sm text-gray-600 mb-4">5-month projection based on current trends</p>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200" id="cashflowTable">
-                            <thead class="bg-gray-50">
+                    <p style="color: #718096; margin-bottom: 20px; font-size: 0.9rem;">5-month projection based on current trends</p>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;" id="cashflowTable">
+                            <thead style="background: #f7fafc;">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2023/24 Visit Avg</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2025 Visit Projection</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Expenses</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Revenue</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Profit</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cash Position</th>
+                                    <th style="padding: 12px; text-align: left; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Month</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2023/24 Visit Avg</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2025 Visit Projection</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Expenses</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Revenue</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Profit</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Cash Position</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody style="background: white;">
                                 <!-- Table rows will be populated by JavaScript -->
                             </tbody>
                         </table>
@@ -2531,8 +2529,8 @@
                 const percentage = (growth * 100).toFixed(0);
                 const isPositive = growth >= 0;
                 const arrow = isPositive ? '↗' : '↘';
-                const color = isPositive ? 'text-green-600' : 'text-red-600';
-                return `<div class="${color} flex items-center"><span class="mr-1">${arrow}</span>${percentage}%</div>`;
+                const color = isPositive ? '#38a169' : '#e53e3e';
+                return `<div style="color: ${color}; display: flex; align-items: center; justify-content: center;"><span style="margin-right: 5px;">${arrow}</span>${percentage}%</div>`;
             },
 
             // Get responsibility color class
@@ -2547,6 +2545,18 @@
                 return colors[responsibility] || "bg-gray-100 text-gray-800";
             },
 
+            // Get responsibility color style for inline styling
+            getResponsibilityColorStyle: function(responsibility) {
+                const colors = {
+                    "Team": "background-color: #dbeafe; color: #1e40af;",
+                    "Owner Controlled": "background-color: #f3e8ff; color: #7c3aed;", 
+                    "RCM/Marketing": "background-color: #dcfce7; color: #166534;",
+                    "Ops - Clinical Administrator Controlled": "background-color: #fed7aa; color: #c05621;",
+                    "% of visits/revenue": "background-color: #f7fafc; color: #4a5568;"
+                };
+                return colors[responsibility] || "background-color: #f7fafc; color: #4a5568;";
+            },
+
             // Render expense analysis table
             renderExpenseAnalysisTable: function(data) {
                 const tbody = document.querySelector('#expenseAnalysisTable tbody');
@@ -2554,29 +2564,29 @@
 
                 data.forEach(item => {
                     const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
+                    row.style.borderBottom = '1px solid #e2e8f0';
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${item.title}</div>
+                        <td style="padding: 12px; text-align: left; font-size: 0.9rem; color: #2d3748;">
+                            <div style="font-weight: 600;">${item.title}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full ${this.getResponsibilityColor(item.responsibility)}">
+                        <td style="padding: 12px; text-align: left; font-size: 0.9rem;">
+                            <span style="display: inline-flex; padding: 4px 8px; font-size: 0.75rem; font-weight: 600; border-radius: 12px; ${this.getResponsibilityColorStyle(item.responsibility)}">
                                 ${item.responsibility}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${item.title === 'Visit Count' ? 
                                 this.formatVisitCount(item.val2024) : 
                                 this.formatCurrency(item.val2024)
                             }
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${item.title === 'Visit Count' ? 
                                 this.formatVisitCount(item.val2025) : 
                                 this.formatCurrency(item.val2025)
                             }
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <td style="padding: 12px; text-align: center; font-size: 0.9rem;">
                             ${this.formatGrowth(item.growth)}
                         </td>
                     `;
@@ -2591,27 +2601,27 @@
 
                 data.forEach(item => {
                     const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
+                    row.style.borderBottom = '1px solid #e2e8f0';
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${item.month}</div>
+                        <td style="padding: 12px; text-align: left; font-size: 0.9rem; color: #2d3748;">
+                            <div style="font-weight: 600;">${item.month}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${this.formatVisitCount(item.visitAvg)}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${this.formatVisitCount(item.visitProj)}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${this.formatCurrency(item.expenses)}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
-                            <span class="text-sm text-gray-900">${this.formatCurrency(item.revenue)}</span>
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
+                            ${this.formatCurrency(item.revenue)}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-green-600 font-medium">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #38a169; font-weight: 600;">
                             ${this.formatCurrency(item.profit)}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900 font-semibold">
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748; font-weight: 700;">
                             ${this.formatCurrency(item.cashPosition)}
                         </td>
                     `;
