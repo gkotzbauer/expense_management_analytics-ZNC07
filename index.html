@@ -2290,11 +2290,44 @@
             loadFinancialPerformanceData: async function() {
                 try {
                     console.log('Attempting to load Financial Performance Data.xlsx...');
-                    const response = await fetch('/Financial Performance Data.xlsx');
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                    // Try to load from API endpoint first, then fallback to direct file access
+                    let response;
+                    try {
+                        console.log('Trying API endpoint: /api/financial-performance');
+                        response = await fetch('/api/financial-performance');
+                        if (response.ok) {
+                            console.log('Success with API endpoint');
+                        } else {
+                            throw new Error(`API endpoint failed: ${response.status}`);
+                        }
+                    } catch (apiError) {
+                        console.log('API endpoint failed, trying direct file access...');
+                        // Fallback to direct file access
+                        const possiblePaths = [
+                            '/Financial Performance Data.xlsx',
+                            '/Financial%20Performance%20Data.xlsx',
+                            'Financial Performance Data.xlsx'
+                        ];
+                        
+                        for (const path of possiblePaths) {
+                            try {
+                                console.log('Trying path:', path);
+                                response = await fetch(path);
+                                if (response.ok) {
+                                    console.log('Success with path:', path);
+                                    break;
+                                }
+                            } catch (e) {
+                                console.log('Failed with path:', path, e);
+                            }
+                        }
                     }
+                    
+                    if (!response || !response.ok) {
+                        throw new Error(`HTTP error! status: ${response?.status || 'No response'}`);
+                    }
+                    
+                    console.log('Response status:', response.status);
                     const arrayBuffer = await response.arrayBuffer();
                     console.log('Array buffer size:', arrayBuffer.byteLength);
                     const workbook = XLSX.read(arrayBuffer, { type: 'array' });

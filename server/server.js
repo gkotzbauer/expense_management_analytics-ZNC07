@@ -88,6 +88,27 @@ app.get('/api/chunk2', (req, res) => {
   res.sendFile(filePath);
 });
 
+// API endpoint to get the Financial Performance Data file
+app.get('/api/financial-performance', (req, res) => {
+  const publicDir = path.join(__dirname, '..', 'public');
+  const filePath = path.join(publicDir, 'Financial Performance Data.xlsx');
+  
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'Financial Performance Data file not found' });
+  }
+  
+  console.log(`Serving Financial Performance Data file: Financial Performance Data.xlsx`);
+  
+  // Set cache-busting headers to prevent caching
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Last-Modified', new Date().toUTCString());
+  
+  // Send the file
+  res.sendFile(filePath);
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Backend server is running' });
