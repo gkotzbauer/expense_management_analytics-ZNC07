@@ -2289,18 +2289,23 @@
             // Load financial performance data
             loadFinancialPerformanceData: async function() {
                 try {
+                    console.log('Attempting to load Financial Performance Data.xlsx...');
                     const response = await fetch('/Financial Performance Data.xlsx');
+                    console.log('Response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const arrayBuffer = await response.arrayBuffer();
+                    console.log('Array buffer size:', arrayBuffer.byteLength);
                     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                    console.log('Workbook sheets:', workbook.SheetNames);
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     this.financialPerformanceData = XLSX.utils.sheet_to_json(worksheet);
                     console.log('Financial Performance Data loaded:', this.financialPerformanceData);
                     this.renderFinancialPerformanceSection();
                 } catch (error) {
                     console.error('Error loading financial performance data:', error);
+                    console.log('Falling back to sample data...');
                     // Use fallback data if file not found
                     this.renderFinancialPerformanceSectionWithFallback();
                 }
@@ -2308,6 +2313,7 @@
 
             // Render financial performance section with fallback data
             renderFinancialPerformanceSectionWithFallback: function() {
+                console.log('Rendering financial performance section with fallback data...');
                 // Fallback expense analysis data
                 const expenseAnalysisData = [
                     {
