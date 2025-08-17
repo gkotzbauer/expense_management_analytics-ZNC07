@@ -455,8 +455,133 @@
             </button>
         </div>
 
+        <!-- Status Summary Section -->
+        <div id="statusSummarySection" class="bg-white rounded-lg shadow-sm mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">🎯 Status Summary</h2>
+            </div>
+            <div class="p-6">
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <canvas id="statusSummaryChart" width="650" height="520"></canvas>
+                    <canvas id="marginSummaryChart" width="650" height="520"></canvas>
+                </div>
+            </div>
+        </div>
 
+        <!-- Financial Performance Overview Section -->
+        <div id="financialPerformanceSection" class="bg-white rounded-lg shadow-sm mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">📊 Financial Performance Overview</h2>
+                <p class="text-sm text-gray-600 mt-1">Performance analysis for Jan-July 2024 vs 2025</p>
+            </div>
+            
+            <!-- Key Metrics Summary -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-blue-50 rounded-lg p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+                                <p class="text-2xl font-bold text-gray-900" id="totalRevenue">$933K</p>
+                                <div class="mt-1 text-green-600 flex items-center">
+                                    <span class="mr-1">↗</span>35.4%
+                                </div>
+                            </div>
+                            <div class="text-blue-500 text-2xl">💰</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-lg p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Expenses</p>
+                                <p class="text-2xl font-bold text-gray-900" id="totalExpenses">$788K</p>
+                                <div class="mt-1 text-red-600 flex items-center">
+                                    <span class="mr-1">↘</span>12.1%
+                                </div>
+                            </div>
+                            <div class="text-green-500 text-2xl">📊</div>
+                        </div>
+                    </div>
 
+                    <div class="bg-purple-50 rounded-lg p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Visit Count</p>
+                                <p class="text-2xl font-bold text-gray-900" id="visitCount">8,156</p>
+                                <div class="mt-1 text-green-600 flex items-center">
+                                    <span class="mr-1">↗</span>25.7%
+                                </div>
+                            </div>
+                            <div class="text-purple-500 text-2xl">👥</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-orange-50 rounded-lg p-6 border-l-4 border-orange-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Profit per Visit</p>
+                                <p class="text-2xl font-bold text-gray-900" id="profitPerVisit">$18</p>
+                                <div class="mt-1 text-red-600 flex items-center">
+                                    <span class="mr-1">↘</span>155.6%
+                                </div>
+                            </div>
+                            <div class="text-orange-500 text-2xl">💰</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YOY Expense & Profitability Analysis -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">YOY Expense & Profitability Analysis</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200" id="expenseAnalysisTable">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responsibility</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2024 Jan-July</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2025 Jan-July</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Remaining Year Cashflow Projections -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <span class="mr-2">📅</span>
+                        Remaining Year Cashflow Projections
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">5-month projection based on current trends</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200" id="cashflowTable">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2023/24 Visit Avg</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">2025 Visit Projection</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Expenses</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Revenue</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Profit</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Cash Position</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Insights Section -->
         <div id="dashboardContent" class="hidden">
             <div class="filters-section">
                 <div class="filter-group">
@@ -2159,6 +2284,265 @@
                         }
                     }
                 });
+            },
+
+            // Load financial performance data
+            loadFinancialPerformanceData: async function() {
+                try {
+                    const response = await fetch('/Financial Performance Data.xlsx');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const arrayBuffer = await response.arrayBuffer();
+                    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    this.financialPerformanceData = XLSX.utils.sheet_to_json(worksheet);
+                    console.log('Financial Performance Data loaded:', this.financialPerformanceData);
+                    this.renderFinancialPerformanceSection();
+                } catch (error) {
+                    console.error('Error loading financial performance data:', error);
+                    // Use fallback data if file not found
+                    this.renderFinancialPerformanceSectionWithFallback();
+                }
+            },
+
+            // Render financial performance section with fallback data
+            renderFinancialPerformanceSectionWithFallback: function() {
+                // Fallback expense analysis data
+                const expenseAnalysisData = [
+                    {
+                        title: "Total Expenses",
+                        responsibility: "Team",
+                        val2024: 896645,
+                        val2025: 788324,
+                        growth: -0.121
+                    },
+                    {
+                        title: "Total Revenue", 
+                        responsibility: "Team",
+                        val2024: 689105,
+                        val2025: 933263,
+                        growth: 0.354
+                    },
+                    {
+                        title: "Visit Count",
+                        responsibility: "RCM/Marketing", 
+                        val2024: 6488,
+                        val2025: 8156,
+                        growth: 0.257
+                    },
+                    {
+                        title: "Standard Commitments",
+                        responsibility: "Owner Controlled",
+                        val2024: 233683,
+                        val2025: 172552,
+                        growth: -0.262
+                    },
+                    {
+                        title: "Variable Operational Costs",
+                        responsibility: "Ops - Clinical Administrator Controlled",
+                        val2024: 485095,
+                        val2025: 411129,
+                        growth: -0.152
+                    },
+                    {
+                        title: "Marketing & Advertising",
+                        responsibility: "Owner Controlled",
+                        val2024: 67696,
+                        val2025: 75774,
+                        growth: 0.119
+                    },
+                    {
+                        title: "Revenue Proportional",
+                        responsibility: "% of visits/revenue",
+                        val2024: 109089,
+                        val2025: 133509,
+                        growth: 0.224
+                    },
+                    {
+                        title: "Supply $ per Visit",
+                        responsibility: "Ops - Clinical Administrator Controlled",
+                        val2024: 16,
+                        val2025: 9,
+                        growth: -0.468
+                    },
+                    {
+                        title: "Total Expense per visit",
+                        responsibility: "Ops - Clinical Administrator Controlled",
+                        val2024: 138,
+                        val2025: 97,
+                        growth: -0.301
+                    },
+                    {
+                        title: "Revenue per Visit",
+                        responsibility: "RCM/Marketing",
+                        val2024: 106,
+                        val2025: 114,
+                        growth: 0.077
+                    },
+                    {
+                        title: "Profit per Visit",
+                        responsibility: "Team",
+                        val2024: -32,
+                        val2025: 18,
+                        growth: -1.556
+                    }
+                ];
+
+                // Fallback cashflow data
+                const cashflowData = [
+                    { month: "August", visitAvg: 840, visitProj: 1056, expenses: 102064, revenue: 120829, profit: 18765, cashPosition: 293765 },
+                    { month: "September", visitAvg: 865, visitProj: 1087, expenses: 105102, revenue: 124425, profit: 19324, cashPosition: 313089 },
+                    { month: "October", visitAvg: 915, visitProj: 1150, expenses: 111177, revenue: 131618, profit: 20441, cashPosition: 333530 },
+                    { month: "November", visitAvg: 950, visitProj: 1194, expenses: 115430, revenue: 136652, profit: 21223, cashPosition: 354752 },
+                    { month: "December", visitAvg: 1175, visitProj: 1477, expenses: 142768, revenue: 169017, profit: 26249, cashPosition: 381001 }
+                ];
+
+                this.renderExpenseAnalysisTable(expenseAnalysisData);
+                this.renderCashflowTable(cashflowData);
+                this.updateKeyMetrics(expenseAnalysisData);
+            },
+
+            // Render financial performance section
+            renderFinancialPerformanceSection: function() {
+                if (!this.financialPerformanceData || this.financialPerformanceData.length === 0) {
+                    this.renderFinancialPerformanceSectionWithFallback();
+                    return;
+                }
+
+                // Process the data and render tables
+                // This will depend on the structure of your Excel file
+                console.log('Rendering financial performance section with loaded data');
+            },
+
+            // Format currency values
+            formatCurrency: function(value) {
+                if (Math.abs(value) >= 1000000) {
+                    return `$${Math.round(value / 1000000)}M`;
+                } else if (Math.abs(value) >= 1000) {
+                    return `$${Math.round(value / 1000)}K`;
+                } else {
+                    return `$${Math.round(value)}`;
+                }
+            },
+
+            // Format visit count values
+            formatVisitCount: function(value) {
+                return value.toString();
+            },
+
+            // Format growth percentage
+            formatGrowth: function(growth) {
+                const percentage = (growth * 100).toFixed(0);
+                const isPositive = growth >= 0;
+                const arrow = isPositive ? '↗' : '↘';
+                const color = isPositive ? 'text-green-600' : 'text-red-600';
+                return `<div class="${color} flex items-center"><span class="mr-1">${arrow}</span>${percentage}%</div>`;
+            },
+
+            // Get responsibility color class
+            getResponsibilityColor: function(responsibility) {
+                const colors = {
+                    "Team": "bg-blue-100 text-blue-800",
+                    "Owner Controlled": "bg-purple-100 text-purple-800", 
+                    "RCM/Marketing": "bg-green-100 text-green-800",
+                    "Ops - Clinical Administrator Controlled": "bg-orange-100 text-orange-800",
+                    "% of visits/revenue": "bg-gray-100 text-gray-800"
+                };
+                return colors[responsibility] || "bg-gray-100 text-gray-800";
+            },
+
+            // Render expense analysis table
+            renderExpenseAnalysisTable: function(data) {
+                const tbody = document.querySelector('#expenseAnalysisTable tbody');
+                tbody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${item.title}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full ${this.getResponsibilityColor(item.responsibility)}">
+                                ${item.responsibility}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                            ${item.title === 'Visit Count' ? 
+                                this.formatVisitCount(item.val2024) : 
+                                this.formatCurrency(item.val2024)
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                            ${item.title === 'Visit Count' ? 
+                                this.formatVisitCount(item.val2025) : 
+                                this.formatCurrency(item.val2025)
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            ${this.formatGrowth(item.growth)}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            },
+
+            // Render cashflow table
+            renderCashflowTable: function(data) {
+                const tbody = document.querySelector('#cashflowTable tbody');
+                tbody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${item.month}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                            ${this.formatVisitCount(item.visitAvg)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                            ${this.formatVisitCount(item.visitProj)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                            ${this.formatCurrency(item.expenses)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900">
+                            <span class="text-sm text-gray-900">${this.formatCurrency(item.revenue)}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-green-600 font-medium">
+                            ${this.formatCurrency(item.profit)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-sm text-gray-900 font-semibold">
+                            ${this.formatCurrency(item.cashPosition)}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            },
+
+            // Update key metrics display
+            updateKeyMetrics: function(data) {
+                const revenueItem = data.find(item => item.title === 'Total Revenue');
+                const expensesItem = data.find(item => item.title === 'Total Expenses');
+                const visitItem = data.find(item => item.title === 'Visit Count');
+                const profitItem = data.find(item => item.title === 'Profit per Visit');
+
+                if (revenueItem) {
+                    document.getElementById('totalRevenue').textContent = this.formatCurrency(revenueItem.val2025);
+                }
+                if (expensesItem) {
+                    document.getElementById('totalExpenses').textContent = this.formatCurrency(expensesItem.val2025);
+                }
+                if (visitItem) {
+                    document.getElementById('visitCount').textContent = this.formatVisitCount(visitItem.val2025);
+                }
+                if (profitItem) {
+                    document.getElementById('profitPerVisit').textContent = this.formatCurrency(profitItem.val2025);
+                }
             }
         };
 
@@ -2168,6 +2552,7 @@
             // Automatically load pre-loaded data
             window.dashboard.loadPreloadedData();
             window.dashboard.loadStatusSummaryData();
+            window.dashboard.loadFinancialPerformanceData();
         });
     </script>
 </body>

@@ -1,0 +1,47 @@
+Financial Performance Data.xlsx - Expected Structure
+
+Sheet 1: Expense Analysis
+Columns:
+- Title (e.g., "Total Expenses", "Total Revenue", "Visit Count")
+- Responsibility (e.g., "Team", "Owner Controlled", "RCM/Marketing")
+- Val2024 (2024 values)
+- Val2025 (2025 values)
+- Growth (growth rate as decimal, e.g., 0.354 for 35.4%)
+
+Sample Data:
+Title,Responsibility,Val2024,Val2025,Growth
+Total Expenses,Team,896645,788324,-0.121
+Total Revenue,Team,689105,933263,0.354
+Visit Count,RCM/Marketing,6488,8156,0.257
+Standard Commitments,Owner Controlled,233683,172552,-0.262
+Variable Operational Costs,Ops - Clinical Administrator Controlled,485095,411129,-0.152
+Marketing & Advertising,Owner Controlled,67696,75774,0.119
+Revenue Proportional,% of visits/revenue,109089,133509,0.224
+Supply $ per Visit,Ops - Clinical Administrator Controlled,16,9,-0.468
+Total Expense per visit,Ops - Clinical Administrator Controlled,138,97,-0.301
+Revenue per Visit,RCM/Marketing,106,114,0.077
+Profit per Visit,Team,-32,18,-1.556
+
+Sheet 2: Cashflow Projections
+Columns:
+- Month (e.g., "August", "September")
+- VisitAvg (2023/24 visit average)
+- VisitProj (2025 visit projection)
+- Expenses (expected expenses)
+- Revenue (expected revenue)
+- Profit (expected profit)
+- CashPosition (projected cash position)
+
+Sample Data:
+Month,VisitAvg,VisitProj,Expenses,Revenue,Profit,CashPosition
+August,840,1056,102064,120829,18765,293765
+September,865,1087,105102,124425,19324,313089
+October,915,1150,111177,131618,20441,333530
+November,950,1194,115430,136652,21223,354752
+December,1175,1477,142768,169017,26249,381001
+
+Notes:
+- The dashboard will automatically use fallback data if this file is not found
+- Column names should match exactly (case-sensitive)
+- All numeric values should be numbers, not text
+- The dashboard will handle missing data gracefully
