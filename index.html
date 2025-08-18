@@ -636,7 +636,7 @@
 
             <div class="table-container">
                 <div class="table-header">
-                    <h2>📋 Most Recent Month Key Insights</h2>
+                    <h2>📋 Most Recent Month Key Insights <span id="monthCountDisplay"></span></h2>
                     <div class="export-buttons">
                         <button class="export-btn" onclick="window.dashboard.exportFilteredData()">📊 Export Filtered Data</button>
                         <button class="export-btn secondary" onclick="window.dashboard.exportAllData()">📈 Export All Data</button>
@@ -648,10 +648,9 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th style="width: 140px;">Category</th>
-                            <th class="center-column" style="width: 140px;">Expenses for Most Recent Month</th>
-                            <th class="center-column" style="width: 170px;">Most Recent Month vs. Avg. of Prior Months</th>
-                            <th class="center-column">Margin Risk Assessment</th>
+                            <th style="width: 250px;">Category</th>
+                            <th class="center-column" style="width: 200px;">Expenses for Most Recent Month</th>
+                            <th class="center-column" style="width: 200px;">Most Recent Month vs. Avg. of Prior Months</th>
                             <th class="center-column">Expense Growth Alignment</th>
                             <th class="center-column">Suggested Action</th>
                         </tr>
@@ -1109,6 +1108,7 @@
                             }));
                             
                             this.initializeDashboard();
+                            this.updateMonthCountDisplay();
                             this.showUploadSuccess(file.name, data.length);
                         } else {
                             throw new Error('No valid data found in the file.');
@@ -1150,6 +1150,9 @@
 
                     const headers = jsonData[0];
                     const dataRows = jsonData.slice(1);
+
+                    // Store raw headers for month counting
+                    this.rawHeaders = headers;
 
                     // Normalize headers: trim, replace multiple spaces/dashes with a single space, and lowercase
                     const normalizedHeaders = headers.map(h => h ? h.toString().replace(/[\s\-]+/g, ' ').trim() : '');
@@ -1210,6 +1213,24 @@
                     console.error('Excel parsing error:', error);
                     throw new Error(`Excel parsing failed: ${error.message}`);
                 }
+            },
+
+            updateMonthCountDisplay: function() {
+                if (!this.rawHeaders) return;
+                
+                // Count month columns (Jan 2025, Feb 2025, etc.)
+                const monthColumns = this.rawHeaders.filter(header => {
+                    const headerStr = String(header || '').trim();
+                    return /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(headerStr);
+                });
+                
+                const monthCount = monthColumns.length;
+                const monthCountElement = document.getElementById('monthCountDisplay');
+                if (monthCountElement) {
+                    monthCountElement.textContent = `(${monthCount} months)`;
+                }
+                
+                console.log(`Found ${monthCount} month columns:`, monthColumns);
             },
 
             loadSampleData: function() {
@@ -1396,6 +1417,7 @@
                     
                     setTimeout(() => {
                         this.updateInsights();
+                        this.updateMonthCountDisplay();
                         this.calculateProjections();
                         this.isInitialized = true;
                     }, 200);
@@ -1478,6 +1500,7 @@
                 this.updateCharts();
                 this.updateTable();
                 this.updateGrowthRiskTable();
+                this.updateMonthCountDisplay();
                 
                 if (this.isInitialized) {
                     this.updateInsights();
@@ -1566,7 +1589,7 @@
                 }
 
                 if (tableData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6">No data available</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5">No data available</td></tr>';
                     return;
                 }
 
@@ -1609,9 +1632,6 @@
                     // Most Recent Month vs. Avg. of Prior Months
                     const anchorPriorValue = item['Anchor vs Prior Avg ($)'] || 0;
                     tableHTML += `<td class="center-column">${Math.round(anchorPriorValue).toLocaleString()}</td>`;
-                    
-                    // Performance Diagnostic
-                    tableHTML += `<td class="center-column">${item['Performance Diagnostic Summary'] || 'N/A'}</td>`;
                     
                     // Expense Growth Alignment (as text)
                     const expenseGrowthAlignment = item['Expense Growth Alignment'] || '';
