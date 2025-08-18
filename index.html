@@ -961,32 +961,22 @@
             isExcludedFromProjections: function(categoryName) {
                 const category = categoryName.toLowerCase().trim();
                 
-                // Exact exclusions
+                // Exact exclusions (removed 'total expenses')
                 const exactExclusions = [
                     'net operating income',
                     'total income',
                     'gross profit',
                     'net income',
-                    'unapplied cash payment income',
-                    'total expenses'
+                    'unapplied cash payment income'
                 ];
                 
-                // Pattern exclusions
-                const patternExclusions = [
-                    'total 6', // Catches "Total 600100 Payroll expenses", etc.
-                    '400000 management fees',
-                    '420000 services - doctors',
-                    '430000 medical services (pc)'
-                ];
+                // Pattern exclusions (removed all)
+                const patternExclusions = [];
                 
-                // New exclusion patterns for income, profit, fee, fees, services - doctors, and medical services
+                // New exclusion patterns (removed fee, fees, services-doctors, medical services)
                 const newExclusions = [
                     'income',
-                    'profit',
-                    'fee',
-                    'fees',
-                    'services - doctors',
-                    'medical services (pc)'
+                    'profit'
                 ];
                 
                 // Check exact matches
@@ -994,7 +984,7 @@
                     return true;
                 }
                 
-                // Check pattern matches
+                // Check pattern matches (removed all pattern exclusions)
                 for (let pattern of patternExclusions) {
                     if (category.includes(pattern)) {
                         return true;
@@ -1009,10 +999,10 @@
                     }
                 }
                 
-                // Check if starts with "total"
-                if (category.startsWith('total ')) {
-                    return true;
-                }
+                // Check if starts with "total" (removed this exclusion)
+                // if (category.startsWith('total ')) {
+                //     return true;
+                // }
                 
                 return false;
             },
@@ -1689,9 +1679,7 @@
                     
                     // Remove the problematic exclusions that are blocking our target categories
                     const essentialPatternExclusions = [
-                        '400000 management fees',
-                        '420000 services - doctors'
-                        // Removed: 'total 6' and '430000 medical services (pc)'
+                        // Removed: '400000 management fees', '420000 services - doctors'
                     ];
                     
                     // Check essential exact matches
@@ -1708,11 +1696,11 @@
                         }
                     }
                     
-                    // Check if starts with "total" (but allow medical/service categories)
-                    if (cat.startsWith('total ') && !cat.includes('medical') && !cat.includes('service')) {
-                        console.log(`Excluding "${item.Category}" due to total exclusion`);
-                        return false;
-                    }
+                    // Check if starts with "total" (removed this exclusion)
+                    // if (cat.startsWith('total ') && !cat.includes('medical') && !cat.includes('service')) {
+                    //     console.log(`Excluding "${item.Category}" due to total exclusion`);
+                    //     return false;
+                    // }
                     
                     // Check for income/profit exclusions (keep medical/service categories)
                     if (cat.includes('income') || cat.includes('profit')) {
