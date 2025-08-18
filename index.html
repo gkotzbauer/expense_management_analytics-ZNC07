@@ -586,11 +586,11 @@
                 <h2>�� Key Insights</h2>
                 <div class="insight-item" id="expenseOutpacedInsight">
                     <span style="font-size: 1.2rem;">⚠️ </span>
-                    <strong>Expenses Grew Faster Than Profit:</strong> <span id="expenseOutpacedText">Loading...</span>
+                    <strong>Expenses Grew Faster Than GP:</strong> <span id="expenseOutpacedText">Loading...</span>
                 </div>
                 <div class="insight-item" id="expenseGrewDespiteDeclineInsight">
                     <span style="font-size: 1.2rem;">⚠️ </span>
-                    <strong>Expenses Grew Even Though Profit Declined:</strong> <span id="expenseGrewDespiteDeclineText">Loading...</span>
+                    <strong>Expenses Grew Even Though GP Declined:</strong> <span id="expenseGrewDespiteDeclineText">Loading...</span>
                 </div>
                 <div class="insight-item" id="topVarianceInsight">
                     <span style="font-size: 1.2rem;">📈 </span>
@@ -1639,10 +1639,10 @@
 
 
 
-                // Expenses Grew Faster Than Profit (using Expense Growth Alignment)
+                // Expenses Grew Faster Than GP (using Expense Growth Alignment)
                 const outpacedCategories = insightData.filter(item => {
                     const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
-                    return growthAlignment === 'Expenses Grew Faster Than Profit';
+                    return growthAlignment === 'Expenses Grew Faster Than GP';
                 });
                 
                 const expenseOutpacedElement = document.getElementById('expenseOutpacedText');
@@ -1655,10 +1655,10 @@
                     }
                 }
 
-                // Expenses Grew Even Though Profit Declined (using Expense Growth Alignment)
+                // Expenses Grew Even Though GP Declined (using Expense Growth Alignment)
                 const grewDespiteDeclineCategories = insightData.filter(item => {
                     const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
-                    return growthAlignment === 'Expenses Grew Even Though Profit Declined';
+                    return growthAlignment === 'Expenses Grew Even Though GP Declined';
                 });
                 
                 const expenseGrewDespiteDeclineElement = document.getElementById('expenseGrewDespiteDeclineText');
