@@ -2015,9 +2015,9 @@
                     
                     tableHTML += '<tr>';
                     tableHTML += `<td>${item['Category'] || 'N/A'}</td>`;
-                    tableHTML += `<td class="center-column">${outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' ? Number(outpacedGrowth).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${didNotDecline !== undefined && didNotDecline !== null && didNotDecline !== '' ? Number(didNotDecline).toFixed(0) + '%' : '0%'}</td>`;
-                    tableHTML += `<td class="center-column">${oppositeDirection !== undefined && oppositeDirection !== null && oppositeDirection !== '' ? Number(oppositeDirection).toFixed(0) + '%' : '0%'}</td>`;
+                    tableHTML += `<td class="center-column">${outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' ? Number(outpacedGrowth).toFixed(0) : '0'}</td>`;
+                    tableHTML += `<td class="center-column">${didNotDecline !== undefined && didNotDecline !== null && didNotDecline !== '' ? Number(didNotDecline).toFixed(0) : '0'}</td>`;
+                    tableHTML += `<td class="center-column">${oppositeDirection !== undefined && oppositeDirection !== null && oppositeDirection !== '' ? Number(oppositeDirection).toFixed(0) : '0'}</td>`;
                     tableHTML += `<td class="center-column">${excessCostValue > 0 ? '$' + Math.round(excessCostValue).toLocaleString() : '$0'}</td>`;
                     tableHTML += '</tr>';
                 });
