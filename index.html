@@ -636,7 +636,7 @@
 
             <div class="table-container">
                 <div class="table-header">
-                    <h2>📋 Most Recent Month Key Insights <span id="monthCountDisplay"></span></h2>
+                    <h2>📋 Most Recent Month Key Insights <span id="recentMonthDisplay"></span></h2>
                     <div class="export-buttons">
                         <button class="export-btn" onclick="window.dashboard.exportFilteredData()">📊 Export Filtered Data</button>
                         <button class="export-btn secondary" onclick="window.dashboard.exportAllData()">📈 Export All Data</button>
@@ -670,7 +670,7 @@
 
             <div class="table-container">
                 <div class="table-header">
-                    <h2>📋 Expense Trends Over Entire Dataset</h2>
+                    <h2>📋 Expense Trends Over Entire Dataset <span id="monthCountDisplay"></span></h2>
                 </div>
                 <table id="growthRiskTable">
                     <thead>
@@ -1228,6 +1228,14 @@
                 const monthCountElement = document.getElementById('monthCountDisplay');
                 if (monthCountElement) {
                     monthCountElement.textContent = `(${monthCount} months)`;
+                }
+                
+                // Update most recent month display for Key Insights section
+                const recentMonthElement = document.getElementById('recentMonthDisplay');
+                if (recentMonthElement && monthColumns.length > 0) {
+                    const lastMonth = monthColumns[monthColumns.length - 1];
+                    const monthName = lastMonth.split(' ')[0]; // Extract just the month name
+                    recentMonthElement.textContent = `(${monthName})`;
                 }
                 
                 console.log(`Found ${monthCount} month columns:`, monthColumns);
@@ -1862,13 +1870,45 @@
                 if (!tbody) return;
                 
                 // Use main data (expense-analysis.xlsx) for all metrics
-                const mainData = this.filteredData.filter(item => {
+                let mainData = this.filteredData.filter(item => {
                     const isExcluded = this.isExcludedFromProjections(item.Category);
                     if (isExcluded) {
                         console.log(`Excluding from Growth & Risk Drivers: "${item.Category}"`);
                     }
                     return !isExcluded;
                 }) || [];
+                
+                // Sort by Potential $ Loss Due to Excess Spending (highest to lowest)
+                mainData.sort((a, b) => {
+                    let aExcessCost = 0;
+                    let bExcessCost = 0;
+                    
+                    // Try to find excess cost values for both items
+                    const possibleExcessColumns = [
+                        'Total Excess Costs (5% Buffer)',
+                        'Excess Costs (5% Buffer)',
+                        'Total Excess Costs',
+                        'Excess Costs',
+                        'Potential Loss',
+                        'Excess Spending'
+                    ];
+                    
+                    for (const colName of possibleExcessColumns) {
+                        if (a[colName] !== undefined && a[colName] !== null && a[colName] !== '') {
+                            aExcessCost = Number(a[colName]);
+                            break;
+                        }
+                    }
+                    
+                    for (const colName of possibleExcessColumns) {
+                        if (b[colName] !== undefined && b[colName] !== null && b[colName] !== '') {
+                            bExcessCost = Number(b[colName]);
+                            break;
+                        }
+                    }
+                    
+                    return bExcessCost - aExcessCost; // Highest to lowest
+                });
                 
                 // Debug logging
                 console.log('=== GROWTH RISK DEBUG ===');
