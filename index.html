@@ -2521,12 +2521,22 @@
                 
                 this.financialPerformanceData.forEach(row => {
                     if (row.Category === 'YOY Expense & Profitability Analysis') {
+                        const val2024 = parseFloat(row.Value_2024_Jan_July) || 0;
+                        const val2025 = parseFloat(row.Value_2025_Jan_July) || 0;
+                        let growth = parseFloat(row.Growth_Rate_Decimal) || 0;
+                        
+                        // Special handling for Profit per Visit: if prior year is negative and current year is positive,
+                        // multiply the growth by -1 to make it positive
+                        if (row.Metric_Name === 'Profit per Visit' && val2024 < 0 && val2025 > 0) {
+                            growth = Math.abs(growth);
+                        }
+                        
                         expenseAnalysisData.push({
                             title: row.Metric_Name,
                             responsibility: row.Responsibility,
-                            val2024: parseFloat(row.Value_2024_Jan_July) || 0,
-                            val2025: parseFloat(row.Value_2025_Jan_July) || 0,
-                            growth: parseFloat(row.Growth_Rate_Decimal) || 0
+                            val2024: val2024,
+                            val2025: val2025,
+                            growth: growth
                         });
                     } else if (row.Category === 'Remaining Year Cashflow Projections') {
                         // Handle cashflow data - need to group by month
