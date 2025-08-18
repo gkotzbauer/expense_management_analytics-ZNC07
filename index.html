@@ -604,10 +604,7 @@
                     <span style="font-size: 1.2rem;">💰 </span>
                     <strong>Marketing Spend Efficiency:</strong> <span id="marketingROIText">Loading...</span>
                 </div>
-                <div class="insight-item" id="outpacingProfitInsight">
-                    <span style="font-size: 1.2rem;">🚀 </span>
-                    <strong>Consistently Outpacing Profit Growth:</strong> <span id="outpacingProfitText">Loading...</span>
-                </div>
+
                 
                 <div style="margin-top: 20px; font-size: 0.9rem; color: #718096;">
                     <h4 style="color: #2d3748; margin-bottom: 10px;"><strong>Marketing Spend Efficiency</strong></h4>
@@ -1814,23 +1811,7 @@
                     }
                 }
 
-                // Consistently Outpacing Profit Growth (Elasticity Classification = 'Over-scaled')
-                const outpacingProfitCategories = this.filteredData.filter(item => {
-                    const isExcluded = this.isExcludedFromProjections(item.Category);
-                    if (isExcluded) {
-                        console.log(`Excluding from Consistently Outpacing Profit Growth: "${item.Category}"`);
-                    }
-                    return !isExcluded && String(item['Elasticity Classification'] || '').trim() === 'Over-scaled';
-                });
-                const outpacingProfitElement = document.getElementById('outpacingProfitText');
-                if (outpacingProfitElement) {
-                    if (outpacingProfitCategories.length > 0) {
-                        const categoryNames = outpacingProfitCategories.map(item => item.Category);
-                        outpacingProfitElement.textContent = `(${outpacingProfitCategories.length}) ${categoryNames.join(', ')}`;
-                    } else {
-                        outpacingProfitElement.textContent = '(0) No expense category in the most recent month fits this metric.';
-                    }
-                }
+
             },
 
             calculateProjections: function() {
