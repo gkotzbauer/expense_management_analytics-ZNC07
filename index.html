@@ -2410,102 +2410,18 @@
                 }
             },
 
-            // Render financial performance section with fallback data
+            // Render financial performance section with source file data only
             renderFinancialPerformanceSectionWithFallback: function() {
-                console.log('Rendering financial performance section with fallback data...');
-                // Fallback expense analysis data
-                const expenseAnalysisData = [
-                    {
-                        title: "Total Expenses",
-                        responsibility: "Team",
-                        val2024: 896645,
-                        val2025: 788324,
-                        growth: -0.121
-                    },
-                    {
-                        title: "Total Revenue", 
-                        responsibility: "Team",
-                        val2024: 689105,
-                        val2025: 933263,
-                        growth: 0.354
-                    },
-                    {
-                        title: "Visit Count",
-                        responsibility: "RCM/Marketing", 
-                        val2024: 6488,
-                        val2025: 8156,
-                        growth: 0.257
-                    },
-                    {
-                        title: "Standard Commitments",
-                        responsibility: "Owner Controlled",
-                        val2024: 233683,
-                        val2025: 172552,
-                        growth: -0.262
-                    },
-                    {
-                        title: "Variable Operational Costs",
-                        responsibility: "Ops - Clinical Administrator Controlled",
-                        val2024: 485095,
-                        val2025: 411129,
-                        growth: -0.152
-                    },
-                    {
-                        title: "Marketing & Advertising",
-                        responsibility: "Owner Controlled",
-                        val2024: 67696,
-                        val2025: 75774,
-                        growth: 0.119
-                    },
-                    {
-                        title: "Revenue Proportional",
-                        responsibility: "% of visits/revenue",
-                        val2024: 109089,
-                        val2025: 133509,
-                        growth: 0.224
-                    },
-                    {
-                        title: "Supply $ per Visit",
-                        responsibility: "Ops - Clinical Administrator Controlled",
-                        val2024: 16,
-                        val2025: 9,
-                        growth: -0.468
-                    },
-                    {
-                        title: "Total Expense per visit",
-                        responsibility: "Ops - Clinical Administrator Controlled",
-                        val2024: 138,
-                        val2025: 97,
-                        growth: -0.301
-                    },
-                    {
-                        title: "Revenue per Visit",
-                        responsibility: "RCM/Marketing",
-                        val2024: 106,
-                        val2025: 114,
-                        growth: 0.077
-                    },
-                    {
-                        title: "Profit per Visit",
-                        responsibility: "Team",
-                        val2024: -32,
-                        val2025: 18,
-                        growth: 1.556
-                    }
-                ];
-
-                // Fallback cashflow data
-                const cashflowData = [
-                    { month: "August", visitAvg: 840, visitProj: 1056, expenses: 102064, revenue: 120829, profit: 18765, cashPosition: 293765 },
-                    { month: "September", visitAvg: 865, visitProj: 1087, expenses: 105102, revenue: 124425, profit: 19324, cashPosition: 313089 },
-                    { month: "October", visitAvg: 915, visitProj: 1150, expenses: 111177, revenue: 131618, profit: 20441, cashPosition: 333530 },
-                    { month: "November", visitAvg: 950, visitProj: 1194, expenses: 115430, revenue: 136652, profit: 21223, cashPosition: 354752 },
-                    { month: "December", visitAvg: 1175, visitProj: 1477, expenses: 142768, revenue: 169017, profit: 26249, cashPosition: 381001 }
-                ];
-
-                this.renderExpenseAnalysisTable(expenseAnalysisData);
-                this.renderCashflowTable(cashflowData);
-                this.updateKeyMetrics(expenseAnalysisData);
+                console.log('Rendering financial performance section with source file data only...');
+                
+                // If no source data is available, show a message instead of fallback data
+                if (!this.financialPerformanceData || this.financialPerformanceData.length === 0) {
+                    console.log('No financial performance data available - please ensure source file is loaded');
+                    return;
+                }
+                
+                // Process the source data
+                this.processFinancialPerformanceData();
             },
 
             // Render financial performance section
