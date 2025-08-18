@@ -1841,8 +1841,7 @@
                 const tbody = table.querySelector('tbody');
                 if (!tbody) return;
                 
-                // Use chunk2 data if available, otherwise use main data with empty values
-                const chunk2Data = this.chunk2Data || [];
+                // Use main data (expense-analysis.xlsx) for all metrics
                 const mainData = this.filteredData.filter(item => {
                     const isExcluded = this.isExcludedFromProjections(item.Category);
                     if (isExcluded) {
@@ -1853,15 +1852,14 @@
                 
                 // Debug logging
                 console.log('=== GROWTH RISK DEBUG ===');
-                console.log('Chunk2 data available:', chunk2Data.length > 0);
                 console.log('Main data available:', mainData.length > 0);
-                if (chunk2Data.length > 0) {
-                    console.log('First chunk2 item:', chunk2Data[0]);
-                    console.log('Chunk2 columns:', Object.keys(chunk2Data[0]));
+                if (mainData.length > 0) {
+                    console.log('First main data item:', mainData[0]);
+                    console.log('Main data columns:', Object.keys(mainData[0]));
                     
                     // Log all column names to help identify the correct ones
-                    const allColumns = Object.keys(chunk2Data[0]);
-                    console.log('All available columns in chunk2:', allColumns);
+                    const allColumns = Object.keys(mainData[0]);
+                    console.log('All available columns in main data:', allColumns);
                     
                     // Look for columns that might contain the data we need
                     const excessCostColumns = allColumns.filter(col => 
@@ -1878,11 +1876,8 @@
                 let hasData = false;
                 
                 mainData.forEach(item => {
-                    // Find matching chunk2 data for this category
-                    const chunk2Item = chunk2Data.find(chunk2 => chunk2.Category === item.Category);
-                    
-                    // Use chunk2 data if available, otherwise fall back to main data
-                    const dataSource = chunk2Item || item;
+                    // Use main data directly for all metrics
+                    const dataSource = item;
                     
                     // Try to find the correct column names for excess costs
                     let excessCostValue = 0;
@@ -1906,7 +1901,7 @@
                         }
                     }
                     
-                    // Get percentage values, using chunk2 data if available, otherwise main data
+                    // Get percentage values from main data
                     const outpacedGrowth = dataSource['% of Months Outpaced Growth'];
                     const didNotDecline = dataSource['% of Months Did Not Decline with Profit'];
                     const oppositeDirection = dataSource['% of Months Opposite Direction than Profit'];
