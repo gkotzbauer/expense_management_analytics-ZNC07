@@ -1666,8 +1666,16 @@
 
                 // Expenses Grew Faster Than GP (using Expense Growth Alignment)
                 // Use less restrictive filtering for this specific metric
+                console.log('=== EXPENSES GREW FASTER THAN GP DEBUG ===');
+                console.log('Total filteredData items:', this.filteredData.length);
+                
                 const outpacedCategories = this.filteredData.filter(item => {
                     const cat = (item.Category || '').toLowerCase().trim();
+                    
+                    // Debug: Log specific categories we're looking for
+                    if (cat.includes('612000') || cat.includes('430000') || cat.includes('medical services') || cat.includes('professional fees')) {
+                        console.log(`DEBUG - Category: "${item.Category}", Expense Growth Alignment: "${item['Expense Growth Alignment']}"`);
+                    }
                     
                     // Apply only essential exclusions for this metric (remove medical, services, fee, fees)
                     const essentialExclusions = [
@@ -1679,39 +1687,52 @@
                         'total expenses'
                     ];
                     
+                    // Remove the problematic exclusions that are blocking our target categories
                     const essentialPatternExclusions = [
-                        'total 6', // Catches "Total 600100 Payroll expenses", etc.
                         '400000 management fees',
-                        '420000 services - doctors',
-                        '430000 medical services (pc)'
+                        '420000 services - doctors'
+                        // Removed: 'total 6' and '430000 medical services (pc)'
                     ];
                     
                     // Check essential exact matches
                     if (essentialExclusions.includes(cat)) {
+                        console.log(`Excluding "${item.Category}" due to essential exclusion`);
                         return false;
                     }
                     
                     // Check essential pattern matches
                     for (let pattern of essentialPatternExclusions) {
                         if (cat.includes(pattern)) {
+                            console.log(`Excluding "${item.Category}" due to pattern "${pattern}"`);
                             return false;
                         }
                     }
                     
                     // Check if starts with "total" (but allow medical/service categories)
                     if (cat.startsWith('total ') && !cat.includes('medical') && !cat.includes('service')) {
+                        console.log(`Excluding "${item.Category}" due to total exclusion`);
                         return false;
                     }
                     
                     // Check for income/profit exclusions (keep medical/service categories)
                     if (cat.includes('income') || cat.includes('profit')) {
+                        console.log(`Excluding "${item.Category}" due to income/profit exclusion`);
                         return false;
                     }
                     
                     // Now check if it has the right Expense Growth Alignment
                     const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
-                    return growthAlignment === 'Expenses Grew Faster Than GP';
+                    const matches = growthAlignment === 'Expenses Grew Faster Than GP';
+                    
+                    if (cat.includes('612000') || cat.includes('430000') || cat.includes('medical services') || cat.includes('professional fees')) {
+                        console.log(`Category "${item.Category}" - Growth Alignment: "${growthAlignment}", Matches: ${matches}`);
+                    }
+                    
+                    return matches;
                 });
+                
+                console.log('Found categories with Expenses Grew Faster Than GP:', outpacedCategories.map(item => item.Category));
+                console.log('=== END EXPENSES GREW FASTER THAN GP DEBUG ===');
                 
                 const expenseOutpacedElement = document.getElementById('expenseOutpacedText');
                 if (expenseOutpacedElement) {
