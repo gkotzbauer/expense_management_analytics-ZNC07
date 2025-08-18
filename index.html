@@ -1668,7 +1668,50 @@
 
 
                 // Expenses Grew Faster Than GP (using Expense Growth Alignment)
-                const outpacedCategories = insightData.filter(item => {
+                // Use less restrictive filtering for this specific metric
+                const outpacedCategories = this.filteredData.filter(item => {
+                    const cat = (item.Category || '').toLowerCase().trim();
+                    
+                    // Apply only essential exclusions for this metric (remove medical, services, fee, fees)
+                    const essentialExclusions = [
+                        'net operating income',
+                        'total income',
+                        'gross profit',
+                        'net income',
+                        'unapplied cash payment income',
+                        'total expenses'
+                    ];
+                    
+                    const essentialPatternExclusions = [
+                        'total 6', // Catches "Total 600100 Payroll expenses", etc.
+                        '400000 management fees',
+                        '420000 services - doctors',
+                        '430000 medical services (pc)'
+                    ];
+                    
+                    // Check essential exact matches
+                    if (essentialExclusions.includes(cat)) {
+                        return false;
+                    }
+                    
+                    // Check essential pattern matches
+                    for (let pattern of essentialPatternExclusions) {
+                        if (cat.includes(pattern)) {
+                            return false;
+                        }
+                    }
+                    
+                    // Check if starts with "total" (but allow medical/service categories)
+                    if (cat.startsWith('total ') && !cat.includes('medical') && !cat.includes('service')) {
+                        return false;
+                    }
+                    
+                    // Check for income/profit exclusions (keep medical/service categories)
+                    if (cat.includes('income') || cat.includes('profit')) {
+                        return false;
+                    }
+                    
+                    // Now check if it has the right Expense Growth Alignment
                     const growthAlignment = String(item['Expense Growth Alignment'] || '').trim();
                     return growthAlignment === 'Expenses Grew Faster Than GP';
                 });
