@@ -1671,13 +1671,15 @@
                     }
                 }
 
-                // Highest variance (exclude Net Ordinary Expense and Gross Profit)
+                // Highest variance (exclude income, gross profit, and related categories)
                 const topVariance = this.filteredData
                     .filter(item => {
                         const variance = item['Anchor vs Prior Avg ($)'];
                         const cat = (item.Category || '').toLowerCase().trim();
                         return variance !== undefined && variance !== null && variance !== 0 &&
-                            cat !== 'net ordinary income' && cat !== 'gross profit' && cat !== 'net ordinary expense';
+                            cat !== 'net ordinary income' && cat !== 'gross profit' && cat !== 'net ordinary expense' &&
+                            !cat.includes('income') && !cat.includes('gross profit') && !cat.includes('profit') &&
+                            !cat.includes('revenue') && !cat.includes('fee') && !cat.includes('fees');
                     })
                     .sort((a, b) => Math.abs(b['Anchor vs Prior Avg ($)']) - Math.abs(a['Anchor vs Prior Avg ($)']))[0];
                 
