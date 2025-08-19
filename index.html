@@ -2150,8 +2150,7 @@
                         if (jsonData && jsonData.length > 0) {
                             this.statusSummaryData = jsonData;
                             this.renderStatusSummary();
-                            this.renderStatusSummaryChart();
-                            // Also create the working charts
+                            // Create the working charts
                             this.createWorkingCharts();
                             return true;
                         }
@@ -2188,8 +2187,10 @@
                 statusSummaryDiv.innerHTML = html;
             },
 
+            // DISABLED - Canvas not found error
             renderStatusSummaryChart: function() {
-                console.log('=== SIMPLE CHART FUNCTION START ===');
+                console.log('=== CHART FUNCTION DISABLED ===');
+                return; // Skip this function to prevent canvas errors
                 
                 // Hardcode the data we know works
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
@@ -2248,8 +2249,10 @@
                 this.renderMarginSummaryChart();
             },
 
+            // DISABLED - Canvas not found error
             renderMarginSummaryChart: function() {
-                console.log('=== SIMPLE MARGIN CHART FUNCTION START ===');
+                console.log('=== MARGIN CHART FUNCTION DISABLED ===');
+                return; // Skip this function to prevent canvas errors
                 
                 // Hardcode the margin data we know works
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
