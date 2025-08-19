@@ -1162,12 +1162,7 @@
                         }
                         console.log(`Processing ${obj['Category']}: Expense Growth Alignment = "${expenseGrowthAlignment}"`);
                         
-                        // Debug Growth & Risk Driver columns - only log first few rows to avoid spam
-                        if (row === dataRows[0] || row === dataRows[1] || row === dataRows[2]) {
-                            console.log('  Raw "# of Months Outpaced Growth":', obj['# of Months Outpaced Growth'], '(type:', typeof obj['# of Months Outpaced Growth'], ')');
-                            console.log('  Raw "# of Months Did Not Decline with Profit":', obj['# of Months Did Not Decline with Profit'], '(type:', typeof obj['# of Months Did Not Decline with Profit'], ')');
-                            console.log('  Raw "# of Months Opposite Direction than Profit":', obj['# of Months Opposite Direction than Profit'], '(type:', typeof obj['# of Months Opposite Direction than Profit'], ')');
-                        }
+
                         
                         return {
                             "Category": String(obj['Category'] || '').trim(),
@@ -1955,15 +1950,7 @@
                     const didNotDecline = dataSource['# of Months Did Not Decline with Profit'];
                     const oppositeDirection = dataSource['# of Months Opposite Direction than Profit'];
                     
-                    // Simple debug logging - only for first few items to avoid spam
-                    if (mainData.indexOf(item) < 3) {
-                        console.log('=== DEBUG FOR', item.Category, '===');
-                        console.log('  Raw outpacedGrowth value:', outpacedGrowth);
-                        console.log('  Raw didNotDecline value:', didNotDecline);
-                        console.log('  Raw oppositeDirection value:', oppositeDirection);
-                        console.log('  Has "# of Months Outpaced Growth":', '# of Months Outpaced Growth' in dataSource);
-                        console.log('=== END DEBUG ===');
-                    }
+
                     
                     // Check if we have any meaningful data
                     if (outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' && outpacedGrowth > 0) {
