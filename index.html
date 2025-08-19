@@ -2174,7 +2174,7 @@
                 console.log('Status Summary - All rows:', data);
                 
                 const grossProfitRow = data.find(row => 
-                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2025 Gross Profit')
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Gross Profit')
                 );
                 
                 if (!grossProfitRow) {
@@ -2236,10 +2236,10 @@
             renderMarginSummaryChart: function(data, months) {
                 // Find the margin rows
                 const margin2025Row = data.find(row => 
-                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2025 Margin')
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
                 );
                 const margin2024Row = data.find(row => 
-                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2024 Margin')
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
                 );
                 
                 if (!margin2025Row || !margin2024Row) {
