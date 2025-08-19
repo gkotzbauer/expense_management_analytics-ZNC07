@@ -575,12 +575,12 @@
             <!-- STATUS SUMMARY CHARTS -->
             <div class="insights-section" id="workingChartsSection">
                 <h2>🎯 Status Summary</h2>
-                <div style="display: flex; align-items: flex-start; gap: 32px;">
-                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
-                        <canvas id="workingRevenueChart" width="650" height="520"></canvas>
+                <div style="display: flex; align-items: flex-start; gap: 20px; justify-content: center;">
+                    <div style="width: 600px;">
+                        <canvas id="workingRevenueChart" width="600" height="520"></canvas>
                     </div>
-                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
-                        <canvas id="workingMarginChart" width="650" height="520"></canvas>
+                    <div style="width: 600px;">
+                        <canvas id="workingMarginChart" width="600" height="520"></canvas>
                     </div>
                 </div>
             </div>
@@ -2374,7 +2374,7 @@
                                         title: { display: true, text: 'Margin (%)' },
                                         ticks: {
                                             callback: function(value) {
-                                                return value.toFixed(1) + '%';
+                                                return Math.round(value) + '%';
                                             }
                                         }
                                     } 
