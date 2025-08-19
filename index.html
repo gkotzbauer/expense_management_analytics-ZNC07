@@ -1274,19 +1274,6 @@
                             
                             const data = this.parseExcel(arrayBuffer);
                             if (data && data.length > 0) {
-                                // Check what columns are actually available for month counts
-                                console.log('=== COLUMN CHECK ===');
-                                console.log('Available columns:', Object.keys(data[0]));
-                                
-                                // Look for columns that might contain month count data
-                                const monthColumns = Object.keys(data[0]).filter(col => 
-                                    col.toLowerCase().includes('months') || 
-                                    col.toLowerCase().includes('outpaced') ||
-                                    col.toLowerCase().includes('decline') ||
-                                    col.toLowerCase().includes('opposite')
-                                );
-                                console.log('Potential month count columns:', monthColumns);
-                                console.log('=== END COLUMN CHECK ===');
                                 console.log('Main data columns:', Object.keys(data[0]));
                                 console.log('Growth & Risk columns in main data:');
                                 console.log('- # of Months Outpaced Growth:', data[0]['# of Months Outpaced Growth']);
