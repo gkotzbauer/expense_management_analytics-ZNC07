@@ -1793,7 +1793,14 @@
                         const formattedList = marketingEfficiencyCategories
                             .map(item => {
                                 const efficiency = item['Marketing Spend Efficiency'];
-                                const growthDelta = item['Expense – GP Growth Δ [%] [Jul 2025]'] || item['Expense - GP Growth Δ [%] [Jul 2025]'] || '';
+                                // Find the Jul 2025 growth column dynamically
+                                let growthDelta = '';
+                                const julGrowthColumn = Object.keys(item).find(col => 
+                                    col.includes('Jul 2025') && col.includes('Growth')
+                                );
+                                if (julGrowthColumn) {
+                                    growthDelta = item[julGrowthColumn] || '';
+                                }
                                 console.log(`Formatting item: "${item.Category}" - Efficiency: "${efficiency}" - GrowthDelta: "${growthDelta}"`);
                                 return `${item.Category} (${efficiency}, ${growthDelta})`;
                             })
