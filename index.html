@@ -2200,44 +2200,58 @@
                     window.statusSummaryChartInstance.destroy();
                 }
                 console.log('Status Summary - Creating new chart with data:', { months, revenueData });
-                window.statusSummaryChartInstance = new Chart(ctx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            {
-                                type: 'bar',
-                                label: 'Revenue (2025 Gross Profit)',
-                                data: revenueData,
-                                backgroundColor: '#667eea',
-                                yAxisID: 'y'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: false,
-                        plugins: { 
-                            legend: { display: true },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const value = Math.round(context.parsed.y);
-                                        return 'Revenue: $' + value.toLocaleString();
+                
+                // Test if Chart.js is available
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded!');
+                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
+                    return;
+                }
+                
+                try {
+                    window.statusSummaryChartInstance = new Chart(ctx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [
+                                {
+                                    type: 'bar',
+                                    label: 'Revenue (2025 Gross Profit)',
+                                    data: revenueData,
+                                    backgroundColor: '#667eea',
+                                    yAxisID: 'y'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: false,
+                            plugins: { 
+                                legend: { display: true },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const value = Math.round(context.parsed.y);
+                                            return 'Revenue: $' + value.toLocaleString();
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                type: 'linear',
-                                position: 'left',
-                                title: { display: true, text: 'Monthly Revenue (2025 Gross Profit)' },
-                                beginAtZero: true,
-                                ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
+                            },
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    position: 'left',
+                                    title: { display: true, text: 'Monthly Revenue (2025 Gross Profit)' },
+                                    beginAtZero: true,
+                                    ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                    console.log('Status Summary - Chart created successfully!');
+                } catch (error) {
+                    console.error('Status Summary - Error creating chart:', error);
+                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Error creating chart: ' + error.message + '</div>';
+                }
 
                 // Render margin chart
                 this.renderMarginSummaryChart(data, months);
@@ -2295,7 +2309,16 @@
                     window.marginSummaryChartInstance.destroy();
                 }
                 console.log('Margin Summary - Creating new chart with data:', { marginMonths, margin2025, margin2024 });
-                window.marginSummaryChartInstance = new Chart(ctx.getContext('2d'), {
+                
+                // Test if Chart.js is available
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded!');
+                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
+                    return;
+                }
+                
+                try {
+                    window.marginSummaryChartInstance = new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: marginMonths,
@@ -2343,9 +2366,14 @@
                         }
                     }
                 });
-            },
+                console.log('Margin Summary - Chart created successfully!');
+            } catch (error) {
+                console.error('Margin Summary - Error creating chart:', error);
+                ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Error creating chart: ' + error.message + '</div>';
+            }
+        },
 
-            // Load financial performance data
+        // Load financial performance data
             loadFinancialPerformanceData: async function() {
                 try {
                     console.log('Attempting to load Financial Performance Data.xlsx...');
