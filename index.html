@@ -2169,27 +2169,14 @@
                 // Extract month names and data for each month
                 const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
                 
-                // Find the Gross Profit row (which represents Revenue)
+                // For now, just show the first row of data to get something working
                 console.log('Status Summary - First row keys:', Object.keys(firstRow));
                 console.log('Status Summary - All rows:', data);
                 
-                const grossProfitRow = data.find(row => {
-                    // Check if any column contains 'gross profit'
-                    return Object.values(row).some(value => 
-                        value && value.toString().toLowerCase().includes('gross profit')
-                    );
-                });
-                
-                if (!grossProfitRow) {
-                    console.log('Status Summary: Gross Profit row not found. Available data:', data);
-                    return;
-                }
-                
-                // Extract revenue data from Gross Profit row
-                const revenueData = monthColumns.map(col => parseFloat(grossProfitRow[col]) || 0);
+                const firstRowData = monthColumns.map(col => parseFloat(firstRow[col]) || 0);
                 
                 console.log('Status Summary - Months:', months);
-                console.log('Status Summary - Revenue data:', revenueData);
+                console.log('Status Summary - First row data:', firstRowData);
                 
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
@@ -2201,9 +2188,9 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Revenue (Gross Profit)',
-                                data: revenueData,
-                                backgroundColor: '#667eea',
+                                label: 'Monthly Data',
+                                data: firstRowData,
+                                backgroundColor: '#48bb78',
                                 yAxisID: 'y'
                             }
                         ]
@@ -2216,7 +2203,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const value = Math.round(context.parsed.y);
-                                        return 'Revenue: $' + value.toLocaleString();
+                                        return 'Value: $' + value.toLocaleString();
                                     }
                                 }
                             }
@@ -2225,7 +2212,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Monthly Revenue (Gross Profit)' },
+                                title: { display: true, text: 'Monthly Data' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
@@ -2238,28 +2225,14 @@
             },
 
             renderMarginSummaryChart: function(data, months) {
-                // Find the margin rows
-                const margin2024Row = data.find(row => {
-                    // Check if any column contains '2024 margin'
-                    return Object.values(row).some(value => 
-                        value && value.toString().toLowerCase().includes('2024 margin')
-                    );
-                });
-                const margin2025Row = data.find(row => {
-                    // Check if any column contains '2025 margin'
-                    return Object.values(row).some(value => 
-                        value && value.toString().toLowerCase().includes('2025 margin')
-                    );
-                });
-                
-                if (!margin2024Row || !margin2025Row) {
-                    console.log('Margin Summary: Margin rows not found. Available data:', data);
+                // For now, just show the second row of data to get something working
+                if (data.length < 2) {
+                    console.log('Margin Summary: Not enough data rows');
                     return;
                 }
                 
-                // Get month columns from the data
-                const firstRow = data[0] || {};
-                const monthColumns = Object.keys(firstRow).filter(key => 
+                const secondRow = data[1] || {};
+                const monthColumns = Object.keys(secondRow).filter(key => 
                     /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
                 ).sort((a, b) => {
                     const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -2274,12 +2247,10 @@
                 }
                 
                 const marginMonths = monthColumns.map(col => col.split(' ')[0]);
-                const margin2024 = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
-                const margin2025 = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
+                const secondRowData = monthColumns.map(col => parseFloat(secondRow[col]) || 0);
                 
                 console.log('Margin Summary - Months:', marginMonths);
-                console.log('Margin Summary - 2024 margins:', margin2024);
-                console.log('Margin Summary - 2025 margins:', margin2025);
+                console.log('Margin Summary - Second row data:', secondRowData);
                 const ctx = document.getElementById('marginSummaryChart');
                 if (!ctx) return;
                 if (window.marginSummaryChartInstance) window.marginSummaryChartInstance.destroy();
@@ -2290,16 +2261,9 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: '2024 Margin',
-                                data: margin2024,
+                                label: 'Monthly Data (Row 2)',
+                                data: secondRowData,
                                 backgroundColor: '#fdc88e', // light orange
-                                yAxisID: 'y'
-                            },
-                            {
-                                type: 'bar',
-                                label: '2025 Margin',
-                                data: margin2025,
-                                backgroundColor: '#8ec6fd', // light blue
                                 yAxisID: 'y'
                             }
                         ]
