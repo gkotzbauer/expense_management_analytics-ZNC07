@@ -1758,7 +1758,11 @@
                 if (roiElement) {
                     if (marketingEfficiencyCategories.length > 0) {
                         const formattedList = marketingEfficiencyCategories
-                            .map(item => `${item.Category} (${item['Marketing Spend Efficiency']})`)
+                            .map(item => {
+                                const efficiency = item['Marketing Spend Efficiency'];
+                                const growthDelta = item['Expense – GP Growth Δ [%] [June 2025]'] || item['Expense - GP Growth Δ [%] [June 2025]'] || '';
+                                return `${item.Category} (${efficiency}, ${growthDelta})`;
+                            })
                             .join(', ');
                         roiElement.textContent = formattedList;
                     } else {
