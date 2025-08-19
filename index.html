@@ -1167,6 +1167,23 @@
                         
 
                         
+                        // Add this after the existing field mappings
+                        let growthDeltaValue = '';
+                        const possibleGrowthDeltaColumns = [
+                            'Expense – GP Growth Δ [%] [Jul 2025]',
+                            'Expense - GP Growth Δ [%] [Jul 2025]',
+                            'Expense – GP Growth Î" [%] [Jul 2025]',
+                            'Expense - GP Growth Delta [%] [Jul 2025]',
+                            'Expense-GP Growth Delta [%] [Jul 2025]'
+                        ];
+
+                        for (const colName of possibleGrowthDeltaColumns) {
+                            if (obj[colName] !== undefined && obj[colName] !== null && obj[colName] !== '') {
+                                growthDeltaValue = String(obj[colName]).trim();
+                                break;
+                            }
+                        }
+
                         return {
                             "Category": String(obj['Category'] || '').trim(),
                             "May": parseFloat(obj['May 2025']) || 0,
@@ -1187,7 +1204,9 @@
                             "# of Months Outpaced Growth": parseFloat(obj['# of Months Outpaced Growth']) || 0,
                             "# of Months Did Not Decline with Profit": parseFloat(obj['# of Months Did Not Decline with Profit']) || 0,
                             "# of Months Opposite Direction than Profit": parseFloat(obj['# of Months Opposite Direction than Profit']) || 0,
-                            "Total Excess Costs (5% Buffer)": parseFloat(obj['Total Excess Costs (5% Buffer)']) || 0
+                            "Total Excess Costs (5% Buffer)": parseFloat(obj['Total Excess Costs (5% Buffer)']) || 0,
+                            // Then in the return object, add:
+                            "Expense – GP Growth Δ [%] [Jul 2025]": growthDeltaValue
                         };
                     });
 
