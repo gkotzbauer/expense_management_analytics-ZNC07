@@ -583,6 +583,19 @@
                 </div>
             </div>
 
+            <!-- NEW WORKING CHARTS SECTION -->
+            <div class="insights-section" id="workingChartsSection">
+                <h2>📊 Working Charts (New)</h2>
+                <div style="display: flex; align-items: flex-start; gap: 32px;">
+                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
+                        <canvas id="workingRevenueChart" width="650" height="520"></canvas>
+                    </div>
+                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
+                        <canvas id="workingMarginChart" width="650" height="520"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <div class="insights-section">
                 <h2>�� Key Insights</h2>
                 <div class="insight-item" id="expenseOutpacedInsight">
@@ -2105,6 +2118,8 @@
                             this.statusSummaryData = jsonData;
                             this.renderStatusSummary();
                             this.renderStatusSummaryChart();
+                            // Also create the working charts
+                            this.createWorkingCharts();
                             return true;
                         }
                     } catch (e) {
@@ -2263,9 +2278,73 @@
                     console.error('Margin chart creation failed:', error);
                     newCtx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Margin chart failed: ' + error.message + '</div>';
                 }
+                        },
+
+            // NEW SIMPLE WORKING CHARTS FUNCTION
+            createWorkingCharts: function() {
+                console.log('=== CREATING WORKING CHARTS ===');
+                
+                // Revenue Chart
+                const revenueCtx = document.getElementById('workingRevenueChart');
+                if (revenueCtx && typeof Chart !== 'undefined') {
+                    try {
+                        const revenueChart = new Chart(revenueCtx.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'],
+                                datasets: [{
+                                    label: 'Revenue (2025 Gross Profit)',
+                                    data: [141764, 115153, 144090, 147081, 81394, 138129, 165652],
+                                    backgroundColor: '#667eea'
+                                }]
+                            },
+                            options: {
+                                responsive: false,
+                                plugins: { legend: { display: true } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                        console.log('Working Revenue Chart created!');
+                    } catch (error) {
+                        console.error('Revenue chart failed:', error);
+                    }
+                }
+                
+                // Margin Chart
+                const marginCtx = document.getElementById('workingMarginChart');
+                if (marginCtx && typeof Chart !== 'undefined') {
+                    try {
+                        const marginChart = new Chart(marginCtx.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'],
+                                datasets: [
+                                    {
+                                        label: '2025 Margin',
+                                        data: [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0],
+                                        backgroundColor: '#8ec6fd'
+                                    },
+                                    {
+                                        label: '2024 Margin',
+                                        data: [5.0, -10.2, -194.4, -8.3, -11.3, -0.7, -42.9],
+                                        backgroundColor: '#fdc88e'
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: false,
+                                plugins: { legend: { display: true } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                        console.log('Working Margin Chart created!');
+                    } catch (error) {
+                        console.error('Margin chart failed:', error);
+                    }
+                }
             },
 
-        // Load financial performance data
+            // Load financial performance data
             loadFinancialPerformanceData: async function() {
                 try {
                     console.log('Attempting to load Financial Performance Data.xlsx...');
