@@ -2084,7 +2084,7 @@
             },
 
             loadStatusSummaryData: function() {
-                const fileName = 'Summary RMT Rev & Expense Data for Dashboard.xlsx';
+                const fileName = 'Status Summary Source File.xlsx';
                 const publicPath = `/public/${fileName}`;
                 const rootPath = `/${fileName}`;
                 const sources = [publicPath, rootPath];
@@ -2168,17 +2168,22 @@
                 
                 // Extract month names and data for each month
                 const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
-                const monthlyData = monthColumns.map(col => {
-                    let totalValue = 0;
-                    data.forEach(row => {
-                        const value = parseFloat(row[col]) || 0;
-                        totalValue += value;
-                    });
-                    return totalValue;
-                });
+                
+                // Find the Gross Profit row (which represents Revenue)
+                const grossProfitRow = data.find(row => 
+                    row.Category && row.Category.toLowerCase().includes('gross profit')
+                );
+                
+                if (!grossProfitRow) {
+                    console.log('Status Summary: Gross Profit row not found. Available categories:', data.map(row => row.Category));
+                    return;
+                }
+                
+                // Extract revenue data from Gross Profit row
+                const revenueData = monthColumns.map(col => parseFloat(grossProfitRow[col]) || 0);
                 
                 console.log('Status Summary - Months:', months);
-                console.log('Status Summary - Monthly totals:', monthlyData);
+                console.log('Status Summary - Revenue data:', revenueData);
                 
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
@@ -2190,9 +2195,9 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Monthly Expenses',
-                                data: monthlyData,
-                                backgroundColor: '#48bb78',
+                                label: 'Revenue (Gross Profit)',
+                                data: revenueData,
+                                backgroundColor: '#667eea',
                                 yAxisID: 'y'
                             }
                         ]
@@ -2205,7 +2210,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const value = Math.round(context.parsed.y);
-                                        return 'Monthly Expenses: $' + value.toLocaleString();
+                                        return 'Revenue: $' + value.toLocaleString();
                                     }
                                 }
                             }
@@ -2214,7 +2219,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Monthly Expenses' },
+                                title: { display: true, text: 'Monthly Revenue (Gross Profit)' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
@@ -2227,40 +2232,42 @@
             },
 
             renderMarginSummaryChart: function(data, months) {
-                // Normalize headers for robustness
-                const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
+                // Find the margin rows
+                const margin2024Row = data.find(row => 
+                    row.Category && row.Category.toLowerCase().includes('2024 margin')
+                );
+                const margin2025Row = data.find(row => 
+                    row.Category && row.Category.toLowerCase().includes('2025 margin')
+                );
+                
+                if (!margin2024Row || !margin2025Row) {
+                    console.log('Margin Summary: Margin rows not found. Available categories:', data.map(row => row.Category));
+                    return;
+                }
+                
+                // Get month columns from the data
                 const firstRow = data[0] || {};
-                const keys = Object.keys(firstRow).reduce((acc, k) => {
-                    acc[normalize(k)] = k;
-                    return acc;
-                }, {});
-                const margin2024Key = keys['2024 margin'];
-                const margin2025Key = keys['2025 margin'];
-                const monthKey = keys['month'];
-                if (!monthKey || !margin2024Key || !margin2025Key) {
-                    console.log('Margin Summary: Required columns not found. Keys:', Object.keys(firstRow));
-                    return;
-                }
-                const margin2024 = [], margin2025 = [], marginMonths = [];
-                let validRows = 0;
-                data.forEach((row, i) => {
-                    const m = row[monthKey], m24 = row[margin2024Key], m25 = row[margin2025Key];
-                    if (m && m24 !== undefined && m25 !== undefined && m24 !== '' && m25 !== '') {
-                        marginMonths.push(m);
-                        // Convert to whole percent, e.g., -0.597 -> -60
-                        margin2024.push(Math.round(Number(m24) * 100));
-                        margin2025.push(Math.round(Number(m25) * 100));
-                        validRows++;
-                    } else {
-                        console.log(`Margin Summary: Skipping row ${i+1} due to missing values.`, row);
-                    }
+                const monthColumns = Object.keys(firstRow).filter(key => 
+                    /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
+                ).sort((a, b) => {
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const monthA = a.split(' ')[0];
+                    const monthB = b.split(' ')[0];
+                    return monthOrder.indexOf(monthA) - monthOrder.indexOf(monthB);
                 });
-                if (!validRows) {
-                    console.log('Margin Summary: No valid rows found for chart.');
-                    const ctx = document.getElementById('marginSummaryChart');
-                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid margin chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                
+                if (monthColumns.length === 0) {
+                    console.log('Margin Summary: No month columns found.');
                     return;
                 }
+                
+                const marginMonths = monthColumns.map(col => col.split(' ')[0]);
+                const margin2024 = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
+                const margin2025 = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
+                
+                console.log('Margin Summary - Months:', marginMonths);
+                console.log('Margin Summary - 2024 margins:', margin2024);
+                console.log('Margin Summary - 2025 margins:', margin2025);
                 const ctx = document.getElementById('marginSummaryChart');
                 if (!ctx) return;
                 if (window.marginSummaryChartInstance) window.marginSummaryChartInstance.destroy();
