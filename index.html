@@ -575,12 +575,12 @@
             <!-- STATUS SUMMARY CHARTS -->
             <div class="insights-section" id="workingChartsSection">
                 <h2>🎯 Status Summary</h2>
-                <div style="display: flex; align-items: flex-start; gap: 20px; justify-content: center;">
-                    <div style="width: 600px;">
-                        <canvas id="workingRevenueChart" width="600" height="520"></canvas>
+                <div style="display: flex; align-items: flex-start; gap: 20px;">
+                    <div style="width: 700px;">
+                        <canvas id="workingRevenueChart" width="700" height="520"></canvas>
                     </div>
-                    <div style="width: 600px;">
-                        <canvas id="workingMarginChart" width="600" height="520"></canvas>
+                    <div style="width: 700px;">
+                        <canvas id="workingMarginChart" width="700" height="520"></canvas>
                     </div>
                 </div>
             </div>
@@ -2269,9 +2269,57 @@
                 }
                         },
 
-            // NEW SIMPLE WORKING CHARTS FUNCTION
+            // UPDATED CHARTS FUNCTION - READS FROM SOURCE DATA
             createWorkingCharts: function() {
-                console.log('=== CREATING WORKING CHARTS ===');
+                console.log('=== CREATING CHARTS FROM SOURCE DATA ===');
+                
+                const data = this.statusSummaryData || [];
+                if (!data.length) {
+                    console.log('No source data available for charts');
+                    return;
+                }
+                
+                // Get month columns
+                const firstRow = data[0] || {};
+                const monthColumns = Object.keys(firstRow).filter(key => 
+                    /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
+                ).sort((a, b) => {
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
+                    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+                });
+                
+                if (monthColumns.length === 0) {
+                    console.log('No month columns found');
+                    return;
+                }
+                
+                // Find the data rows
+                const revenueRow = data.find(row => 
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Gross Profit')
+                );
+                const expensesRow = data.find(row => 
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Total Expenses')
+                );
+                const margin2025Row = data.find(row => 
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
+                );
+                const margin2024Row = data.find(row => 
+                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
+                );
+                
+                if (!revenueRow || !expensesRow || !margin2025Row || !margin2024Row) {
+                    console.log('Required data rows not found');
+                    return;
+                }
+                
+                // Extract data
+                const months = monthColumns;
+                const revenueData = monthColumns.map(col => parseFloat(revenueRow[col]) || 0);
+                const expensesData = monthColumns.map(col => parseFloat(expensesRow[col]) || 0);
+                const margin2025Data = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
+                const margin2024Data = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
+                
+                console.log('Extracted data:', { months, revenueData, expensesData, margin2025Data, margin2024Data });
                 
                 // Revenue & Expenses Chart
                 const revenueCtx = document.getElementById('workingRevenueChart');
@@ -2280,16 +2328,16 @@
                         const revenueChart = new Chart(revenueCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
-                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'],
+                                labels: months,
                                 datasets: [
                                     {
                                         label: '2025 Revenue (Gross Profit)',
-                                        data: [141764, 115153, 144090, 147081, 81394, 138129, 165652],
+                                        data: revenueData,
                                         backgroundColor: '#667eea'
                                     },
                                     {
                                         label: '2025 Total Expenses',
-                                        data: [129294, 105456, 114677, 94163, 129992, 108666, 106078],
+                                        data: expensesData,
                                         backgroundColor: '#48bb78'
                                     }
                                 ]
@@ -2320,11 +2368,14 @@
                         // Add totals table to the right of the chart
                         const totalsDiv = document.createElement('div');
                         totalsDiv.style.cssText = 'position: absolute; right: 0; top: 0; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;';
+                        const totalRevenue = revenueData.reduce((sum, val) => sum + val, 0);
+                        const totalExpenses = expensesData.reduce((sum, val) => sum + val, 0);
+                        const netAmount = totalRevenue - totalExpenses;
                         totalsDiv.innerHTML = `
                             <strong>Totals:</strong><br>
-                            Revenue: $933,263<br>
-                            Expenses: $788,324<br>
-                            Net: $144,939
+                            Revenue: $${totalRevenue.toLocaleString()}<br>
+                            Expenses: $${totalExpenses.toLocaleString()}<br>
+                            Net: $${netAmount.toLocaleString()}
                         `;
                         revenueCtx.parentElement.style.position = 'relative';
                         revenueCtx.parentElement.appendChild(totalsDiv);
@@ -2341,16 +2392,16 @@
                         const marginChart = new Chart(marginCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
-                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'],
+                                labels: months,
                                 datasets: [
                                     {
                                         label: '2025 Margin',
-                                        data: [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0],
+                                        data: margin2025Data,
                                         backgroundColor: '#8ec6fd'
                                     },
                                     {
                                         label: '2024 Margin',
-                                        data: [5.0, -10.2, -194.4, -8.3, -11.3, -0.7, -42.9],
+                                        data: margin2024Data,
                                         backgroundColor: '#fdc88e'
                                     }
                                 ]
@@ -2363,7 +2414,7 @@
                                         callbacks: {
                                             label: function(context) {
                                                 const value = context.parsed.y;
-                                                return context.dataset.label + ': ' + value.toFixed(1) + '%';
+                                                return context.dataset.label + ': ' + Math.round(value) + '%';
                                             }
                                         }
                                     }
@@ -2381,7 +2432,8 @@
                                 }
                             }
                         });
-                        console.log('Working Margin Chart created!');
+                        console.log('Margin chart created successfully!');
+                        
                     } catch (error) {
                         console.error('Margin chart failed:', error);
                     }
