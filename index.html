@@ -1749,6 +1749,16 @@
                 // Log first few items to see what columns exist
                 if (this.filteredData.length > 0) {
                     console.log('First item columns:', Object.keys(this.filteredData[0]));
+                    
+                    // Look for any columns that might contain the growth delta data
+                    const allColumns = Object.keys(this.filteredData[0]);
+                    const growthColumns = allColumns.filter(col => 
+                        col.toLowerCase().includes('growth') || 
+                        col.toLowerCase().includes('jul') || 
+                        col.toLowerCase().includes('july')
+                    );
+                    console.log('Potential growth columns:', growthColumns);
+                    
                     console.log('Sample marketing items:', this.filteredData.filter(item => 
                         item.Category && item.Category.toLowerCase().includes('marketing')
                     ).slice(0, 3));
@@ -1764,6 +1774,12 @@
                                              cat === '614200 internet & social media';
                     
                     console.log(`Checking item: "${item.Category}" - Efficiency: "${efficiency}" - HasData: ${hasEfficiencyData} - IsSpecial: ${isMarketingSpecial}`);
+                    
+                    // Log all data for marketing items to see what's available
+                    if (cat.includes('marketing') || cat.includes('advertising')) {
+                        console.log('Full marketing item data:', item);
+                        console.log('All available columns for this item:', Object.keys(item));
+                    }
                     
                     // Include the specific marketing categories
                     return hasEfficiencyData && isMarketingSpecial;
