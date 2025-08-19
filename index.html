@@ -2140,44 +2140,45 @@
             },
 
             renderStatusSummaryChart: function() {
-                // Use the main expense data instead of statusSummaryData
-                const data = this.originalData || [];
+                const data = this.statusSummaryData || [];
                 if (!data.length) {
-                    console.log('Status Summary: No main data loaded.');
+                    console.log('Status Summary: No data loaded.');
                     return;
                 }
-                
-                // Get the month columns from the actual data
+                // Normalize headers for robustness
+                const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
+                // Find actual keys
                 const firstRow = data[0] || {};
-                const monthColumns = Object.keys(firstRow).filter(key => 
-                    /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
-                ).sort((a, b) => {
-                    // Sort months chronologically
-                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const monthA = a.split(' ')[0];
-                    const monthB = b.split(' ')[0];
-                    return monthOrder.indexOf(monthA) - monthOrder.indexOf(monthB);
-                });
-                
-                if (monthColumns.length === 0) {
-                    console.log('Status Summary: No month columns found. Available keys:', Object.keys(firstRow));
+                const keys = Object.keys(firstRow).reduce((acc, k) => {
+                    acc[normalize(k)] = k;
+                    return acc;
+                }, {});
+                const monthKey = keys['month'];
+                const revKey = keys['revenue 2025'];
+                const expKey = keys['expenses 2025'];
+                if (!monthKey || !revKey || !expKey) {
+                    console.log('Status Summary: Required columns not found. Keys:', Object.keys(firstRow));
                     return;
                 }
-                
-                // Extract month names and data for each month
-                const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
-                const monthlyData = monthColumns.map(col => {
-                    let totalValue = 0;
-                    data.forEach(row => {
-                        const value = parseFloat(row[col]) || 0;
-                        totalValue += value;
-                    });
-                    return totalValue;
+                const months = [], revenue = [], expenses = [];
+                let validRows = 0;
+                data.forEach((row, i) => {
+                    const m = row[monthKey], r = row[revKey], e = row[expKey];
+                    if (m && r !== undefined && e !== undefined && r !== '' && e !== '') {
+                        months.push(m);
+                        revenue.push(Number(r) || 0);
+                        expenses.push(Number(e) || 0);
+                        validRows++;
+                    } else {
+                        console.log(`Status Summary: Skipping row ${i+1} due to missing values.`, row);
+                    }
                 });
-                
-                console.log('Status Summary Chart - Month columns found:', monthColumns);
-                console.log('Status Summary Chart - Months:', months);
-                console.log('Status Summary Chart - Monthly totals:', monthlyData);
+                if (!validRows) {
+                    console.log('Status Summary: No valid rows found for chart.');
+                    const ctx = document.getElementById('statusSummaryChart');
+                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid summary chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                    return;
+                }
                 
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
@@ -2189,8 +2190,15 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Monthly Expenses',
-                                data: monthlyData,
+                                label: 'Revenue 2025',
+                                data: revenue,
+                                backgroundColor: '#667eea',
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Expenses 2025',
+                                data: expenses,
                                 backgroundColor: '#48bb78',
                                 yAxisID: 'y'
                             }
@@ -2204,7 +2212,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const value = Math.round(context.parsed.y);
-                                        return 'Monthly Expenses: $' + value.toLocaleString();
+                                        return context.dataset.label + ': $' + value.toLocaleString();
                                     }
                                 }
                             }
@@ -2213,7 +2221,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Monthly Expenses' },
+                                title: { display: true, text: 'Revenue/Expenses 2025' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
@@ -2226,39 +2234,60 @@
             },
 
             renderMarginSummaryChart: function(data, months) {
-                // Use the months passed from the main chart and create a simple trend chart
-                if (!months || months.length === 0) {
-                    console.log('Margin Summary: No months provided');
+                // Normalize headers for robustness
+                const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
+                const firstRow = data[0] || {};
+                const keys = Object.keys(firstRow).reduce((acc, k) => {
+                    acc[normalize(k)] = k;
+                    return acc;
+                }, {});
+                const margin2024Key = keys['2024 margin'];
+                const margin2025Key = keys['2025 margin'];
+                const monthKey = keys['month'];
+                if (!monthKey || !margin2024Key || !margin2025Key) {
+                    console.log('Margin Summary: Required columns not found. Keys:', Object.keys(firstRow));
                     return;
                 }
-                
-                // Create a simple trend line showing month-over-month change
-                const trendData = months.map((month, index) => {
-                    if (index === 0) return 0; // First month has no change
-                    
-                    // Calculate percentage change from previous month (simplified)
-                    const change = Math.round((index * 5) - 10); // Simple trend for demonstration
-                    return change;
+                const margin2024 = [], margin2025 = [], marginMonths = [];
+                let validRows = 0;
+                data.forEach((row, i) => {
+                    const m = row[monthKey], m24 = row[margin2024Key], m25 = row[margin2025Key];
+                    if (m && m24 !== undefined && m25 !== undefined && m24 !== '' && m25 !== '') {
+                        marginMonths.push(m);
+                        // Convert to whole percent, e.g., -0.597 -> -60
+                        margin2024.push(Math.round(Number(m24) * 100));
+                        margin2025.push(Math.round(Number(m25) * 100));
+                        validRows++;
+                    } else {
+                        console.log(`Margin Summary: Skipping row ${i+1} due to missing values.`, row);
+                    }
                 });
-                
-                console.log('Margin Summary Chart - Months:', months);
-                console.log('Margin Summary Chart - Trend data:', trendData);
+                if (!validRows) {
+                    console.log('Margin Summary: No valid rows found for chart.');
+                    const ctx = document.getElementById('marginSummaryChart');
+                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid margin chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                    return;
+                }
                 const ctx = document.getElementById('marginSummaryChart');
                 if (!ctx) return;
                 if (window.marginSummaryChartInstance) window.marginSummaryChartInstance.destroy();
                 window.marginSummaryChartInstance = new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: months,
+                        labels: marginMonths,
                         datasets: [
                             {
-                                type: 'line',
-                                label: 'Month-over-Month Change (%)',
-                                data: trendData,
-                                backgroundColor: '#8ec6fd',
-                                borderColor: '#8ec6fd',
-                                borderWidth: 3,
-                                fill: false,
+                                type: 'bar',
+                                label: '2024 Margin',
+                                data: margin2024,
+                                backgroundColor: '#fdc88e', // light orange
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'bar',
+                                label: '2025 Margin',
+                                data: margin2025,
+                                backgroundColor: '#8ec6fd', // light blue
                                 yAxisID: 'y'
                             }
                         ]
