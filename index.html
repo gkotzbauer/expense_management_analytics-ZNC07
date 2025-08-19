@@ -2179,6 +2179,11 @@
                     if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid summary chart data found.<br>Check column names and data in the summary Excel file.</div>';
                     return;
                 }
+                
+                // Log the months being loaded for debugging
+                console.log('Status Summary Chart - Months loaded:', months);
+                console.log('Status Summary Chart - Revenue values:', revenue);
+                console.log('Status Summary Chart - Expense values:', expenses);
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
                 if (window.statusSummaryChartInstance) window.statusSummaryChartInstance.destroy();
@@ -2212,7 +2217,7 @@
                                 position: 'left',
                                 title: { display: true, text: 'Revenue/Expenses 2025' },
                                 beginAtZero: true,
-                                ticks: { callback: v => '$' + v.toLocaleString() }
+                                ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
                         }
                     }
