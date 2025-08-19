@@ -468,8 +468,9 @@
                             <div>
                                 <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Total Revenue</p>
                                 <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="totalRevenue">$933K</p>
-                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;">
-                                    <span style="margin-right: 5px;">↗</span>35.4%
+                                <!-- For Total Revenue -->
+                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;" id="totalRevenueGrowth">
+                                    <span style="margin-right: 5px;">↗</span>35%
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #667eea;">💰</div>
@@ -481,8 +482,9 @@
                             <div>
                                 <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Total Expenses</p>
                                 <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="totalExpenses">$788K</p>
-                                <div style="color: #e53e3e; font-size: 0.9rem; margin-top: 5px;">
-                                    <span style="margin-right: 5px;">↘</span>12.1%
+                                <!-- For Total Expenses -->
+                                <div style="color: #e53e3e; font-size: 0.9rem; margin-top: 5px;" id="totalExpensesGrowth">
+                                    <span style="margin-right: 5px;">↘</span>12%
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #48bb78;">📊</div>
@@ -494,8 +496,9 @@
                             <div>
                                 <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Visit Count</p>
                                 <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="visitCount">8,156</p>
-                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;">
-                                    <span style="margin-right: 5px;">↗</span>25.7%
+                                <!-- For Visit Count -->
+                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;" id="visitCountGrowth">
+                                    <span style="margin-right: 5px;">↗</span>26%
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #805ad5;">👥</div>
@@ -507,8 +510,9 @@
                             <div>
                                 <p style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;">Profit per Visit</p>
                                 <p style="font-size: 1.5rem; font-weight: 700; color: #2d3748;" id="profitPerVisit">$18</p>
-                                <div style="color: #e53e3e; font-size: 0.9rem; margin-top: 5px;">
-                                    <span style="margin-right: 5px;">↘</span>155.6%
+                                <!-- For Profit per Visit -->
+                                <div style="color: #38a169; font-size: 0.9rem; margin-top: 5px;" id="profitPerVisitGrowth">
+                                    <span style="margin-right: 5px;">↗</span>156%
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #ed8936;">💰</div>
@@ -2876,9 +2880,8 @@
                 if (revenueItem) {
                     console.log('Updating revenue:', revenueItem);
                     document.getElementById('totalRevenue').textContent = this.formatCurrency(revenueItem.val2025);
-                    // Update percentage change above the table
-                    const revenueGrowthElement = document.querySelector('#totalRevenue').parentElement.nextElementSibling.querySelector('div');
-                    console.log('Revenue growth element found:', revenueGrowthElement);
+                    // Update percentage change using specific ID
+                    const revenueGrowthElement = document.getElementById('totalRevenueGrowth');
                     if (revenueGrowthElement) {
                         const growthPercent = Math.round(revenueItem.growth);
                         console.log('Revenue growth percent:', growthPercent);
@@ -2889,9 +2892,8 @@
                 if (expensesItem) {
                     console.log('Updating expenses:', expensesItem);
                     document.getElementById('totalExpenses').textContent = this.formatCurrency(expensesItem.val2025);
-                    // Update percentage change above the table
-                    const expensesGrowthElement = document.querySelector('#totalExpenses').parentElement.nextElementSibling.querySelector('div');
-                    console.log('Expenses growth element found:', expensesGrowthElement);
+                    // Update percentage change using specific ID
+                    const expensesGrowthElement = document.getElementById('totalExpensesGrowth');
                     if (expensesGrowthElement) {
                         const growthPercent = Math.round(expensesItem.growth);
                         console.log('Expenses growth percent:', growthPercent);
@@ -2902,9 +2904,8 @@
                 if (visitItem) {
                     console.log('Updating visit count:', visitItem);
                     document.getElementById('visitCount').textContent = this.formatVisitCount(visitItem.val2025);
-                    // Update percentage change above the table
-                    const visitGrowthElement = document.querySelector('#visitCount').parentElement.nextElementSibling.querySelector('div');
-                    console.log('Visit growth element found:', visitGrowthElement);
+                    // Update percentage change using specific ID
+                    const visitGrowthElement = document.getElementById('visitCountGrowth');
                     if (visitGrowthElement) {
                         const growthPercent = Math.round(visitItem.growth);
                         console.log('Visit growth percent:', growthPercent);
@@ -2915,12 +2916,8 @@
                 if (profitItem) {
                     console.log('Updating profit per visit:', profitItem);
                     document.getElementById('profitPerVisit').textContent = this.formatCurrency(profitItem.val2025);
-                    // Update percentage change above the table - use the same growth value as the table
-                    const profitGrowthElement = document.querySelector('#profitPerVisit').parentElement.nextElementSibling.querySelector('div');
-                    console.log('Profit growth element found:', profitGrowthElement);
-                    console.log('Profit item growth value:', profitItem.growth);
-                    console.log('Profit item growth type:', typeof profitItem.growth);
-                    
+                    // Update percentage change using specific ID
+                    const profitGrowthElement = document.getElementById('profitPerVisitGrowth');
                     if (profitGrowthElement) {
                         const growthPercent = Math.round(profitItem.growth);
                         console.log('Profit growth percent (rounded):', growthPercent);
