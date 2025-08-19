@@ -2795,15 +2795,43 @@
 
                 if (revenueItem) {
                     document.getElementById('totalRevenue').textContent = this.formatCurrency(revenueItem.val2025);
+                    // Update percentage change above the table
+                    const revenueGrowthElement = document.querySelector('#totalRevenue').parentElement.nextElementSibling.querySelector('div');
+                    if (revenueGrowthElement) {
+                        const growthPercent = Math.round(revenueItem.growth);
+                        revenueGrowthElement.innerHTML = `<span style="margin-right: 5px;">${revenueItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
+                        revenueGrowthElement.style.color = revenueItem.growth >= 0 ? '#48bb78' : '#e53e3e';
+                    }
                 }
                 if (expensesItem) {
                     document.getElementById('totalExpenses').textContent = this.formatCurrency(expensesItem.val2025);
+                    // Update percentage change above the table
+                    const expensesGrowthElement = document.querySelector('#totalExpenses').parentElement.nextElementSibling.querySelector('div');
+                    if (expensesGrowthElement) {
+                        const growthPercent = Math.round(expensesItem.growth);
+                        expensesGrowthElement.innerHTML = `<span style="margin-right: 5px;">${expensesItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
+                        expensesGrowthElement.style.color = expensesItem.growth >= 0 ? '#48bb78' : '#e53e3e';
+                    }
                 }
                 if (visitItem) {
                     document.getElementById('visitCount').textContent = this.formatVisitCount(visitItem.val2025);
+                    // Update percentage change above the table
+                    const visitGrowthElement = document.querySelector('#visitCount').parentElement.nextElementSibling.querySelector('div');
+                    if (visitGrowthElement) {
+                        const growthPercent = Math.round(visitItem.growth);
+                        visitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${visitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
+                        visitGrowthElement.style.color = visitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
+                    }
                 }
                 if (profitItem) {
                     document.getElementById('profitPerVisit').textContent = this.formatCurrency(profitItem.val2025);
+                    // Update percentage change above the table - use the same growth value as the table
+                    const profitGrowthElement = document.querySelector('#profitPerVisit').parentElement.nextElementSibling.querySelector('div');
+                    if (profitGrowthElement) {
+                        const growthPercent = Math.round(profitItem.growth);
+                        profitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
+                        profitGrowthElement.style.color = profitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
+                    }
                 }
             }
         };
