@@ -1953,6 +1953,21 @@
                         col.toLowerCase().includes('buffer')
                     );
                     console.log('Potential excess cost columns:', excessCostColumns);
+                    
+                    // Look for the specific columns we need for month counts
+                    const monthCountColumns = allColumns.filter(col => 
+                        col.toLowerCase().includes('months') || 
+                        col.toLowerCase().includes('outpaced') ||
+                        col.toLowerCase().includes('decline') ||
+                        col.toLowerCase().includes('opposite')
+                    );
+                    console.log('Potential month count columns:', monthCountColumns);
+                    
+                    // Check for exact matches
+                    console.log('Looking for exact column matches:');
+                    console.log('  "# of Months Outpaced Growth":', allColumns.includes('# of Months Outpaced Growth'));
+                    console.log('  "# of Months Did Not Decline with Profit":', allColumns.includes('# of Months Did Not Decline with Profit'));
+                    console.log('  "# of Months Opposite Direction than Profit":', allColumns.includes('# of Months Opposite Direction than Profit'));
                 }
                 console.log('=== END GROWTH RISK DEBUG ===');
                 
@@ -1989,6 +2004,13 @@
                     const outpacedGrowth = dataSource['# of Months Outpaced Growth'];
                     const didNotDecline = dataSource['# of Months Did Not Decline with Profit'];
                     const oppositeDirection = dataSource['# of Months Opposite Direction than Profit'];
+                    
+                    // Debug logging for the specific columns we need
+                    console.log(`Category: ${item.Category}`);
+                    console.log(`  # of Months Outpaced Growth:`, outpacedGrowth, `(type: ${typeof outpacedGrowth})`);
+                    console.log(`  # of Months Did Not Decline with Profit:`, didNotDecline, `(type: ${typeof didNotDecline})`);
+                    console.log(`  # of Months Opposite Direction than Profit:`, oppositeDirection, `(type: ${typeof oppositeDirection})`);
+                    console.log(`  Raw dataSource:`, dataSource);
                     
                     // Check if we have any meaningful data
                     if (outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' && outpacedGrowth > 0) {
