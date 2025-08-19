@@ -570,22 +570,11 @@
         <div id="dashboardContent" class="hidden">
 
 
-            <div class="insights-section" id="statusSummarySection">
-                <h2>🎯 Status Summary</h2>
-                <div id="statusSummaryItems" style="margin-bottom: 20px;"></div>
-                <div style="display: flex; align-items: flex-start; gap: 32px;">
-                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
-                        <canvas id="statusSummaryChart" width="650" height="520"></canvas>
-                    </div>
-                    <div style="min-width: 650px; max-width: 800px; width: 100%;">
-                        <canvas id="marginSummaryChart" width="650" height="520"></canvas>
-                    </div>
-                </div>
-            </div>
 
-            <!-- NEW WORKING CHARTS SECTION -->
+
+            <!-- STATUS SUMMARY CHARTS -->
             <div class="insights-section" id="workingChartsSection">
-                <h2>📊 Working Charts (New)</h2>
+                <h2>🎯 Status Summary</h2>
                 <div style="display: flex; align-items: flex-start; gap: 32px;">
                     <div style="min-width: 650px; max-width: 800px; width: 100%;">
                         <canvas id="workingRevenueChart" width="650" height="520"></canvas>
@@ -2284,7 +2273,7 @@
             createWorkingCharts: function() {
                 console.log('=== CREATING WORKING CHARTS ===');
                 
-                // Revenue Chart
+                // Revenue & Expenses Chart
                 const revenueCtx = document.getElementById('workingRevenueChart');
                 if (revenueCtx && typeof Chart !== 'undefined') {
                     try {
@@ -2292,19 +2281,54 @@
                             type: 'bar',
                             data: {
                                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'],
-                                datasets: [{
-                                    label: 'Revenue (2025 Gross Profit)',
-                                    data: [141764, 115153, 144090, 147081, 81394, 138129, 165652],
-                                    backgroundColor: '#667eea'
-                                }]
+                                datasets: [
+                                    {
+                                        label: '2025 Revenue (Gross Profit)',
+                                        data: [141764, 115153, 144090, 147081, 81394, 138129, 165652],
+                                        backgroundColor: '#667eea'
+                                    },
+                                    {
+                                        label: '2025 Total Expenses',
+                                        data: [129294, 105456, 114677, 94163, 129992, 108666, 106078],
+                                        backgroundColor: '#48bb78'
+                                    }
+                                ]
                             },
                             options: {
                                 responsive: false,
-                                plugins: { legend: { display: true } },
-                                scales: { y: { beginAtZero: true } }
+                                plugins: { 
+                                    legend: { display: true },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const value = Math.round(context.parsed.y);
+                                                return context.dataset.label + ': $' + value.toLocaleString();
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: { 
+                                    y: { 
+                                        beginAtZero: true,
+                                        title: { display: true, text: 'Amount ($)' }
+                                    } 
+                                }
                             }
                         });
-                        console.log('Working Revenue Chart created!');
+                        console.log('Revenue & Expenses Chart created!');
+                        
+                        // Add totals table to the right of the chart
+                        const totalsDiv = document.createElement('div');
+                        totalsDiv.style.cssText = 'position: absolute; right: 0; top: 0; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;';
+                        totalsDiv.innerHTML = `
+                            <strong>Totals:</strong><br>
+                            Revenue: $933,263<br>
+                            Expenses: $788,324<br>
+                            Net: $144,939
+                        `;
+                        revenueCtx.parentElement.style.position = 'relative';
+                        revenueCtx.parentElement.appendChild(totalsDiv);
+                        
                     } catch (error) {
                         console.error('Revenue chart failed:', error);
                     }
@@ -2333,8 +2357,28 @@
                             },
                             options: {
                                 responsive: false,
-                                plugins: { legend: { display: true } },
-                                scales: { y: { beginAtZero: true } }
+                                plugins: { 
+                                    legend: { display: true },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const value = context.parsed.y;
+                                                return context.dataset.label + ': ' + value.toFixed(1) + '%';
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: { 
+                                    y: { 
+                                        beginAtZero: true,
+                                        title: { display: true, text: 'Margin (%)' },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return value.toFixed(1) + '%';
+                                            }
+                                        }
+                                    } 
+                                }
                             }
                         });
                         console.log('Working Margin Chart created!');
