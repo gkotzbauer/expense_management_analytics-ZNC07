@@ -1215,10 +1215,28 @@
                 if (recentMonthElement && monthColumns.length > 0) {
                     const lastMonth = monthColumns[monthColumns.length - 1];
                     const monthName = lastMonth.split(' ')[0]; // Extract just the month name
-                    recentMonthElement.textContent = `(${monthName})`;
+                    
+                    // Convert month abbreviation to full name
+                    const monthNames = {
+                        'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April',
+                        'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August',
+                        'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'
+                    };
+                    const fullMonthName = monthNames[monthName] || monthName;
+                    recentMonthElement.textContent = `(${fullMonthName})`;
                 }
                 
                 console.log(`Found ${monthCount} month columns:`, monthColumns);
+                
+                // Debug: Check what month columns are actually available in the data
+                if (monthColumns.length > 0) {
+                    console.log('Available month columns:', monthColumns);
+                    // Check if May column exists in the parsed data
+                    if (this.originalData && this.originalData.length > 0) {
+                        const firstItem = this.originalData[0];
+                        console.log('First item month columns:', Object.keys(firstItem).filter(key => key.includes('May') || key.includes('Jun')));
+                    }
+                }
             },
 
             loadSampleData: function() {
