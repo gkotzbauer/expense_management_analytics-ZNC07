@@ -2150,12 +2150,11 @@
                 // Get the month columns directly from the data
                 const firstRow = data[0] || {};
                 const monthColumns = Object.keys(firstRow).filter(key => 
-                    /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
+                    /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
                 ).sort((a, b) => {
-                    // Sort months chronologically
-                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const monthA = a.split(' ')[0];
-                    const monthB = b.split(' ')[0];
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
+                    const monthA = a;
+                    const monthB = b;
                     return monthOrder.indexOf(monthA) - monthOrder.indexOf(monthB);
                 });
                 
@@ -2166,17 +2165,26 @@
                 
                 console.log('Status Summary - Month columns found:', monthColumns);
                 
-                // Extract month names and data for each month
-                const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
+                // Extract month names (they're already correct)
+                const months = monthColumns; // Jan, Feb, Mar, Apr, May, Jun, July
                 
-                // For now, just show the first row of data to get something working
+                // Find the 2025 Gross Profit row (which represents Revenue)
                 console.log('Status Summary - First row keys:', Object.keys(firstRow));
                 console.log('Status Summary - All rows:', data);
                 
-                const firstRowData = monthColumns.map(col => parseFloat(firstRow[col]) || 0);
+                const grossProfitRow = data.find(row => 
+                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2025 Gross Profit')
+                );
+                
+                if (!grossProfitRow) {
+                    console.log('Status Summary: 2025 Gross Profit row not found. Available data:', data);
+                    return;
+                }
+                
+                const revenueData = monthColumns.map(col => parseFloat(grossProfitRow[col]) || 0);
                 
                 console.log('Status Summary - Months:', months);
-                console.log('Status Summary - First row data:', firstRowData);
+                console.log('Status Summary - Revenue data:', revenueData);
                 
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
@@ -2188,9 +2196,9 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Monthly Data',
-                                data: firstRowData,
-                                backgroundColor: '#48bb78',
+                                label: 'Revenue (2025 Gross Profit)',
+                                data: revenueData,
+                                backgroundColor: '#667eea',
                                 yAxisID: 'y'
                             }
                         ]
@@ -2203,7 +2211,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const value = Math.round(context.parsed.y);
-                                        return 'Value: $' + value.toLocaleString();
+                                        return 'Revenue: $' + value.toLocaleString();
                                     }
                                 }
                             }
@@ -2212,7 +2220,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Monthly Data' },
+                                title: { display: true, text: 'Monthly Revenue (2025 Gross Profit)' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
@@ -2225,19 +2233,27 @@
             },
 
             renderMarginSummaryChart: function(data, months) {
-                // For now, just show the second row of data to get something working
-                if (data.length < 2) {
-                    console.log('Margin Summary: Not enough data rows');
+                // Find the margin rows
+                const margin2025Row = data.find(row => 
+                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2025 Margin')
+                );
+                const margin2024Row = data.find(row => 
+                    row['Unnamed: 0'] && row['Unnamed: 0'].toString().includes('2024 Margin')
+                );
+                
+                if (!margin2025Row || !margin2024Row) {
+                    console.log('Margin Summary: Margin rows not found. Available data:', data);
                     return;
                 }
                 
-                const secondRow = data[1] || {};
-                const monthColumns = Object.keys(secondRow).filter(key => 
-                    /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
+                // Get month columns (same as revenue chart)
+                const firstRow = data[0] || {};
+                const monthColumns = Object.keys(firstRow).filter(key => 
+                    /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
                 ).sort((a, b) => {
-                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const monthA = a.split(' ')[0];
-                    const monthB = b.split(' ')[0];
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
+                    const monthA = a;
+                    const monthB = b;
                     return monthOrder.indexOf(monthA) - monthOrder.indexOf(monthB);
                 });
                 
@@ -2246,11 +2262,13 @@
                     return;
                 }
                 
-                const marginMonths = monthColumns.map(col => col.split(' ')[0]);
-                const secondRowData = monthColumns.map(col => parseFloat(secondRow[col]) || 0);
+                const marginMonths = monthColumns;
+                const margin2025 = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
+                const margin2024 = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
                 
                 console.log('Margin Summary - Months:', marginMonths);
-                console.log('Margin Summary - Second row data:', secondRowData);
+                console.log('Margin Summary - 2025 margins:', margin2025);
+                console.log('Margin Summary - 2024 margins:', margin2024);
                 const ctx = document.getElementById('marginSummaryChart');
                 if (!ctx) return;
                 if (window.marginSummaryChartInstance) window.marginSummaryChartInstance.destroy();
@@ -2261,8 +2279,15 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Monthly Data (Row 2)',
-                                data: secondRowData,
+                                label: '2025 Margin',
+                                data: margin2025,
+                                backgroundColor: '#8ec6fd', // light blue
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'bar',
+                                label: '2024 Margin',
+                                data: margin2024,
                                 backgroundColor: '#fdc88e', // light orange
                                 yAxisID: 'y'
                             }
