@@ -2170,12 +2170,18 @@
                 const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
                 
                 // Find the Gross Profit row (which represents Revenue)
-                const grossProfitRow = data.find(row => 
-                    row.Category && row.Category.toLowerCase().includes('gross profit')
-                );
+                console.log('Status Summary - First row keys:', Object.keys(firstRow));
+                console.log('Status Summary - All rows:', data);
+                
+                const grossProfitRow = data.find(row => {
+                    // Check if any column contains 'gross profit'
+                    return Object.values(row).some(value => 
+                        value && value.toString().toLowerCase().includes('gross profit')
+                    );
+                });
                 
                 if (!grossProfitRow) {
-                    console.log('Status Summary: Gross Profit row not found. Available categories:', data.map(row => row.Category));
+                    console.log('Status Summary: Gross Profit row not found. Available data:', data);
                     return;
                 }
                 
@@ -2233,15 +2239,21 @@
 
             renderMarginSummaryChart: function(data, months) {
                 // Find the margin rows
-                const margin2024Row = data.find(row => 
-                    row.Category && row.Category.toLowerCase().includes('2024 margin')
-                );
-                const margin2025Row = data.find(row => 
-                    row.Category && row.Category.toLowerCase().includes('2025 margin')
-                );
+                const margin2024Row = data.find(row => {
+                    // Check if any column contains '2024 margin'
+                    return Object.values(row).some(value => 
+                        value && value.toString().toLowerCase().includes('2024 margin')
+                    );
+                });
+                const margin2025Row = data.find(row => {
+                    // Check if any column contains '2025 margin'
+                    return Object.values(row).some(value => 
+                        value && value.toString().toLowerCase().includes('2025 margin')
+                    );
+                });
                 
                 if (!margin2024Row || !margin2025Row) {
-                    console.log('Margin Summary: Margin rows not found. Available categories:', data.map(row => row.Category));
+                    console.log('Margin Summary: Margin rows not found. Available data:', data);
                     return;
                 }
                 
