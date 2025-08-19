@@ -1163,9 +1163,9 @@
                         console.log(`Processing ${obj['Category']}: Expense Growth Alignment = "${expenseGrowthAlignment}"`);
                         
                         // Debug Growth & Risk Driver columns
-                        console.log(`  Raw "# of Months Outpaced Growth":`, obj['# of Months Outpaced Growth'], `(type: ${typeof obj['# of Months Outpaced Growth']})`);
-                        console.log(`  Raw "# of Months Did Not Decline with Profit":`, obj['# of Months Did Not Decline with Profit'], `(type: ${typeof obj['# of Months Did Not Decline with Profit']})`);
-                        console.log(`  Raw "# of Months Opposite Direction than Profit":`, obj['# of Months Opposite Direction than Profit'], `(type: ${typeof obj['# of Months Opposite Direction than Profit']})`);
+                        console.log('  Raw "# of Months Outpaced Growth":', obj['# of Months Outpaced Growth'], '(type:', typeof obj['# of Months Outpaced Growth'], ')');
+                        console.log('  Raw "# of Months Did Not Decline with Profit":', obj['# of Months Did Not Decline with Profit'], '(type:', typeof obj['# of Months Did Not Decline with Profit'], ')');
+                        console.log('  Raw "# of Months Opposite Direction than Profit":', obj['# of Months Opposite Direction than Profit'], '(type:', typeof obj['# of Months Opposite Direction than Profit'], ')');
                         
                         return {
                             "Category": String(obj['Category'] || '').trim(),
@@ -1954,20 +1954,20 @@
                     const oppositeDirection = dataSource['# of Months Opposite Direction than Profit'];
                     
                     // Debug logging for the specific columns we need
-                    console.log(`=== DEBUG FOR ${item.Category} ===`);
-                    console.log(`  Raw outpacedGrowth value:`, outpacedGrowth);
-                    console.log(`  Raw didNotDecline value:`, didNotDecline);
-                    console.log(`  Raw oppositeDirection value:`, oppositeDirection);
-                    console.log(`  All available keys in dataSource:`, Object.keys(dataSource));
+                    console.log('=== DEBUG FOR', item.Category, '===');
+                    console.log('  Raw outpacedGrowth value:', outpacedGrowth);
+                    console.log('  Raw didNotDecline value:', didNotDecline);
+                    console.log('  Raw oppositeDirection value:', oppositeDirection);
+                    console.log('  All available keys in dataSource:', Object.keys(dataSource));
                     
                     // Check if the columns exist and their exact names
                     const hasOutpaced = '# of Months Outpaced Growth' in dataSource;
                     const hasDidNotDecline = '# of Months Did Not Decline with Profit' in dataSource;
                     const hasOpposite = '# of Months Opposite Direction than Profit' in dataSource;
                     
-                    console.log(`  Has "# of Months Outpaced Growth": ${hasOutpaced}`);
-                    console.log(`  Has "# of Months Did Not Decline with Profit": ${hasDidNotDecline}`);
-                    console.log(`  Has "# of Months Opposite Direction than Profit": ${hasOpposite}`);
+                    console.log('  Has "# of Months Outpaced Growth":', hasOutpaced);
+                    console.log('  Has "# of Months Did Not Decline with Profit":', hasDidNotDecline);
+                    console.log('  Has "# of Months Opposite Direction than Profit":', hasOpposite);
                     
                     // Check for similar column names
                     const similarColumns = Object.keys(dataSource).filter(key => 
@@ -1976,8 +1976,8 @@
                         key.toLowerCase().includes('decline') ||
                         key.toLowerCase().includes('opposite')
                     );
-                    console.log(`  Similar columns found:`, similarColumns);
-                    console.log(`=== END DEBUG ===`);
+                    console.log('  Similar columns found:', similarColumns);
+                    console.log('=== END DEBUG ===');
                     
                     // Check if we have any meaningful data
                     if (outpacedGrowth !== undefined && outpacedGrowth !== null && outpacedGrowth !== '' && outpacedGrowth > 0) {
