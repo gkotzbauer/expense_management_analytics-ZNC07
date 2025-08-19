@@ -1773,8 +1773,28 @@
                 const estimatedGPInput = document.getElementById('estimatedGP');
                 const estimatedGP = estimatedGPInput ? parseFloat(estimatedGPInput.value) || 0 : 147081;
                 
-                // Calculate projections for all model data, excluding Net Ordinary Income and Gross Profit
+                // Categories to exclude from Expense Projection Based on Gross Profit Forecast
+                const excludedFromProjections = [
+                    '400000 Management Fees',
+                    '420000 Services - Doctors',
+                    '430000 Medical Services (PC)',
+                    'Total 600100 Payroll expenses',
+                    'Total 610000 Supplies',
+                    'Total 610600 Utilities',
+                    'Total 611000 Computer Supplies & Software',
+                    'Total 612000 Professional Fees',
+                    'Total 613000 Insurance',
+                    'Total 614000 Marketing & Advertising',
+                    'Total 616000 Employee Benefits',
+                    'Total 617000 Bank & Merchant Fees',
+                    'Total 617300 Interest Expense',
+                    'Total 631000 Franchise Costs',
+                    'Total 650000 Depreciation Expense'
+                ];
+                
+                // Calculate projections for all model data, excluding specified categories and Net Ordinary Income and Gross Profit
                 const projections = this.modelData.filter(item =>
+                    !excludedFromProjections.includes(item.Category) &&
                     item.Category.toLowerCase().trim() !== 'net ordinary income' &&
                     item.Category.toLowerCase().trim() !== 'gross profit'
                 ).map(item => {
