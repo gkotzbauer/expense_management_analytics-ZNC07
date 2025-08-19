@@ -1296,8 +1296,7 @@
                                     "Marginal Cost per $1 GP": item["Marginal Cost per $1 GP"]
                                 }));
                                 
-                                // Load chunk2 data for Growth & Risk Drivers section
-                                this.loadChunk2Data();
+                                                // Chunk2 data loading removed - using main data only
                                 
                                 this.initializeDashboard();
                                 this.showUploadSuccess('Pre-loaded Data (Fresh)', data.length);
@@ -1329,64 +1328,7 @@
                 attemptLoad();
             },
 
-            loadChunk2Data: function() {
-                console.log('=== LOADING CHUNK2 DATA ===');
-                // Sources for the chunk2 file - same pattern as main file
-                const timestamp = new Date().getTime();
-                const chunk2Sources = [
-                    `/RMT-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
-                    `/public/RMT-expense-analysis-chunk2.xlsx?t=${timestamp}&v=${Date.now()}`,
-                    `/api/chunk2?t=${timestamp}&v=${Date.now()}`
-                ];
-                
-                console.log('Trying chunk2 sources:', chunk2Sources);
-                
-                // Try to load chunk2 data (optional - won't break if it fails)
-                let chunk2Loaded = false;
-                chunk2Sources.forEach(source => {
-                    if (chunk2Loaded) return; // Stop if already loaded
-                    console.log('Attempting to fetch from:', source);
-                    fetch(source, {
-                        method: 'GET',
-                        headers: {
-                            'Cache-Control': 'no-cache, no-store, must-revalidate',
-                            'Pragma': 'no-cache',
-                            'Expires': '0'
-                        }
-                    })
-                    .then(response => {
-                        console.log('Response status for', source, ':', response.status);
-                        if (response.ok) {
-                            return response.arrayBuffer();
-                        }
-                        throw new Error(`Failed to fetch chunk2 from ${source} - Status: ${response.status}`);
-                    })
-                    .then(arrayBuffer => {
-                        console.log('Successfully fetched chunk2 file, parsing...');
-                        const chunk2Data = this.parseExcel(arrayBuffer);
-                        console.log('Parsed chunk2 data:', chunk2Data);
-                        
-                        if (chunk2Data && chunk2Data.length > 0) {
-                            console.log('Chunk2 data loaded for Growth & Risk Drivers section only');
-                            console.log('Number of chunk2 records:', chunk2Data.length);
-                            console.log('First chunk2 record:', chunk2Data[0]);
-                            console.log('Chunk2 columns available:', Object.keys(chunk2Data[0]));
-                            
-                            // Store chunk2 data separately - don't merge with main data
-                            this.chunk2Data = chunk2Data;
-                            chunk2Loaded = true;
-                            
-                            // Update only the Growth & Risk Drivers table
-                            this.updateGrowthRiskTable();
-                        } else {
-                            console.log('Chunk2 data is empty or null');
-                        }
-                    })
-                    .catch(error => {
-                        console.log('Error loading chunk2 data from', source, ':', error);
-                    });
-                });
-            },
+
 
             initializeDashboard: function() {
                 const dashboardContent = document.getElementById('dashboardContent');

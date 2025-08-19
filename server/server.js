@@ -67,26 +67,7 @@ app.get('/api/files', (req, res) => {
   res.json({ files: excelFiles });
 });
 
-// API endpoint to get the chunk2 file
-app.get('/api/chunk2', (req, res) => {
-  const publicDir = path.join(__dirname, '..', 'public');
-  const filePath = path.join(publicDir, 'RMT-expense-analysis-chunk2.xlsx');
-  
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'Chunk2 file not found' });
-  }
-  
-  console.log(`Serving chunk2 file: RMT-expense-analysis-chunk2.xlsx`);
-  
-  // Set cache-busting headers to prevent caching
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Last-Modified', new Date().toUTCString());
-  
-  // Send the file
-  res.sendFile(filePath);
-});
+
 
 // API endpoint to get the Financial Performance Data file
 app.get('/api/financial-performance', (req, res) => {
