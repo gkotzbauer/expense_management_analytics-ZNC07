@@ -2668,6 +2668,10 @@
                 const monthOrder = ['August', 'September', 'October', 'November', 'December'];
                 cashflowData.sort((a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month));
 
+                console.log('=== CALLING UPDATE KEY METRICS ===');
+                console.log('expenseAnalysisData being passed:', expenseAnalysisData);
+                console.log('Looking for Profit per Visit item:', expenseAnalysisData.find(item => item.title === 'Profit per Visit'));
+                
                 this.renderExpenseAnalysisTable(expenseAnalysisData);
                 this.renderCashflowTable(cashflowData);
                 this.updateKeyMetrics(expenseAnalysisData);
@@ -2862,11 +2866,21 @@
                     // Update percentage change above the table - use the same growth value as the table
                     const profitGrowthElement = document.querySelector('#profitPerVisit').parentElement.nextElementSibling.querySelector('div');
                     console.log('Profit growth element found:', profitGrowthElement);
+                    console.log('Profit item growth value:', profitItem.growth);
+                    console.log('Profit item growth type:', typeof profitItem.growth);
+                    
                     if (profitGrowthElement) {
                         const growthPercent = Math.round(profitItem.growth);
-                        console.log('Profit growth percent:', growthPercent);
+                        console.log('Profit growth percent (rounded):', growthPercent);
+                        console.log('Setting innerHTML to:', `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`);
                         profitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         profitGrowthElement.style.color = profitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
+                        console.log('Updated profit growth element');
+                    } else {
+                        console.error('Profit growth element NOT FOUND!');
+                        console.log('profitPerVisit element:', document.getElementById('profitPerVisit'));
+                        console.log('profitPerVisit parent:', document.getElementById('profitPerVisit')?.parentElement);
+                        console.log('profitPerVisit next sibling:', document.getElementById('profitPerVisit')?.parentElement?.nextElementSibling);
                     }
                 }
                 
