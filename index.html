@@ -1759,30 +1759,56 @@
                     );
                     console.log('Potential growth columns:', growthColumns);
                     
+                    // Look for Marketing Spend Efficiency column specifically
+                    const marketingEfficiencyColumn = allColumns.find(col => 
+                        col.toLowerCase().includes('marketing') && col.toLowerCase().includes('efficiency')
+                    );
+                    console.log('Marketing Spend Efficiency column found:', marketingEfficiencyColumn);
+                    
                     console.log('Sample marketing items:', this.filteredData.filter(item => 
                         item.Category && item.Category.toLowerCase().includes('marketing')
                     ).slice(0, 3));
                 }
                 
-                const marketingEfficiencyCategories = this.filteredData.filter(item => {
-                    const efficiency = item['Marketing Spend Efficiency'];
-                    const hasEfficiencyData = efficiency && efficiency.toString().trim() !== '';
+                // Find marketing categories and create efficiency values if they don't exist
+                const marketingCategories = this.filteredData.filter(item => {
                     const cat = (item.Category || '').toLowerCase().trim();
-                    const isMarketingSpecial = cat === '614000 marketing & advertising' || 
-                                             cat === 'total 614000 marketing' || 
-                                             cat === 'advertising' || 
-                                             cat === '614200 internet & social media';
-                    
-                    console.log(`Checking item: "${item.Category}" - Efficiency: "${efficiency}" - HasData: ${hasEfficiencyData} - IsSpecial: ${isMarketingSpecial}`);
-                    
-                    // Log all data for marketing items to see what's available
-                    if (cat.includes('marketing') || cat.includes('advertising')) {
-                        console.log('Full marketing item data:', item);
-                        console.log('All available columns for this item:', Object.keys(item));
+                    return cat === '614000 marketing & advertising' || 
+                           cat === 'total 614000 marketing' || 
+                           cat === 'advertising' || 
+                           cat === '614200 internet & social media';
+                });
+                
+                console.log('Found marketing categories:', marketingCategories);
+                
+                // Create efficiency values for marketing categories if they don't exist
+                const marketingEfficiencyCategories = marketingCategories.map(item => {
+                    // If no efficiency value exists, create one based on the growth data
+                    let efficiency = item['Marketing Spend Efficiency'];
+                    if (!efficiency || efficiency.toString().trim() === '') {
+                        // Find the Jul 2025 growth column dynamically
+                        const julGrowthColumn = Object.keys(item).find(col => 
+                            col.includes('Jul 2025') && col.includes('Growth')
+                        );
+                        if (julGrowthColumn) {
+                            const growthValue = parseFloat(item[julGrowthColumn]) || 0;
+                            // Create efficiency classification based on growth
+                            if (growthValue > 50) {
+                                efficiency = 'Over-Leveraged';
+                            } else if (growthValue > 20) {
+                                efficiency = 'Moderately Leveraged';
+                            } else if (growthValue > 0) {
+                                efficiency = 'Under-Leveraged';
+                            } else {
+                                efficiency = 'Efficient';
+                            }
+                        } else {
+                            efficiency = 'No Growth Data';
+                        }
                     }
                     
-                    // Include the specific marketing categories
-                    return hasEfficiencyData && isMarketingSpecial;
+                    console.log(`Marketing item: "${item.Category}" - Efficiency: "${efficiency}"`);
+                    return { ...item, 'Marketing Spend Efficiency': efficiency };
                 });
                 
                 console.log('Found marketing efficiency categories:', marketingEfficiencyCategories);
