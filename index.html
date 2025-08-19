@@ -635,12 +635,11 @@
                 <div class="table-header">
                     <h2>📋 Most Recent Month Key Insights <span id="recentMonthDisplay"></span></h2>
                     <div class="export-buttons">
-                        <button class="export-btn" onclick="window.dashboard.exportFilteredData()">📊 Export Filtered Data</button>
                         <button class="export-btn secondary" onclick="window.dashboard.exportAllData()">📈 Export All Data</button>
                     </div>
                 </div>
                 <p style="font-size: 0.9rem; color: #718096; margin-bottom: 15px; font-style: italic;">
-                    <strong>Table Organization:</strong> Categories are ranked by Performance Diagnostic priority - Cost Spike items first, then Margin Risk items, then Stable/Fixed items. Within each priority group, items are sorted by highest June variance. June Expenses data is sourced from Jun 2025 column of your Excel file.
+                    <strong>Table Organization:</strong> Categories are ranked by Suggested Action, with Investigate - Potential Risk ranked first.
                 </p>
                 <table id="dataTable">
                     <thead>
@@ -654,15 +653,6 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <div style="margin-top: 20px; font-size: 0.9rem; color: #718096;">
-                    <h4 style="color: #2d3748; margin-bottom: 10px;"><strong>Margin Risk Assessment Definitions</strong></h4>
-                    <ul style="padding-left: 20px; line-height: 1.6;">
-                        <li><strong>Margin Improvement:</strong> Expense reductions or better expense control relative to profit—expenses are declining, or increasing more slowly than profit, driving improved margins.</li>
-                        <li><strong>Margin Risk:</strong> Expenses are rising faster than profit, or are increasing while profit is flat or declining. This expense appears to be threat to margins that warrants immediate investigation and action.</li>
-                        <li><strong>Below Threshold:</strong> An expense category will be assigned "Below Threshold" if its average monthly expense is below $500 or if it's a one-time expense.</li>
-                        <li><strong>Neutral:</strong> Expenses and profit are changing at similar rates, or neither cost nor profit are moving in a way that indicates significant risk or improvement. No immediate concern - keep under review.</li>
-                    </ul>
-                </div>
             </div>
 
             <div class="table-container">
@@ -1574,7 +1564,8 @@
                     }
                     return !isExcluded &&
                         item.Category.toLowerCase().trim() !== 'net ordinary income' &&
-                        item.Category.toLowerCase().trim() !== 'gross profit';
+                        item.Category.toLowerCase().trim() !== 'gross profit' &&
+                        !item.Category.toLowerCase().trim().includes('400000 management fees');
                 });
 
                 // Debug: print keys of first row
