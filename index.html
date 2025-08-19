@@ -2147,45 +2147,38 @@
                 }
                 // Normalize headers for robustness
                 const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
-                // Find actual keys
+                // Get the month columns directly from the data
                 const firstRow = data[0] || {};
-                console.log('Status Summary - Available columns:', Object.keys(firstRow));
-                
-                const keys = Object.keys(firstRow).reduce((acc, k) => {
-                    acc[normalize(k)] = k;
-                    return acc;
-                }, {});
-                console.log('Status Summary - Normalized keys:', keys);
-                
-                const monthKey = keys['month'];
-                const revKey = keys['revenue 2025'];
-                const expKey = keys['expenses 2025'];
-                
-                console.log('Status Summary - Looking for keys:', { monthKey, revKey, expKey });
-                
-                if (!monthKey || !revKey || !expKey) {
-                    console.log('Status Summary: Required columns not found. Keys:', Object.keys(firstRow));
-                    return;
-                }
-                const months = [], revenue = [], expenses = [];
-                let validRows = 0;
-                data.forEach((row, i) => {
-                    const m = row[monthKey], r = row[revKey], e = row[expKey];
-                    if (m && r !== undefined && e !== undefined && r !== '' && e !== '') {
-                        months.push(m);
-                        revenue.push(Number(r) || 0);
-                        expenses.push(Number(e) || 0);
-                        validRows++;
-                    } else {
-                        console.log(`Status Summary: Skipping row ${i+1} due to missing values.`, row);
-                    }
+                const monthColumns = Object.keys(firstRow).filter(key => 
+                    /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(key)
+                ).sort((a, b) => {
+                    // Sort months chronologically
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const monthA = a.split(' ')[0];
+                    const monthB = b.split(' ')[0];
+                    return monthOrder.indexOf(monthA) - monthOrder.indexOf(monthB);
                 });
-                if (!validRows) {
-                    console.log('Status Summary: No valid rows found for chart.');
-                    const ctx = document.getElementById('statusSummaryChart');
-                    if (ctx) ctx.parentElement.innerHTML = '<div style="color:#e53e3e;padding:2em;">No valid summary chart data found.<br>Check column names and data in the summary Excel file.</div>';
+                
+                if (monthColumns.length === 0) {
+                    console.log('Status Summary: No month columns found. Available keys:', Object.keys(firstRow));
                     return;
                 }
+                
+                console.log('Status Summary - Month columns found:', monthColumns);
+                
+                // Extract month names and data for each month
+                const months = monthColumns.map(col => col.split(' ')[0]); // Jan, Feb, Mar, etc.
+                const monthlyData = monthColumns.map(col => {
+                    let totalValue = 0;
+                    data.forEach(row => {
+                        const value = parseFloat(row[col]) || 0;
+                        totalValue += value;
+                    });
+                    return totalValue;
+                });
+                
+                console.log('Status Summary - Months:', months);
+                console.log('Status Summary - Monthly totals:', monthlyData);
                 
                 const ctx = document.getElementById('statusSummaryChart');
                 if (!ctx) return;
@@ -2197,15 +2190,8 @@
                         datasets: [
                             {
                                 type: 'bar',
-                                label: 'Revenue 2025',
-                                data: revenue,
-                                backgroundColor: '#667eea',
-                                yAxisID: 'y'
-                            },
-                            {
-                                type: 'bar',
-                                label: 'Expenses 2025',
-                                data: expenses,
+                                label: 'Monthly Expenses',
+                                data: monthlyData,
                                 backgroundColor: '#48bb78',
                                 yAxisID: 'y'
                             }
@@ -2219,7 +2205,7 @@
                                 callbacks: {
                                     label: function(context) {
                                         const value = Math.round(context.parsed.y);
-                                        return context.dataset.label + ': $' + value.toLocaleString();
+                                        return 'Monthly Expenses: $' + value.toLocaleString();
                                     }
                                 }
                             }
@@ -2228,7 +2214,7 @@
                             y: {
                                 type: 'linear',
                                 position: 'left',
-                                title: { display: true, text: 'Revenue/Expenses 2025' },
+                                title: { display: true, text: 'Monthly Expenses' },
                                 beginAtZero: true,
                                 ticks: { callback: v => '$' + Math.round(v).toLocaleString() }
                             }
