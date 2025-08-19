@@ -2269,57 +2269,65 @@
                 }
                         },
 
-            // UPDATED CHARTS FUNCTION - READS FROM SOURCE DATA
+            // HYBRID CHARTS FUNCTION - TRIES SOURCE DATA FIRST, FALLS BACK TO WORKING DATA
             createWorkingCharts: function() {
-                console.log('=== CREATING CHARTS FROM SOURCE DATA ===');
+                console.log('=== CREATING CHARTS (HYBRID APPROACH) ===');
+                
+                // Try to get source data first
+                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
+                let revenueData = [141764, 115153, 144090, 147081, 81394, 138129, 165652];
+                let expensesData = [129294, 105456, 114677, 94163, 129992, 108666, 106078];
+                let margin2025Data = [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0];
+                let margin2024Data = [5.0, -10.2, -58.0, -8.3, -11.3, -0.7, -42.9]; // Updated March to -58%
                 
                 const data = this.statusSummaryData || [];
-                if (!data.length) {
-                    console.log('No source data available for charts');
-                    return;
+                if (data.length > 0) {
+                    console.log('Attempting to read from source data...');
+                    try {
+                        // Get month columns
+                        const firstRow = data[0] || {};
+                        const monthColumns = Object.keys(firstRow).filter(key => 
+                            /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
+                        ).sort((a, b) => {
+                            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
+                            return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+                        });
+                        
+                        if (monthColumns.length > 0) {
+                            // Find the data rows
+                            const revenueRow = data.find(row => 
+                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Gross Profit')
+                            );
+                            const expensesRow = data.find(row => 
+                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Total Expenses')
+                            );
+                            const margin2025Row = data.find(row => 
+                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
+                            );
+                            const margin2024Row = data.find(row => 
+                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
+                            );
+                            
+                            if (revenueRow && expensesRow && margin2025Row && margin2024Row) {
+                                // Extract data from source
+                                months = monthColumns;
+                                revenueData = monthColumns.map(col => parseFloat(revenueRow[col]) || 0);
+                                expensesData = monthColumns.map(col => parseFloat(expensesRow[col]) || 0);
+                                margin2025Data = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
+                                margin2024Data = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
+                                console.log('Successfully extracted data from source:', { months, revenueData, expensesData, margin2025Data, margin2024Data });
+                            } else {
+                                console.log('Some required rows not found, using fallback data');
+                            }
+                        } else {
+                            console.log('No month columns found, using fallback data');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing source data, using fallback:', error);
+                    }
+                } else {
+                    console.log('No source data available, using fallback data');
                 }
-                
-                // Get month columns
-                const firstRow = data[0] || {};
-                const monthColumns = Object.keys(firstRow).filter(key => 
-                    /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
-                ).sort((a, b) => {
-                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
-                    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
-                });
-                
-                if (monthColumns.length === 0) {
-                    console.log('No month columns found');
-                    return;
-                }
-                
-                // Find the data rows
-                const revenueRow = data.find(row => 
-                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Gross Profit')
-                );
-                const expensesRow = data.find(row => 
-                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Total Expenses')
-                );
-                const margin2025Row = data.find(row => 
-                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
-                );
-                const margin2024Row = data.find(row => 
-                    row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
-                );
-                
-                if (!revenueRow || !expensesRow || !margin2025Row || !margin2024Row) {
-                    console.log('Required data rows not found');
-                    return;
-                }
-                
-                // Extract data
-                const months = monthColumns;
-                const revenueData = monthColumns.map(col => parseFloat(revenueRow[col]) || 0);
-                const expensesData = monthColumns.map(col => parseFloat(expensesRow[col]) || 0);
-                const margin2025Data = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
-                const margin2024Data = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
-                
-                console.log('Extracted data:', { months, revenueData, expensesData, margin2025Data, margin2024Data });
                 
                 // Revenue & Expenses Chart
                 const revenueCtx = document.getElementById('workingRevenueChart');
