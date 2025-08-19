@@ -1848,7 +1848,13 @@
                                     col.includes('Jul 2025') && col.includes('Growth')
                                 );
                                 if (julGrowthColumn) {
-                                    growthDelta = item[julGrowthColumn] || '';
+                                    const rawValue = item[julGrowthColumn] || '';
+                                    // Round the growth delta value to a whole number
+                                    if (rawValue !== '' && !isNaN(parseFloat(rawValue))) {
+                                        growthDelta = Math.round(parseFloat(rawValue));
+                                    } else {
+                                        growthDelta = rawValue;
+                                    }
                                 }
                                 console.log(`Formatting item: "${item.Category}" - Efficiency: "${efficiency}" - GrowthDelta: "${growthDelta}"`);
                                 return `${item.Category} (${efficiency}, ${growthDelta})`;
