@@ -2155,19 +2155,20 @@
                     return;
                 }
                 
-                // Clear any existing content
-                ctx.parentElement.innerHTML = '<canvas id="statusSummaryChart" width="650" height="520"></canvas>';
-                const newCtx = document.getElementById('statusSummaryChart');
+                // Clear any existing chart instance
+                if (window.statusSummaryChartInstance) {
+                    window.statusSummaryChartInstance.destroy();
+                }
                 
                 if (typeof Chart === 'undefined') {
                     console.error('Chart.js not loaded!');
-                    newCtx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
+                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
                     return;
                 }
                 
                 try {
                     console.log('Creating simple chart...');
-                    const chart = new Chart(newCtx.getContext('2d'), {
+                    const chart = new Chart(ctx.getContext('2d'), {
                         type: 'bar',
                         data: {
                             labels: months,
@@ -2215,19 +2216,20 @@
                     return;
                 }
                 
-                // Clear any existing content
-                ctx.parentElement.innerHTML = '<canvas id="marginSummaryChart" width="650" height="520"></canvas>';
-                const newCtx = document.getElementById('marginSummaryChart');
+                // Clear any existing chart instance
+                if (window.marginSummaryChartInstance) {
+                    window.marginSummaryChartInstance.destroy();
+                }
                 
                 if (typeof Chart === 'undefined') {
                     console.error('Chart.js not loaded!');
-                    newCtx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
+                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
                     return;
                 }
                 
                 try {
                     console.log('Creating margin chart...');
-                    const chart = new Chart(newCtx.getContext('2d'), {
+                    const chart = new Chart(ctx.getContext('2d'), {
                         type: 'bar',
                         data: {
                             labels: months,
