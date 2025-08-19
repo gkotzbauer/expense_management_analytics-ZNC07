@@ -2141,7 +2141,9 @@
             },
 
             renderStatusSummaryChart: function() {
+                console.log('=== RENDER STATUS SUMMARY CHART START ===');
                 const data = this.statusSummaryData || [];
+                console.log('Status Summary - Data length:', data.length);
                 if (!data.length) {
                     console.log('Status Summary: No data loaded.');
                     return;
@@ -2188,8 +2190,16 @@
                 console.log('Status Summary - Revenue data:', revenueData);
                 
                 const ctx = document.getElementById('statusSummaryChart');
-                if (!ctx) return;
-                if (window.statusSummaryChartInstance) window.statusSummaryChartInstance.destroy();
+                console.log('Status Summary - Canvas element found:', ctx);
+                if (!ctx) {
+                    console.log('Status Summary - Canvas element NOT found!');
+                    return;
+                }
+                if (window.statusSummaryChartInstance) {
+                    console.log('Status Summary - Destroying existing chart instance');
+                    window.statusSummaryChartInstance.destroy();
+                }
+                console.log('Status Summary - Creating new chart with data:', { months, revenueData });
                 window.statusSummaryChartInstance = new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: {
@@ -2234,6 +2244,7 @@
             },
 
             renderMarginSummaryChart: function(data, months) {
+                console.log('=== RENDER MARGIN SUMMARY CHART START ===');
                 // Find the margin rows
                 const margin2025Row = data.find(row => 
                     row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
@@ -2241,6 +2252,9 @@
                 const margin2024Row = data.find(row => 
                     row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
                 );
+                
+                console.log('Margin Summary - 2025 Margin row found:', margin2025Row);
+                console.log('Margin Summary - 2024 Margin row found:', margin2024Row);
                 
                 if (!margin2025Row || !margin2024Row) {
                     console.log('Margin Summary: Margin rows not found. Available data:', data);
@@ -2271,8 +2285,16 @@
                 console.log('Margin Summary - 2025 margins:', margin2025);
                 console.log('Margin Summary - 2024 margins:', margin2024);
                 const ctx = document.getElementById('marginSummaryChart');
-                if (!ctx) return;
-                if (window.marginSummaryChartInstance) window.marginSummaryChartInstance.destroy();
+                console.log('Margin Summary - Canvas element found:', ctx);
+                if (!ctx) {
+                    console.log('Margin Summary - Canvas element NOT found!');
+                    return;
+                }
+                if (window.marginSummaryChartInstance) {
+                    console.log('Margin Summary - Destroying existing chart instance');
+                    window.marginSummaryChartInstance.destroy();
+                }
+                console.log('Margin Summary - Creating new chart with data:', { marginMonths, margin2025, margin2024 });
                 window.marginSummaryChartInstance = new Chart(ctx.getContext('2d'), {
                     type: 'bar',
                     data: {
