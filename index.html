@@ -2791,51 +2791,70 @@
 
             // Update key metrics display
             updateKeyMetrics: function(data) {
+                console.log('=== UPDATE KEY METRICS DEBUG ===');
+                console.log('Data received:', data);
+                
                 const revenueItem = data.find(item => item.title === 'Total Revenue');
                 const expensesItem = data.find(item => item.title === 'Total Expenses');
                 const visitItem = data.find(item => item.title === 'Visit Count');
                 const profitItem = data.find(item => item.title === 'Profit per Visit');
 
+                console.log('Found items:', { revenueItem, expensesItem, visitItem, profitItem });
+
                 if (revenueItem) {
+                    console.log('Updating revenue:', revenueItem);
                     document.getElementById('totalRevenue').textContent = this.formatCurrency(revenueItem.val2025);
                     // Update percentage change above the table
                     const revenueGrowthElement = document.querySelector('#totalRevenue').parentElement.nextElementSibling.querySelector('div');
+                    console.log('Revenue growth element found:', revenueGrowthElement);
                     if (revenueGrowthElement) {
                         const growthPercent = Math.round(revenueItem.growth);
+                        console.log('Revenue growth percent:', growthPercent);
                         revenueGrowthElement.innerHTML = `<span style="margin-right: 5px;">${revenueItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         revenueGrowthElement.style.color = revenueItem.growth >= 0 ? '#48bb78' : '#e53e3e';
                     }
                 }
                 if (expensesItem) {
+                    console.log('Updating expenses:', expensesItem);
                     document.getElementById('totalExpenses').textContent = this.formatCurrency(expensesItem.val2025);
                     // Update percentage change above the table
                     const expensesGrowthElement = document.querySelector('#totalExpenses').parentElement.nextElementSibling.querySelector('div');
+                    console.log('Expenses growth element found:', expensesGrowthElement);
                     if (expensesGrowthElement) {
                         const growthPercent = Math.round(expensesItem.growth);
+                        console.log('Expenses growth percent:', growthPercent);
                         expensesGrowthElement.innerHTML = `<span style="margin-right: 5px;">${expensesItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         expensesGrowthElement.style.color = expensesItem.growth >= 0 ? '#48bb78' : '#e53e3e';
                     }
                 }
                 if (visitItem) {
+                    console.log('Updating visit count:', visitItem);
                     document.getElementById('visitCount').textContent = this.formatVisitCount(visitItem.val2025);
                     // Update percentage change above the table
                     const visitGrowthElement = document.querySelector('#visitCount').parentElement.nextElementSibling.querySelector('div');
+                    console.log('Visit growth element found:', visitGrowthElement);
                     if (visitGrowthElement) {
                         const growthPercent = Math.round(visitItem.growth);
+                        console.log('Visit growth percent:', growthPercent);
                         visitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${visitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         visitGrowthElement.style.color = visitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
                     }
                 }
                 if (profitItem) {
+                    console.log('Updating profit per visit:', profitItem);
                     document.getElementById('profitPerVisit').textContent = this.formatCurrency(profitItem.val2025);
                     // Update percentage change above the table - use the same growth value as the table
                     const profitGrowthElement = document.querySelector('#profitPerVisit').parentElement.nextElementSibling.querySelector('div');
+                    console.log('Profit growth element found:', profitGrowthElement);
                     if (profitGrowthElement) {
                         const growthPercent = Math.round(profitItem.growth);
+                        console.log('Profit growth percent:', growthPercent);
                         profitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         profitGrowthElement.style.color = profitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
                     }
                 }
+                
+                console.log('=== END UPDATE KEY METRICS DEBUG ===');
             }
         };
 
