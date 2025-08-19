@@ -1743,6 +1743,17 @@
                 }
 
                 // Marketing Spend Efficiency - include 614000 Marketing & Advertising, Total 614000 Marketing, Advertising, and 614200 Internet & Social media
+                console.log('=== MARKETING EFFICIENCY DEBUG ===');
+                console.log('Total filteredData items:', this.filteredData.length);
+                
+                // Log first few items to see what columns exist
+                if (this.filteredData.length > 0) {
+                    console.log('First item columns:', Object.keys(this.filteredData[0]));
+                    console.log('Sample marketing items:', this.filteredData.filter(item => 
+                        item.Category && item.Category.toLowerCase().includes('marketing')
+                    ).slice(0, 3));
+                }
+                
                 const marketingEfficiencyCategories = this.filteredData.filter(item => {
                     const efficiency = item['Marketing Spend Efficiency'];
                     const hasEfficiencyData = efficiency && efficiency.toString().trim() !== '';
@@ -1751,9 +1762,15 @@
                                              cat === 'total 614000 marketing' || 
                                              cat === 'advertising' || 
                                              cat === '614200 internet & social media';
+                    
+                    console.log(`Checking item: "${item.Category}" - Efficiency: "${efficiency}" - HasData: ${hasEfficiencyData} - IsSpecial: ${isMarketingSpecial}`);
+                    
                     // Include the specific marketing categories
                     return hasEfficiencyData && isMarketingSpecial;
                 });
+                
+                console.log('Found marketing efficiency categories:', marketingEfficiencyCategories);
+                
                 const roiElement = document.getElementById('marketingROIText');
                 if (roiElement) {
                     if (marketingEfficiencyCategories.length > 0) {
@@ -1761,11 +1778,14 @@
                             .map(item => {
                                 const efficiency = item['Marketing Spend Efficiency'];
                                 const growthDelta = item['Expense – GP Growth Δ [%] [Jul 2025]'] || item['Expense - GP Growth Δ [%] [Jul 2025]'] || '';
+                                console.log(`Formatting item: "${item.Category}" - Efficiency: "${efficiency}" - GrowthDelta: "${growthDelta}"`);
                                 return `${item.Category} (${efficiency}, ${growthDelta})`;
                             })
                             .join(', ');
+                        console.log('Final formatted text:', formattedList);
                         roiElement.textContent = formattedList;
                     } else {
+                        console.log('No marketing efficiency categories found');
                         roiElement.textContent = 'No marketing efficiency data available';
                     }
                 }
