@@ -2149,13 +2149,20 @@
                 const normalize = s => (s || '').toString().replace(/\s+/g, ' ').trim().toLowerCase();
                 // Find actual keys
                 const firstRow = data[0] || {};
+                console.log('Status Summary - Available columns:', Object.keys(firstRow));
+                
                 const keys = Object.keys(firstRow).reduce((acc, k) => {
                     acc[normalize(k)] = k;
                     return acc;
                 }, {});
+                console.log('Status Summary - Normalized keys:', keys);
+                
                 const monthKey = keys['month'];
                 const revKey = keys['revenue 2025'];
                 const expKey = keys['expenses 2025'];
+                
+                console.log('Status Summary - Found keys:', { monthKey, revKey, expKey });
+                
                 if (!monthKey || !revKey || !expKey) {
                     console.log('Status Summary: Required columns not found. Keys:', Object.keys(firstRow));
                     return;
@@ -2210,7 +2217,17 @@
                     },
                     options: {
                         responsive: false,
-                        plugins: { legend: { display: true } },
+                        plugins: { 
+                            legend: { display: true },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = Math.round(context.parsed.y);
+                                        return context.dataset.label + ': $' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 type: 'linear',
@@ -2288,7 +2305,17 @@
                     },
                     options: {
                         responsive: false,
-                        plugins: { legend: { display: true } },
+                        plugins: { 
+                            legend: { display: true },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = Math.round(context.parsed.y);
+                                        return context.dataset.label + ': ' + value + '%';
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 type: 'linear',
