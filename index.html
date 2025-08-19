@@ -2886,10 +2886,10 @@
                 if (revenueItem) {
                     console.log('Updating revenue:', revenueItem);
                     document.getElementById('totalRevenue').textContent = this.formatCurrency(revenueItem.val2025);
-                    // Update percentage change using specific ID
+                    // Update percentage change using specific ID - use same logic as table
                     const revenueGrowthElement = document.getElementById('totalRevenueGrowth');
                     if (revenueGrowthElement) {
-                        const growthPercent = Math.round(revenueItem.growth);
+                        const growthPercent = (revenueItem.growth * 100).toFixed(0);
                         console.log('Revenue growth percent:', growthPercent);
                         revenueGrowthElement.innerHTML = `<span style="margin-right: 5px;">${revenueItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         revenueGrowthElement.style.color = revenueItem.growth >= 0 ? '#48bb78' : '#e53e3e';
@@ -2898,10 +2898,10 @@
                 if (expensesItem) {
                     console.log('Updating expenses:', expensesItem);
                     document.getElementById('totalExpenses').textContent = this.formatCurrency(expensesItem.val2025);
-                    // Update percentage change using specific ID
+                    // Update percentage change using specific ID - use same logic as table
                     const expensesGrowthElement = document.getElementById('totalExpensesGrowth');
                     if (expensesGrowthElement) {
-                        const growthPercent = Math.round(expensesItem.growth);
+                        const growthPercent = (expensesItem.growth * 100).toFixed(0);
                         console.log('Expenses growth percent:', growthPercent);
                         expensesGrowthElement.innerHTML = `<span style="margin-right: 5px;">${expensesItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         expensesGrowthElement.style.color = expensesItem.growth >= 0 ? '#48bb78' : '#e53e3e';
@@ -2910,10 +2910,10 @@
                 if (visitItem) {
                     console.log('Updating visit count:', visitItem);
                     document.getElementById('visitCount').textContent = this.formatVisitCount(visitItem.val2025);
-                    // Update percentage change using specific ID
+                    // Update percentage change using specific ID - use same logic as table
                     const visitGrowthElement = document.getElementById('visitCountGrowth');
                     if (visitGrowthElement) {
-                        const growthPercent = Math.round(visitItem.growth);
+                        const growthPercent = (visitItem.growth * 100).toFixed(0);
                         console.log('Visit growth percent:', growthPercent);
                         visitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${visitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
                         visitGrowthElement.style.color = visitItem.growth >= 0 ? '#48bb78' : '#e53e3e';
@@ -2922,10 +2922,10 @@
                 if (profitItem) {
                     console.log('Updating profit per visit:', profitItem);
                     document.getElementById('profitPerVisit').textContent = this.formatCurrency(profitItem.val2025);
-                    // Update percentage change using specific ID
+                    // Update percentage change using specific ID - use same logic as table
                     const profitGrowthElement = document.getElementById('profitPerVisitGrowth');
                     if (profitGrowthElement) {
-                        const growthPercent = Math.round(profitItem.growth);
+                        const growthPercent = (profitItem.growth * 100).toFixed(0);
                         console.log('Profit growth percent (rounded):', growthPercent);
                         console.log('Setting innerHTML to:', `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`);
                         profitGrowthElement.innerHTML = `<span style="margin-right: 5px;">${profitItem.growth >= 0 ? '↗' : '↘'}</span>${growthPercent}%`;
