@@ -2118,27 +2118,48 @@
                 const fileName = 'Status Summary Source File.xlsx';
                 const publicPath = `/public/${fileName}`;
                 const rootPath = `/${fileName}`;
-                const sources = [publicPath, rootPath];
+                const sources = [rootPath, publicPath]; // Try root first for Render
                 const statusSummaryDiv = document.getElementById('statusSummaryItems');
-                if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span>Loading...</span>';
+                if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span>Loading Status Summary Data...</span>';
 
                 const tryFetch = async (url) => {
                     try {
+                        console.log('🔍 Attempting to fetch:', url);
                         const response = await fetch(url);
-                        if (!response.ok) return false;
+                        console.log('📡 Response status:', response.status, response.ok);
+                        
+                        if (!response.ok) {
+                            console.log('❌ Response not OK');
+                            return false;
+                        }
+                        
                         const arrayBuffer = await response.arrayBuffer();
+                        console.log('📊 Array buffer size:', arrayBuffer.byteLength);
+                        
                         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                        console.log('📋 Workbook sheets:', workbook.SheetNames);
+                        
                         const firstSheetName = workbook.SheetNames[0];
                         const worksheet = workbook.Sheets[firstSheetName];
+                        console.log('📄 Worksheet range:', worksheet['!ref']);
+                        
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                        console.log('📈 JSON data length:', jsonData.length);
+                        console.log('📈 First row data:', jsonData[0]);
+                        console.log('📈 First row keys:', Object.keys(jsonData[0] || {}));
+                        
                         if (jsonData && jsonData.length > 0) {
                             this.statusSummaryData = jsonData;
+                            console.log('✅ Status Summary data loaded successfully');
                             this.renderStatusSummary();
                             // Create the working charts
                             this.createWorkingCharts();
                             return true;
+                        } else {
+                            console.log('❌ No JSON data extracted');
                         }
                     } catch (e) {
+                        console.error('❌ Error in tryFetch:', e);
                         return false;
                     }
                     return false;
@@ -2312,10 +2333,15 @@
                 let margin2024Data = [5.0, -10.2, -58.0, -8.3, -11.3, -0.7, -42.9];
                 
                 const data = this.statusSummaryData || [];
+                console.log('🎯 createWorkingCharts - Data received:', data);
+                console.log('🎯 createWorkingCharts - Data length:', data.length);
+                
                 if (data.length > 0) {
-                    console.log('Attempting to read from source data...');
-                    console.log('Status Summary data loaded:', data.length, 'rows');
-                    console.log('First row keys:', Object.keys(data[0] || {}));
+                    console.log('🎯 Attempting to read from source data...');
+                    console.log('🎯 Status Summary data loaded:', data.length, 'rows');
+                    console.log('🎯 First row keys:', Object.keys(data[0] || {}));
+                    console.log('🎯 First row values:', data[0]);
+                    console.log('🎯 All rows with __EMPTY:', data.filter(row => row['__EMPTY']).map(row => row['__EMPTY']));
                     
                     try {
                         // Get month columns from source data
