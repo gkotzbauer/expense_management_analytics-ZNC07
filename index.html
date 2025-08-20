@@ -2714,6 +2714,15 @@
                 data.forEach(item => {
                     const row = document.createElement('tr');
                     row.style.borderBottom = '1px solid #e2e8f0';
+                    
+                    // Helper function to style negative values
+                    const styleNegativeValue = (value, baseStyle) => {
+                        if (value < 0) {
+                            return baseStyle.replace('color: #2d3748', 'color: #e53e3e').replace('font-weight: 600', 'font-weight: 700').replace('font-weight: 700', 'font-weight: 700');
+                        }
+                        return baseStyle;
+                    };
+                    
                     row.innerHTML = `
                         <td style="padding: 12px; text-align: left; font-size: 0.9rem; color: #2d3748;">
                             <div style="font-weight: 600;">${item.month}</div>
@@ -2724,16 +2733,16 @@
                         <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
                             ${this.formatVisitCount(item.visitProj)}
                         </td>
-                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
+                        <td style="${styleNegativeValue(item.expenses, 'padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;')}">
                             ${this.formatCurrency(item.expenses)}
                         </td>
-                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
+                        <td style="${styleNegativeValue(item.revenue, 'padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;')}">
                             ${this.formatCurrency(item.revenue)}
                         </td>
-                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #38a169; font-weight: 600;">
+                        <td style="${styleNegativeValue(item.profit, 'padding: 12px; text-align: right; font-size: 0.9rem; color: #38a169; font-weight: 600;')}">
                             ${this.formatCurrency(item.profit)}
                         </td>
-                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748; font-weight: 700;">
+                        <td style="${styleNegativeValue(item.cashPosition, 'padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748; font-weight: 700;')}">
                             ${this.formatCurrency(item.cashPosition)}
                         </td>
                     `;
