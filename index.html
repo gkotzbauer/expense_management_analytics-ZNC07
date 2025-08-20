@@ -448,7 +448,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 RMT Margin Performance Dashboard</h1>
+            <h1>📊 Wilmington Margin Performance Dashboard</h1>
             <p>Comprehensive margin insights to drive performance optimization and profitability management</p>
 
         </div>
@@ -2332,7 +2332,7 @@
                 if (revenueCtx && typeof Chart !== 'undefined') {
                     try {
                         // Destroy existing chart if any
-                        if (window.workingRevenueChart) {
+                        if (window.workingRevenueChart && typeof window.workingRevenueChart.destroy === 'function') {
                             window.workingRevenueChart.destroy();
                         }
                         
@@ -2386,7 +2386,7 @@
                 if (marginCtx && typeof Chart !== 'undefined') {
                     try {
                         // Destroy existing chart if any
-                        if (window.workingMarginChart) {
+                        if (window.workingMarginChart && typeof window.workingMarginChart.destroy === 'function') {
                             window.workingMarginChart.destroy();
                         }
                         
