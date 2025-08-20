@@ -2114,16 +2114,26 @@
 
             loadStatusSummaryData: function() {
                 const fileName = 'Status Summary Source File.xlsx';
-                const publicPath = `/public/${fileName}`;
-                const rootPath = `/${fileName}`;
-                const sources = [rootPath, publicPath]; // Try root first for Render
-                const statusSummaryDiv = document.getElementById('statusSummaryItems');
-                if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span>Loading Status Summary Data...</span>';
+                const sources = [
+                    `/${fileName}`,
+                    `/public/${fileName}`,
+                    `/Status%20Summary%20Source%20File.xlsx`,
+                    `/public/Status%20Summary%20Source%20File.xlsx`
+                ];
+                
+                console.log('🔍 Loading Status Summary data from:', fileName);
 
                 const tryFetch = async (url) => {
                     try {
                         console.log('🔍 Attempting to fetch:', url);
-                        const response = await fetch(url);
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        });
                         console.log('📡 Response status:', response.status, response.ok);
                         
                         if (!response.ok) {
@@ -2141,16 +2151,21 @@
                         const worksheet = workbook.Sheets[firstSheetName];
                         console.log('📄 Worksheet range:', worksheet['!ref']);
                         
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-                        console.log('📈 JSON data length:', jsonData.length);
-                        console.log('📈 First row data:', jsonData[0]);
-                        console.log('📈 First row keys:', Object.keys(jsonData[0] || {}));
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+                            header: 1,
+                            defval: ''
+                        });
+                        
+                        console.log('📈 Raw data length:', jsonData.length);
+                        console.log('📈 First few rows:', jsonData.slice(0, 5));
                         
                         if (jsonData && jsonData.length > 0) {
-                            this.statusSummaryData = jsonData;
-                            console.log('✅ Status Summary data loaded successfully');
-                            this.renderStatusSummary();
-                            // Create the working charts
+                            // Process the data into a more usable format
+                            this.statusSummaryData = this.processStatusSummaryData(jsonData);
+                            console.log('✅ Status Summary data loaded and processed successfully');
+                            console.log('📊 Processed data:', this.statusSummaryData);
+                            
+                            // Create the working charts with the processed data
                             this.createWorkingCharts();
                             return true;
                         } else {
@@ -2166,9 +2181,14 @@
                 (async () => {
                     for (const src of sources) {
                         const ok = await tryFetch(src);
-                        if (ok) return;
+                        if (ok) {
+                            console.log('✅ Successfully loaded from:', src);
+                            return;
+                        }
                     }
-                    if (statusSummaryDiv) statusSummaryDiv.innerHTML = '<span style="color:#e53e3e">No summary data found.</span>';
+                    console.error('❌ Failed to load Status Summary data from all sources');
+                    // Use fallback data if loading fails
+                    this.createWorkingCharts();
                 })();
             },
 
@@ -2190,211 +2210,131 @@
                 statusSummaryDiv.innerHTML = html;
             },
 
-            // DISABLED - Canvas not found error
-            renderStatusSummaryChart: function() {
-                console.log('=== CHART FUNCTION DISABLED ===');
-                return; // Skip this function to prevent canvas errors
+            // Process the raw data into a structured format
+            processStatusSummaryData: function(rawData) {
+                console.log('🔄 Processing Status Summary data...');
                 
-                // Hardcode the data we know works
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
-                const revenueData = [141764, 115153, 144090, 147081, 81394, 138129, 165652];
+                // Find the header row (usually contains month names)
+                let headerRowIndex = -1;
+                let monthColumns = [];
                 
-                console.log('Using hardcoded data:', { months, revenueData });
-                
-                const ctx = document.getElementById('statusSummaryChart');
-                if (!ctx) {
-                    console.error('Canvas not found!');
-                    return;
+                for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                    const row = rawData[i];
+                    const potentialMonths = row.filter(cell => 
+                        /^(Jan|Feb|Mar|Apr|May|Jun|July|Aug|Sep|Oct|Nov|Dec)$/i.test(String(cell).trim())
+                    );
+                    
+                    if (potentialMonths.length >= 3) {
+                        headerRowIndex = i;
+                        monthColumns = row.map((cell, index) => ({
+                            name: String(cell).trim(),
+                            index: index
+                        })).filter(col => /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(col.name));
+                        console.log('📅 Found month columns:', monthColumns);
+                        break;
+                    }
                 }
                 
-                // Clear any existing chart instance
-                if (window.statusSummaryChartInstance) {
-                    window.statusSummaryChartInstance.destroy();
+                if (headerRowIndex === -1) {
+                    console.warn('⚠️ Could not find header row with months');
+                    return [];
                 }
                 
-                if (typeof Chart === 'undefined') {
-                    console.error('Chart.js not loaded!');
-                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
-                    return;
-                }
-                
-                try {
-                    console.log('Creating simple chart...');
-                    const chart = new Chart(ctx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: months,
-                            datasets: [{
-                                label: 'Revenue (2025 Gross Profit)',
-                                data: revenueData,
-                                backgroundColor: '#667eea'
-                            }]
-                        },
-                        options: {
-                            responsive: false,
-                            plugins: { legend: { display: true } },
-                            scales: {
-                                y: { beginAtZero: true }
-                            }
-                        }
+                // Process the data rows
+                const processedData = [];
+                for (let i = headerRowIndex + 1; i < rawData.length; i++) {
+                    const row = rawData[i];
+                    if (!row || row.length === 0) continue;
+                    
+                    const label = String(row[0] || '').trim();
+                    if (!label) continue;
+                    
+                    const dataRow = {
+                        label: label,
+                        data: {}
+                    };
+                    
+                    monthColumns.forEach(col => {
+                        const value = row[col.index];
+                        dataRow.data[col.name] = parseFloat(value) || 0;
                     });
-                    console.log('Chart created successfully!');
                     
-                    // Store the chart instance
-                    window.statusSummaryChartInstance = chart;
-                    
-                } catch (error) {
-                    console.error('Chart creation failed:', error);
-                    newCtx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart failed: ' + error.message + '</div>';
+                    processedData.push(dataRow);
                 }
                 
-                // Now create the margin chart
-                this.renderMarginSummaryChart();
+                console.log('✅ Processed data rows:', processedData.length);
+                return processedData;
             },
 
-            // DISABLED - Canvas not found error
-            renderMarginSummaryChart: function() {
-                console.log('=== MARGIN CHART FUNCTION DISABLED ===');
-                return; // Skip this function to prevent canvas errors
-                
-                // Hardcode the margin data we know works
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
-                const margin2025 = [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0];
-                const margin2024 = [5.0, -10.2, -194.4, -8.3, -11.3, -0.7, -42.9];
-                
-                console.log('Using hardcoded margin data:', { months, margin2025, margin2024 });
-                
-                const ctx = document.getElementById('marginSummaryChart');
-                if (!ctx) {
-                    console.error('Margin canvas not found!');
-                    return;
-                }
-                
-                // Clear any existing chart instance
-                if (window.marginSummaryChartInstance) {
-                    window.marginSummaryChartInstance.destroy();
-                }
-                
-                if (typeof Chart === 'undefined') {
-                    console.error('Chart.js not loaded!');
-                    ctx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Chart.js library not loaded!</div>';
-                    return;
-                }
-                
-                try {
-                    console.log('Creating margin chart...');
-                    const chart = new Chart(ctx.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: months,
-                            datasets: [
-                                {
-                                    label: '2025 Margin',
-                                    data: margin2025,
-                                    backgroundColor: '#8ec6fd'
-                                },
-                                {
-                                    label: '2024 Margin',
-                                    data: margin2024,
-                                    backgroundColor: '#fdc88e'
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: false,
-                            plugins: { legend: { display: true } },
-                            scales: {
-                                y: { beginAtZero: true }
-                            }
-                        }
-                    });
-                    console.log('Margin chart created successfully!');
-                    
-                    // Store the chart instance
-                    window.marginSummaryChartInstance = chart;
-                    
-                } catch (error) {
-                    console.error('Margin chart creation failed:', error);
-                    newCtx.parentElement.innerHTML = '<div style="color:red;padding:20px;">Margin chart failed: ' + error.message + '</div>';
-                }
-            },
 
-            // HYBRID CHARTS FUNCTION - TRIES SOURCE DATA FIRST, FALLS BACK TO WORKING DATA
+
+
+
+            // Create Status Summary charts with improved data handling
             createWorkingCharts: function() {
-                console.log('=== CREATING CHARTS (HYBRID APPROACH) ===');
+                console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
-                // Default fallback data (will be used if source data fails)
+                // Default fallback data
                 let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
                 let revenueData = [141764, 115153, 144090, 147081, 81394, 138129, 165652];
                 let expensesData = [129294, 105456, 114677, 94163, 129992, 108666, 106078];
                 let margin2025Data = [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0];
                 let margin2024Data = [5.0, -10.2, -58.0, -8.3, -11.3, -0.7, -42.9];
                 
-                const data = this.statusSummaryData || [];
-                console.log('🎯 createWorkingCharts - Data received:', data);
-                console.log('🎯 createWorkingCharts - Data length:', data.length);
-                
-                if (data.length > 0) {
-                    console.log('🎯 Attempting to read from source data...');
-                    console.log('🎯 Status Summary data loaded:', data.length, 'rows');
-                    console.log('🎯 First row keys:', Object.keys(data[0] || {}));
-                    console.log('🎯 First row values:', data[0]);
-                    console.log('🎯 All rows with __EMPTY:', data.filter(row => row['__EMPTY']).map(row => row['__EMPTY']));
+                // Try to use processed data if available
+                if (this.statusSummaryData && this.statusSummaryData.length > 0) {
+                    console.log('🎯 Using processed Status Summary data...');
                     
-                    try {
-                        // Get month columns from source data
-                        const firstRow = data[0] || {};
-                        const monthColumns = Object.keys(firstRow).filter(key => 
-                            /^(Jan|Feb|Mar|Apr|May|Jun|July)$/i.test(key)
-                        ).sort((a, b) => {
-                            const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
-                            return monthOrder.indexOf(a) - monthOrder.indexOf(b);
-                        });
-                        
-                        if (monthColumns.length > 0) {
-                            console.log('Month columns found:', monthColumns);
-                            
-                            // Find the data rows by looking for key identifiers
-                            const revenueRow = data.find(row => 
-                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Gross Profit')
-                            );
-                            const expensesRow = data.find(row => 
-                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Total Expenses')
-                            );
-                            const margin2025Row = data.find(row => 
-                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2025 Margin')
-                            );
-                            const margin2024Row = data.find(row => 
-                                row['__EMPTY'] && row['__EMPTY'].toString().includes('2024 Margin')
-                            );
-                            
-                            if (revenueRow && expensesRow && margin2025Row && margin2024Row) {
-                                // Extract data from source
-                                months = monthColumns;
-                                revenueData = monthColumns.map(col => parseFloat(revenueRow[col]) || 0);
-                                expensesData = monthColumns.map(col => parseFloat(expensesRow[col]) || 0);
-                                margin2025Data = monthColumns.map(col => parseFloat(margin2025Row[col]) || 0);
-                                margin2024Data = monthColumns.map(col => parseFloat(margin2024Row[col]) || 0);
-                                console.log('Successfully extracted data from source:', { months, revenueData, expensesData, margin2025Data, margin2024Data });
-                            } else {
-                                console.log('Some required rows not found, using fallback data');
-                                console.log('Available rows:', data.map(row => row['__EMPTY']).filter(Boolean));
-                            }
-                        } else {
-                            console.log('No month columns found, using fallback data');
-                        }
-                    } catch (error) {
-                        console.error('Error parsing source data, using fallback:', error);
+                    // Find specific data rows
+                    const revenueRow = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Gross Profit') || 
+                        row.label.includes('2025 Revenue')
+                    );
+                    const expensesRow = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Total Expenses') || 
+                        row.label.includes('2025 Expenses')
+                    );
+                    const margin2025Row = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Margin')
+                    );
+                    const margin2024Row = this.statusSummaryData.find(row => 
+                        row.label.includes('2024 Margin')
+                    );
+                    
+                    if (revenueRow && Object.keys(revenueRow.data).length > 0) {
+                        months = Object.keys(revenueRow.data);
+                        revenueData = months.map(month => revenueRow.data[month]);
+                        console.log('📊 Found revenue data:', revenueData);
+                    }
+                    
+                    if (expensesRow && Object.keys(expensesRow.data).length > 0) {
+                        expensesData = months.map(month => expensesRow.data[month]);
+                        console.log('📊 Found expenses data:', expensesData);
+                    }
+                    
+                    if (margin2025Row && Object.keys(margin2025Row.data).length > 0) {
+                        margin2025Data = months.map(month => margin2025Row.data[month]);
+                        console.log('📊 Found 2025 margin data:', margin2025Data);
+                    }
+                    
+                    if (margin2024Row && Object.keys(margin2024Row.data).length > 0) {
+                        margin2024Data = months.map(month => margin2024Row.data[month]);
+                        console.log('📊 Found 2024 margin data:', margin2024Data);
                     }
                 } else {
-                    console.log('No source data available, using fallback data');
+                    console.log('⚠️ No processed data available, using fallback data');
                 }
                 
-                // Revenue & Expenses Chart
+                // Create Revenue & Expenses Chart
                 const revenueCtx = document.getElementById('workingRevenueChart');
                 if (revenueCtx && typeof Chart !== 'undefined') {
                     try {
-                        const revenueChart = new Chart(revenueCtx.getContext('2d'), {
+                        // Destroy existing chart if any
+                        if (window.workingRevenueChart) {
+                            window.workingRevenueChart.destroy();
+                        }
+                        
+                        window.workingRevenueChart = new Chart(revenueCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
                                 labels: months,
@@ -2413,6 +2353,7 @@
                             },
                             options: {
                                 responsive: false,
+                                maintainAspectRatio: false,
                                 plugins: { 
                                     legend: { display: true },
                                     tooltip: {
@@ -2432,33 +2373,22 @@
                                 }
                             }
                         });
-                        console.log('Revenue & Expenses Chart created!');
-                        
-                        // Add totals table to the right of the chart
-                        const totalsDiv = document.createElement('div');
-                        totalsDiv.style.cssText = 'position: absolute; right: 0; top: 0; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;';
-                        const totalRevenue = revenueData.reduce((sum, val) => sum + val, 0);
-                        const totalExpenses = expensesData.reduce((sum, val) => sum + val, 0);
-                        const netAmount = totalRevenue - totalExpenses;
-                        totalsDiv.innerHTML = `
-                            <strong>Totals:</strong><br>
-                            Revenue: $${totalRevenue.toLocaleString()}<br>
-                            Expenses: $${totalExpenses.toLocaleString()}<br>
-                            Net: $${netAmount.toLocaleString()}
-                        `;
-                        revenueCtx.parentElement.style.position = 'relative';
-                        revenueCtx.parentElement.appendChild(totalsDiv);
-                        
+                        console.log('✅ Revenue & Expenses Chart created successfully!');
                     } catch (error) {
-                        console.error('Revenue chart failed:', error);
+                        console.error('❌ Revenue chart creation failed:', error);
                     }
                 }
                 
-                // Margin Chart
+                // Create Margin Chart
                 const marginCtx = document.getElementById('workingMarginChart');
                 if (marginCtx && typeof Chart !== 'undefined') {
                     try {
-                        const marginChart = new Chart(marginCtx.getContext('2d'), {
+                        // Destroy existing chart if any
+                        if (window.workingMarginChart) {
+                            window.workingMarginChart.destroy();
+                        }
+                        
+                        window.workingMarginChart = new Chart(marginCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
                                 labels: months,
@@ -2477,6 +2407,7 @@
                             },
                             options: {
                                 responsive: false,
+                                maintainAspectRatio: false,
                                 plugins: { 
                                     legend: { display: true },
                                     tooltip: {
@@ -2501,14 +2432,13 @@
                                 }
                             }
                         });
-                        console.log('Margin chart created successfully!');
-                        
+                        console.log('✅ Margin Chart created successfully!');
                     } catch (error) {
-                        console.error('Margin chart failed:', error);
+                        console.error('❌ Margin chart creation failed:', error);
                     }
                 }
                 
-                console.log('All Status Summary charts created successfully');
+                console.log('=== STATUS SUMMARY CHARTS COMPLETED ===');
             },
 
             // Load financial performance data
