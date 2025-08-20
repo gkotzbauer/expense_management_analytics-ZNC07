@@ -1194,7 +1194,7 @@
                         return {
                             "Category": String(obj['Category'] || '').trim(),
                             "May": parseFloat(obj['May 2025']) || 0,
-                            "Jun 2025": parseFloat(obj['Jun 2025']) || 0,
+                            "June 2025": parseFloat(obj['June 2025']) || 0,
                             "Anchor vs Prior Avg ($)": parseFloat(obj['Anchor vs Prior Avg ($)']) || 0,
                             "Performance Diagnostic Summary": String(obj['Margin Risk Assessment'] || '').trim(),
                             "Margin Leverage Classification": obj['Margin Risk Assessment'] === true ? 'High Risk' : 'Normal Risk',
@@ -1230,7 +1230,7 @@
                 // Count month columns (Jan 2025, Feb 2025, etc.)
                 const monthColumns = this.rawHeaders.filter(header => {
                     const headerStr = String(header || '').trim();
-                    return /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(headerStr);
+                    return /^(Jan|Feb|Mar|Apr|May|June|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(headerStr);
                 });
                 
                 const monthCount = monthColumns.length;
@@ -1248,7 +1248,7 @@
                     // Convert month abbreviation to full name
                     const monthNames = {
                         'Jan': 'January', 'Feb': 'February', 'Mar': 'March', 'Apr': 'April',
-                        'May': 'May', 'Jun': 'June', 'Jul': 'July', 'Aug': 'August',
+                        'May': 'May', 'June': 'June', 'Jul': 'July', 'Aug': 'August',
                         'Sep': 'September', 'Oct': 'October', 'Nov': 'November', 'Dec': 'December'
                     };
                     const fullMonthName = monthNames[monthName] || monthName;
@@ -1592,8 +1592,8 @@
                     // Category
                     tableHTML += `<td>${item.Category || 'N/A'}</td>`;
                     
-                    // Expenses for Most Recent Month (now from 'Jun 2025')
-                    const junExpenses = item['Jun 2025'] || 0;
+                    // Expenses for Most Recent Month (now from 'June 2025')
+                    const junExpenses = item['June 2025'] || 0;
                     tableHTML += `<td class="center-column">${Math.round(junExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
@@ -1768,7 +1768,7 @@
                     }
                 }
 
-                // Marketing Spend Efficiency - include 614000 Marketing & Advertising, Total 614000 Marketing, Advertising, and 614200 Internet & Social media
+                // Marketing Spend Efficiency - include 614000 Marketing & Advertising, Total 614000 Marketing, Advertising, 614200 Internet & Social media, 614000 Advertising and Marketing, and 630100 Advert. & Marketing Fund
                 console.log('=== MARKETING EFFICIENCY DEBUG ===');
                 console.log('Total filteredData items:', this.filteredData.length);
                 
@@ -1802,7 +1802,9 @@
                     return cat === '614000 marketing & advertising' || 
                            cat === 'total 614000 marketing' || 
                            cat === 'advertising' || 
-                           cat === '614200 internet & social media';
+                           cat === '614200 internet & social media' ||
+                           cat === '614000 advertising and marketing' ||
+                           cat === '630100 advert. & marketing fund';
                 });
                 
                 console.log('Found marketing categories:', marketingCategories);
