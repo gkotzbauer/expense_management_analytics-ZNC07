@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wilmington Margin Performance Dashboard</title>
+    <title>ZNC07 Margin Performance Dashboard</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -448,7 +448,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Wilmington Margin Performance Dashboard</h1>
+            <h1>📊 ZNC07 Margin Performance Dashboard</h1>
             <p>Comprehensive margin insights to drive performance optimization and profitability management</p>
 
         </div>
@@ -609,7 +609,7 @@
                 </div>
                 <div class="insight-item" id="marketingROIInsight">
                     <span style="font-size: 1.2rem;">💰 </span>
-                    <strong>Marketing Spend Efficiency:</strong> <span id="marketingROIText">614000 Advertising and Marketing (Inefficient, 1.58), 630100 Advert. & Marketing Fund (Unclassified, -9)</span>
+                    <strong>Marketing Spend Efficiency:</strong> <span id="marketingROIText">Advertising & Marketing Fund (Inefficient, 0.06)</span>
                 </div>
 
                 
@@ -622,7 +622,7 @@
                         <li><strong>Inefficient:</strong> Marketing spend grew more than 120% of profit growth—spend outpacing returns, needs review.</li>
                     </ul>
                     <p style="margin-top: 15px; font-size: 0.9rem; color: #718096; font-style: italic;">
-                        <strong>Note:</strong> The value behind the category is the ratio between the percentage growth for the category and the percentage growth for Gross Profit. A negative number means the category grew slower than Gross Profit. A positive number means the growth in the expense outpaced the growth in revenue (gross profit). For example, a value of 1.58 means the category spend grew 58% faster than revenue.
+                        <strong>Note:</strong> The value behind the category is the ratio between the percentage growth for the category and the percentage growth for Gross Profit. A negative number means the category grew slower than Gross Profit. A positive number means the growth in the expense outpaced the growth in revenue (gross profit). For example, a value of 0.06 means the category grew at 6% of the rate the revenue growth.
                     </p>
                 </div>
             </div>
@@ -1771,7 +1771,7 @@
                 // Marketing Spend Efficiency - Hardcoded values as requested
                 const roiElement = document.getElementById('marketingROIText');
                 if (roiElement) {
-                    roiElement.textContent = '614000 Advertising and Marketing (Inefficient, 1.58), 630100 Advert. & Marketing Fund (Unclassified, -9)';
+                    roiElement.textContent = 'Advertising & Marketing Fund (Inefficient, 0.06)';
                 }
 
 
