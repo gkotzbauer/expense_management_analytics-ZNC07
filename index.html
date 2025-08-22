@@ -1607,13 +1607,20 @@
                     // Expenses for Most Recent Month (dynamically from most recent month column)
                     const mostRecentMonthColumn = this.mostRecentMonthColumn || 'Jul 2025';
                     
+                    // Debug: Show all available columns for this item
+                    console.log(`=== DEBUGGING ${item.Category} ===`);
+                    console.log('Available columns:', Object.keys(item));
+                    console.log('mostRecentMonthColumn:', mostRecentMonthColumn);
+                    
                     // Check for the July column in the data with multiple fallback options
                     const julyColumns = ['Jul 2025', 'July 2025', 'July', 'Expense – GP Growth Δ [%] [Jul 2025]'];
                     let mostRecentExpenses = 0;
+                    let foundColumn = null;
                     
                     for (const col of julyColumns) {
                         if (item[col] !== undefined && item[col] !== null) {
                             mostRecentExpenses = item[col];
+                            foundColumn = col;
                             console.log(`Found July data in column "${col}" for ${item.Category}: ${mostRecentExpenses}`);
                             break;
                         }
@@ -1622,9 +1629,11 @@
                     if (mostRecentExpenses === 0) {
                         console.log(`No July data found for ${item.Category}, using fallback column: ${mostRecentMonthColumn}`);
                         mostRecentExpenses = item[mostRecentMonthColumn] || 0;
+                        foundColumn = mostRecentMonthColumn;
                     }
                     
-                    console.log(`Final value for ${item.Category}: ${mostRecentExpenses}`);
+                    console.log(`Final value for ${item.Category}: ${mostRecentExpenses} (from column: ${foundColumn})`);
+                    console.log(`=== END DEBUGGING ${item.Category} ===`);
                     tableHTML += `<td class="center-column">${Math.round(mostRecentExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
