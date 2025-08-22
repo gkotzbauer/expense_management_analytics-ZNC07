@@ -1612,7 +1612,7 @@
                     console.log('Available columns:', Object.keys(item));
                     console.log('mostRecentMonthColumn:', mostRecentMonthColumn);
                     
-                    // Check for the July column in the data with multiple fallback options
+                    // Check for the July column in the data
                     const julyColumns = ['Jul 2025', 'July 2025', 'July', 'Expense – GP Growth Δ [%] [Jul 2025]'];
                     let mostRecentExpenses = 0;
                     let foundColumn = null;
@@ -1627,7 +1627,7 @@
                     }
                     
                     if (mostRecentExpenses === 0) {
-                        console.log(`No July data found for ${item.Category}, using fallback column: ${mostRecentMonthColumn}`);
+                        console.log(`No July data found for ${item.Category}, using column: ${mostRecentMonthColumn}`);
                         mostRecentExpenses = item[mostRecentMonthColumn] || 0;
                         foundColumn = mostRecentMonthColumn;
                     }
@@ -2229,7 +2229,7 @@
                         }
                     }
                     console.error('❌ Failed to load Status Summary data from all sources');
-                    // Use fallback data if loading fails
+                    // No fallback data - charts will be empty
                     this.createWorkingCharts();
                 })();
             },
@@ -2316,12 +2316,12 @@
             createWorkingCharts: function() {
                 console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
-                // Default fallback data
-                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July'];
-                let revenueData = [141764, 115153, 144090, 147081, 81394, 138129, 165652];
-                let expensesData = [129294, 105456, 114677, 94163, 129992, 108666, 106078];
-                let margin2025Data = [8.8, 8.4, 20.4, 36.0, -59.7, 21.3, 36.0];
-                let margin2024Data = [5.0, -10.2, -58.0, -8.3, -11.3, -0.7, -42.9];
+                // Initialize data arrays
+                let months = [];
+                let revenueData = [];
+                let expensesData = [];
+                let margin2025Data = [];
+                let margin2024Data = [];
                 
                 // Try to use processed data if available
                 if (this.statusSummaryData && this.statusSummaryData.length > 0) {
@@ -2364,7 +2364,7 @@
                         console.log('📊 Found 2024 margin data:', margin2024Data);
                     }
                 } else {
-                    console.log('⚠️ No processed data available, using fallback data');
+                    console.log('⚠️ No processed data available - charts will be empty');
                 }
                 
                 // Create Revenue & Expenses Chart
