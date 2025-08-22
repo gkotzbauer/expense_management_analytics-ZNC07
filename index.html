@@ -1378,10 +1378,6 @@
 
 
             initializeDashboard: function() {
-                // Set the most recent month column for July 2025
-                this.mostRecentMonthColumn = 'Jul 2025';
-                console.log('Set mostRecentMonthColumn in initializeDashboard:', this.mostRecentMonthColumn);
-                
                 const dashboardContent = document.getElementById('dashboardContent');
                 if (dashboardContent) {
                     dashboardContent.classList.remove('hidden');
@@ -1606,34 +1602,7 @@
                     
                     // Expenses for Most Recent Month (dynamically from most recent month column)
                     const mostRecentMonthColumn = this.mostRecentMonthColumn || 'Jul 2025';
-                    
-                    // Debug: Show all available columns for this item
-                    console.log(`=== DEBUGGING ${item.Category} ===`);
-                    console.log('Available columns:', Object.keys(item));
-                    console.log('mostRecentMonthColumn:', mostRecentMonthColumn);
-                    
-                    // Check for the July column in the data
-                    const julyColumns = ['Jul 2025', 'July 2025', 'July', 'Expense – GP Growth Δ [%] [Jul 2025]'];
-                    let mostRecentExpenses = 0;
-                    let foundColumn = null;
-                    
-                    for (const col of julyColumns) {
-                        if (item[col] !== undefined && item[col] !== null) {
-                            mostRecentExpenses = item[col];
-                            foundColumn = col;
-                            console.log(`Found July data in column "${col}" for ${item.Category}: ${mostRecentExpenses}`);
-                            break;
-                        }
-                    }
-                    
-                    if (mostRecentExpenses === 0) {
-                        console.log(`No July data found for ${item.Category}, using column: ${mostRecentMonthColumn}`);
-                        mostRecentExpenses = item[mostRecentMonthColumn] || 0;
-                        foundColumn = mostRecentMonthColumn;
-                    }
-                    
-                    console.log(`Final value for ${item.Category}: ${mostRecentExpenses} (from column: ${foundColumn})`);
-                    console.log(`=== END DEBUGGING ${item.Category} ===`);
+                    const mostRecentExpenses = item[mostRecentMonthColumn] || 0;
                     tableHTML += `<td class="center-column">${Math.round(mostRecentExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
@@ -2155,12 +2124,12 @@
             },
 
             loadStatusSummaryData: function() {
-                const fileName = 'Status Summary Source File.xlsx';
+                const fileName = 'ZNC07 Status Summary Source File.xlsx';
                 const sources = [
                     `/${fileName}`,
                     `/public/${fileName}`,
-                    `/Status%20Summary%20Source%20File.xlsx`,
-                    `/public/Status%20Summary%20Source%20File.xlsx`
+                    `/ZNC07%20Status%20Summary%20Source%20File.xlsx`,
+                    `/public/ZNC07%20Status%20Summary%20Source%20File.xlsx`
                 ];
                 
                 console.log('🔍 Loading Status Summary data from:', fileName);
