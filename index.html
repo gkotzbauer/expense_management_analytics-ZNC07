@@ -2446,53 +2446,46 @@
             // Load financial performance data
             loadFinancialPerformanceData: async function() {
                 try {
-                    console.log('Attempting to load Financial Performance Data.xlsx...');
-                    // Try to load from API endpoint first, then fallback to direct file access
-                    let response;
-                    try {
-                        console.log('Trying API endpoint: /api/financial-performance');
-                        response = await fetch('/api/financial-performance');
-                        if (response.ok) {
-                            console.log('Success with API endpoint');
-                        } else {
-                            throw new Error(`API endpoint failed: ${response.status}`);
-                        }
-                    } catch (apiError) {
-                        console.log('API endpoint failed, trying direct file access...');
-                        // Fallback to direct file access
-                        const possiblePaths = [
-                            '/public/Financial Performance Data.xlsx',
-                            '/Financial Performance Data.xlsx',
-                            '/Financial%20Performance%20Data.xlsx',
-                            'Financial Performance Data.xlsx'
-                        ];
-                        
-                        for (const path of possiblePaths) {
-                            try {
-                                console.log('Trying path:', path);
-                                response = await fetch(path);
-                                if (response.ok) {
-                                    console.log('Success with path:', path);
-                                    break;
-                                }
-                            } catch (e) {
-                                console.log('Failed with path:', path, e);
-                            }
-                        }
-                    }
+                    console.log('=== LOADING FINANCIAL PERFORMANCE DATA ===');
+                    console.log('Attempting to load financial-performance-data.json...');
                     
-                    if (!response || !response.ok) {
-                        throw new Error(`HTTP error! status: ${response?.status || 'No response'}`);
+                    // Load JSON file directly - much more reliable than Excel parsing
+                    const response = await fetch('/financial-performance-data.json');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
                     console.log('Response status:', response.status);
-                    const arrayBuffer = await response.arrayBuffer();
-                    console.log('Array buffer size:', arrayBuffer.byteLength);
-                    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-                    console.log('Workbook sheets:', workbook.SheetNames);
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    this.financialPerformanceData = XLSX.utils.sheet_to_json(worksheet);
-                    console.log('Financial Performance Data loaded:', this.financialPerformanceData);
+                    this.financialPerformanceData = await response.json();
+                    console.log('Financial Performance Data loaded from JSON:', this.financialPerformanceData);
+                    
+                    // Debug: Log the actual column names from the first row
+                    if (this.financialPerformanceData.length > 0) {
+                        console.log('Available columns in financial performance data:', Object.keys(this.financialPerformanceData[0]));
+                        console.log('First row sample:', this.financialPerformanceData[0]);
+                        
+                        // Check if we have the expected categories
+                        const categories = [...new Set(this.financialPerformanceData.map(row => row.Category))];
+                        console.log('Available categories in data:', categories);
+                        
+                        const yoyRows = this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis');
+                        const cashflowRows = this.financialPerformanceData.filter(row => row.Category === 'Remaining Year Cashflow Projections');
+                        
+                        console.log('YOY rows found:', yoyRows.length);
+                        console.log('Cashflow rows found:', cashflowRows.length);
+                        
+                        if (yoyRows.length > 0) {
+                            console.log('Sample YOY row:', yoyRows[0]);
+                        }
+                        if (cashflowRows.length > 0) {
+                            console.log('Sample cashflow row:', cashflowRows[0]);
+                        }
+                    } else {
+                        console.log('No data rows found in financial performance file');
+                    }
+                    
+                    console.log('=== END LOADING FINANCIAL PERFORMANCE DATA ===');
                     this.renderFinancialPerformanceSection();
                 } catch (error) {
                     console.error('Error loading financial performance data:', error);
