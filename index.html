@@ -2528,6 +2528,10 @@
 
             // Render financial performance section
             renderFinancialPerformanceSection: function() {
+                console.log('🎯 renderFinancialPerformanceSection called!');
+                console.log('financialPerformanceData:', this.financialPerformanceData);
+                console.log('financialPerformanceData.length:', this.financialPerformanceData ? this.financialPerformanceData.length : 'undefined');
+                
                 if (!this.financialPerformanceData || this.financialPerformanceData.length === 0) {
                     console.log('No financial performance data available - cannot render section');
                     return;
@@ -2543,6 +2547,7 @@
                 
                 this.financialPerformanceData.forEach(row => {
                     console.log(`Processing row: Category="${row.Category}", Metric_Name="${row.Metric_Name}"`);
+                    console.log('Full row data:', row);
                     
                     if (row.Category === 'YOY Expense & Profitability Analysis') {
                         const val2024 = parseFloat(row.Value_2024_Jan_July) || 0;
