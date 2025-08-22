@@ -2459,69 +2459,75 @@
             // Load financial performance data
             loadFinancialPerformanceData: async function() {
                 console.log('🚀 loadFinancialPerformanceData function called!');
-                try {
-                    console.log('=== LOADING FINANCIAL PERFORMANCE DATA ===');
-                    console.log('Attempting to load financial-performance-data.json...');
-                    
-                    // Load JSON file directly - much more reliable than Excel parsing
-                    const response = await fetch('/financial-performance-data.json');
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    console.log('Response status:', response.status);
-                    this.financialPerformanceData = await response.json();
-                    console.log('Financial Performance Data loaded from JSON:', this.financialPerformanceData);
-                    
-                    // Debug: Log the actual column names from the first row
-                    if (this.financialPerformanceData.length > 0) {
-                        console.log('Available columns in financial performance data:', Object.keys(this.financialPerformanceData[0]));
-                        console.log('First row sample:', this.financialPerformanceData[0]);
-                        
-                        // Check if we have the expected categories
-                        const categories = [...new Set(this.financialPerformanceData.map(row => row.Category))];
-                        console.log('Available categories in data:', categories);
-                        
-                        const yoyRows = this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis');
-                        const cashflowRows = this.financialPerformanceData.filter(row => row.Category === 'Remaining Year Cashflow Projections');
-                        
-                        console.log('YOY rows found:', yoyRows.length);
-                        console.log('Cashflow rows found:', cashflowRows.length);
-                        
-                        if (yoyRows.length > 0) {
-                            console.log('Sample YOY row:', yoyRows[0]);
-                        }
-                        if (cashflowRows.length > 0) {
-                            console.log('Sample cashflow row:', cashflowRows[0]);
-                        }
-                    } else {
-                        console.log('No data rows found in financial performance file');
-                    }
-                    
-                    console.log('=== END LOADING FINANCIAL PERFORMANCE DATA ===');
-                    
-                    // Set the most recent month column from the financial data if not already set
-                    if (!this.mostRecentMonthColumn) {
-                        // Try to find month columns in the financial data
-                        if (this.financialPerformanceData.length > 0) {
-                            const firstRow = this.financialPerformanceData[0];
-                            const columns = Object.keys(firstRow);
-                            const monthColumns = columns.filter(col => 
-                                /^(Jan|Feb|Mar|Apr|May|June|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(col)
-                            );
-                            if (monthColumns.length > 0) {
-                                this.mostRecentMonthColumn = monthColumns[monthColumns.length - 1];
-                                console.log('Set mostRecentMonthColumn from financial data:', this.mostRecentMonthColumn);
+                console.log('=== LOADING FINANCIAL PERFORMANCE DATA ===');
+                
+                // Use the same pattern as other data loads - try multiple sources
+                const sources = [
+                    'financial-performance-data.json',
+                    '/financial-performance-data.json',
+                    './financial-performance-data.json',
+                    'public/financial-performance-data.json'
+                ];
+                
+                for (const source of sources) {
+                    try {
+                        console.log('Trying to load from:', source);
+                        const response = await fetch(source);
+                        if (response.ok) {
+                            this.financialPerformanceData = await response.json();
+                            console.log('Successfully loaded from:', source);
+                            console.log('Financial Performance Data loaded:', this.financialPerformanceData);
+                            
+                            // Debug: Log the actual column names from the first row
+                            if (this.financialPerformanceData.length > 0) {
+                                console.log('Available columns in financial performance data:', Object.keys(this.financialPerformanceData[0]));
+                                console.log('First row sample:', this.financialPerformanceData[0]);
+                                
+                                // Check if we have the expected categories
+                                const categories = [...new Set(this.financialPerformanceData.map(row => row.Category))];
+                                console.log('Available categories in data:', categories);
+                                
+                                const yoyRows = this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis');
+                                const cashflowRows = this.financialPerformanceData.filter(row => row.Category === 'Remaining Year Cashflow Projections');
+                                
+                                console.log('YOY rows found:', yoyRows.length);
+                                console.log('Cashflow rows found:', cashflowRows.length);
+                                
+                                if (yoyRows.length > 0) {
+                                    console.log('Sample YOY row:', yoyRows[0]);
+                                }
+                                if (cashflowRows.length > 0) {
+                                    console.log('Sample cashflow row:', cashflowRows[0]);
+                                }
+                            } else {
+                                console.log('No data rows found in financial performance file');
                             }
+                            
+                            // Set the most recent month column from the financial data if not already set
+                            if (!this.mostRecentMonthColumn) {
+                                // Try to find month columns in the financial data
+                                if (this.financialPerformanceData.length > 0) {
+                                    const firstRow = this.financialPerformanceData[0];
+                                    const columns = Object.keys(firstRow);
+                                    const monthColumns = columns.filter(col => 
+                                        /^(Jan|Feb|Mar|Apr|May|June|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(col)
+                                    );
+                                    if (monthColumns.length > 0) {
+                                        this.mostRecentMonthColumn = monthColumns[monthColumns.length - 1];
+                                        console.log('Set mostRecentMonthColumn from financial data:', this.mostRecentMonthColumn);
+                                    }
+                                }
+                            }
+                            
+                            this.renderFinancialPerformanceSection();
+                            return; // Exit after successful load
                         }
+                    } catch (error) {
+                        console.log('Failed to load from', source, ':', error);
                     }
-                    
-                    this.renderFinancialPerformanceSection();
-                } catch (error) {
-                    console.error('Error loading financial performance data:', error);
-                    console.log('Failed to load financial performance data - check console for errors');
                 }
+                
+                console.error('Failed to load financial performance data from all sources');
             },
 
 
