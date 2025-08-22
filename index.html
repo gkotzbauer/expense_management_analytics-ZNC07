@@ -1196,6 +1196,7 @@
                             "Category": String(obj['Category'] || '').trim(),
                             "May": parseFloat(obj['May 2025']) || 0,
                             "June 2025": parseFloat(obj['June 2025']) || 0,
+                            "July 2025": parseFloat(obj['Jul 2025'] || obj['July 2025'] || obj['July']) || 0,  // Add this line
                             "Anchor vs Prior Avg ($)": parseFloat(obj['Anchor vs Prior Avg ($)']) || 0,
                             "Performance Diagnostic Summary": String(obj['Margin Risk Assessment'] || '').trim(),
                             "Margin Leverage Classification": obj['Margin Risk Assessment'] === true ? 'High Risk' : 'Normal Risk',
@@ -1605,8 +1606,7 @@
                     tableHTML += `<td>${item.Category || 'N/A'}</td>`;
                     
                     // Expenses for Most Recent Month (dynamically from most recent month column)
-                    const mostRecentMonthColumn = this.mostRecentMonthColumn || 'Jul 2025';
-                    const mostRecentExpenses = item[mostRecentMonthColumn] || 0;
+                    const mostRecentExpenses = item['July 2025'] || item['June 2025'] || 0;
                     tableHTML += `<td class="center-column">${Math.round(mostRecentExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
