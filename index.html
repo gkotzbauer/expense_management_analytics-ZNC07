@@ -1385,12 +1385,14 @@
                 setTimeout(() => {
                     this.setupFilters();
                     this.updateCharts();
-                    this.updateTable();
+                    // Don't call updateTable here - it will be called after data loads
                     this.updateGrowthRiskTable();
                     
                     setTimeout(() => {
                         this.updateInsights();
                         this.updateMonthCountDisplay();
+                        // Now update the table after month column is set
+                        this.updateTable();
                         this.calculateProjections();
                         this.isInitialized = true;
                     }, 200);
