@@ -2464,7 +2464,7 @@
                     console.log('Attempting to load financial-performance-data.json...');
                     
                     // Load JSON file directly - much more reliable than Excel parsing
-                    const response = await fetch('financial-performance-data.json');
+                    const response = await fetch('/financial-performance-data.json');
                     
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -2500,6 +2500,23 @@
                     }
                     
                     console.log('=== END LOADING FINANCIAL PERFORMANCE DATA ===');
+                    
+                    // Set the most recent month column from the financial data if not already set
+                    if (!this.mostRecentMonthColumn) {
+                        // Try to find month columns in the financial data
+                        if (this.financialPerformanceData.length > 0) {
+                            const firstRow = this.financialPerformanceData[0];
+                            const columns = Object.keys(firstRow);
+                            const monthColumns = columns.filter(col => 
+                                /^(Jan|Feb|Mar|Apr|May|June|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(col)
+                            );
+                            if (monthColumns.length > 0) {
+                                this.mostRecentMonthColumn = monthColumns[monthColumns.length - 1];
+                                console.log('Set mostRecentMonthColumn from financial data:', this.mostRecentMonthColumn);
+                            }
+                        }
+                    }
+                    
                     this.renderFinancialPerformanceSection();
                 } catch (error) {
                     console.error('Error loading financial performance data:', error);
