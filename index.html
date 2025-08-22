@@ -601,7 +601,7 @@
                 </div>
                 <div class="insight-item" id="topVarianceInsight">
                     <span style="font-size: 1.2rem;">📈 </span>
-                    <strong>Expense in Most Recent Month with Highest Variance:</strong> <span id="topVarianceText">Loading...</span>
+                                            <strong>Expenses in Most Recent Month with Highest Variance:</strong> <span id="topVarianceText">Loading...</span>
                 </div>
                 <div class="insight-item" id="marginInsight">
                     <span style="font-size: 1.2rem;">🏆 </span>
@@ -1733,25 +1733,34 @@
                     }
                 }
 
-                // Highest variance (exclude income, gross profit, and related categories)
-                const topVariance = this.filteredData
+                // Top 3 highest variances (exclude income, gross profit, and related categories)
+                // Select categories with value > $200 in Jul 2025 and highest absolute variances
+                const topVariances = this.filteredData
                     .filter(item => {
                         const variance = item['Anchor vs Prior Avg ($)'];
+                        const jul2025Value = item['July 2025'] || item['Jul 2025'] || 0;
                         const cat = (item.Category || '').toLowerCase().trim();
                         return variance !== undefined && variance !== null && variance !== 0 &&
+                            Math.abs(jul2025Value) > 200 && // Must have value > $200 in Jul 2025
                             cat !== 'net ordinary income' && cat !== 'gross profit' && cat !== 'net ordinary expense' &&
                             !cat.includes('income') && !cat.includes('gross profit') && !cat.includes('profit') &&
                             !cat.includes('revenue') && !cat.includes('fee') && !cat.includes('fees');
                     })
-                    .sort((a, b) => Math.abs(b['Anchor vs Prior Avg ($)']) - Math.abs(a['Anchor vs Prior Avg ($)']))[0];
+                    .sort((a, b) => Math.abs(b['Anchor vs Prior Avg ($)']) - Math.abs(a['Anchor vs Prior Avg ($)']))
+                    .slice(0, 3); // Take top 3
                 
                 const topVarianceElement = document.getElementById('topVarianceText');
                 if (topVarianceElement) {
-                    if (topVariance) {
-                        const varianceAmount = Math.round(topVariance['Anchor vs Prior Avg ($)']);
-                        const sign = varianceAmount >= 0 ? '+' : '-';
-                        const formattedVariance = `(${sign}${Math.abs(varianceAmount).toLocaleString()})`;
-                        topVarianceElement.textContent = `${topVariance.Category} ${formattedVariance}`;
+                    if (topVariances.length > 0) {
+                        const formattedList = topVariances
+                            .map((item, index) => {
+                                const varianceAmount = Math.round(item['Anchor vs Prior Avg ($)']);
+                                const sign = varianceAmount >= 0 ? '+' : '-';
+                                const formattedVariance = `(${sign}${Math.abs(varianceAmount).toLocaleString()})`;
+                                return `${index + 1}. ${item.Category} ${formattedVariance}`;
+                            })
+                            .join(', ');
+                        topVarianceElement.textContent = formattedList;
                     } else {
                         topVarianceElement.textContent = 'No variance data available';
                     }
