@@ -761,6 +761,7 @@
             modelData: [],
             performanceChart: null,
             isInitialized: false,
+            mostRecentMonthColumn: null, // Store the most recent month column name
 
             sampleData: [
                 {
@@ -1239,6 +1240,12 @@
                     monthCountElement.textContent = `(${monthCount} months)`;
                 }
                 
+                // Store the most recent month column for use in updateTable
+                if (monthColumns.length > 0) {
+                    this.mostRecentMonthColumn = monthColumns[monthColumns.length - 1];
+                    console.log('Most recent month column set to:', this.mostRecentMonthColumn);
+                }
+                
                 // Update most recent month display for Key Insights section
                 const recentMonthElement = document.getElementById('recentMonthDisplay');
                 if (recentMonthElement && monthColumns.length > 0) {
@@ -1592,9 +1599,11 @@
                     // Category
                     tableHTML += `<td>${item.Category || 'N/A'}</td>`;
                     
-                    // Expenses for Most Recent Month (now from 'June 2025')
-                    const junExpenses = item['June 2025'] || 0;
-                    tableHTML += `<td class="center-column">${Math.round(junExpenses).toLocaleString()}</td>`;
+                    // Expenses for Most Recent Month (dynamically from most recent month column)
+                    const mostRecentMonthColumn = this.mostRecentMonthColumn || 'June 2025'; // fallback
+                    const mostRecentExpenses = item[mostRecentMonthColumn] || 0;
+                    console.log(`Using column "${mostRecentMonthColumn}" for ${item.Category}: ${mostRecentExpenses}`);
+                    tableHTML += `<td class="center-column">${Math.round(mostRecentExpenses).toLocaleString()}</td>`;
                     
                     // Most Recent Month vs. Avg. of Prior Months
                     const anchorPriorValue = item['Anchor vs Prior Avg ($)'] || 0;
