@@ -2460,7 +2460,7 @@
                     console.log('Attempting to load financial-performance-data.json...');
                     
                     // Load JSON file directly - much more reliable than Excel parsing
-                    const response = await fetch('/financial-performance-data.json');
+                    const response = await fetch('financial-performance-data.json');
                     
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
