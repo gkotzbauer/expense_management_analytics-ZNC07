@@ -1600,7 +1600,10 @@
                     tableHTML += `<td>${item.Category || 'N/A'}</td>`;
                     
                     // Expenses for Most Recent Month (dynamically from most recent month column)
-                    const mostRecentMonthColumn = this.mostRecentMonthColumn || 'June 2025'; // fallback
+                    const mostRecentMonthColumn = this.mostRecentMonthColumn;
+                    if (!mostRecentMonthColumn) {
+                        console.error('mostRecentMonthColumn is not set! Available columns:', Object.keys(item));
+                    }
                     const mostRecentExpenses = item[mostRecentMonthColumn] || 0;
                     console.log(`Using column "${mostRecentMonthColumn}" for ${item.Category}: ${mostRecentExpenses}`);
                     tableHTML += `<td class="center-column">${Math.round(mostRecentExpenses).toLocaleString()}</td>`;
@@ -2499,30 +2502,16 @@
                     this.renderFinancialPerformanceSection();
                 } catch (error) {
                     console.error('Error loading financial performance data:', error);
-                    console.log('Falling back to sample data...');
-                    // Use fallback data if file not found
-                    this.renderFinancialPerformanceSectionWithFallback();
+                    console.log('Failed to load financial performance data - check console for errors');
                 }
             },
 
-            // Render financial performance section with source file data only
-            renderFinancialPerformanceSectionWithFallback: function() {
-                console.log('Rendering financial performance section with source file data only...');
-                
-                // If no source data is available, show a message instead of fallback data
-                if (!this.financialPerformanceData || this.financialPerformanceData.length === 0) {
-                    console.log('No financial performance data available - please ensure source file is loaded');
-                    return;
-                }
-                
-                // Process the source data using the correct function
-                this.renderFinancialPerformanceSection();
-            },
+
 
             // Render financial performance section
             renderFinancialPerformanceSection: function() {
                 if (!this.financialPerformanceData || this.financialPerformanceData.length === 0) {
-                    this.renderFinancialPerformanceSectionWithFallback();
+                    console.log('No financial performance data available - cannot render section');
                     return;
                 }
 
