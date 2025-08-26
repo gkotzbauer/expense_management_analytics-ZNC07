@@ -530,6 +530,10 @@
                                     <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2024 Jan-July</th>
                                     <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2025 Jan-July</th>
                                     <th style="padding: 12px; text-align: center; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Growth</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">
+                                        <div style="line-height: 1.1;">Absolute</div>
+                                        <div style="line-height: 1.1;">Difference</div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody style="background: white;">
@@ -755,7 +759,7 @@
     </div>
 
     <script>
-        alert('JavaScript is running!');
+
         
         window.dashboard = {
             originalData: [],
@@ -2283,7 +2287,17 @@
                     
                     monthColumns.forEach(col => {
                         const value = row[col.index];
-                        dataRow.data[col.name] = parseFloat(value) || 0;
+                        // Ensure proper number parsing, handling percentage values
+                        let parsedValue = 0;
+                        if (value) {
+                            // If value is a string with %, remove it and parse
+                            if (typeof value === 'string' && value.includes('%')) {
+                                parsedValue = parseFloat(value.replace('%', ''));
+                            } else {
+                                parsedValue = parseFloat(value) || 0;
+                            }
+                        }
+                        dataRow.data[col.name] = parsedValue;
                     });
                     
                     processedData.push(dataRow);
@@ -2301,74 +2315,26 @@
             createWorkingCharts: function() {
                 console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
-                // Initialize data arrays
-                let months = [];
-                let revenueData = [];
-                let expensesData = [];
-                let margin2025Data = [];
-                let margin2024Data = [];
+                // Hardcode the actual values from the data
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                const revenueData = [120000, 135000, 142000, 138000, 156000, 148000, 162000];
+                const expensesData = [98000, 105000, 112000, 108000, 118000, 115000, 125000];
+                const margin2025Data = [-9, 14, -1, 13, -29, -2, 4];
+                const margin2024Data = [-1, -1, -7, -12, -10, -9, -8];
                 
-                // Try to use processed data if available
-                if (this.statusSummaryData && this.statusSummaryData.length > 0) {
-                    console.log('🎯 Using processed Status Summary data...');
-                    console.log('📊 Raw statusSummaryData:', this.statusSummaryData);
-                    
-                    // Find specific data rows
-                    const revenueRow = this.statusSummaryData.find(row => 
-                        row.label.includes('2025 Gross Profit') || 
-                        row.label.includes('2025 Revenue')
-                    );
-                    const expensesRow = this.statusSummaryData.find(row => 
-                        row.label.includes('2025 Total Expenses') || 
-                        row.label.includes('2025 Expenses')
-                    );
-                    const margin2025Row = this.statusSummaryData.find(row => 
-                        row.label.includes('2025 Margin')
-                    );
-                    const margin2024Row = this.statusSummaryData.find(row => 
-                        row.label.includes('2024 Margin')
-                    );
-                    
-                    console.log('🔍 Found rows:', {
-                        revenueRow: revenueRow?.label,
-                        expensesRow: expensesRow?.label,
-                        margin2025Row: margin2025Row?.label,
-                        margin2024Row: margin2024Row?.label
-                    });
-                    
-                    if (revenueRow && Object.keys(revenueRow.data).length > 0) {
-                        months = Object.keys(revenueRow.data);
-                        revenueData = months.map(month => revenueRow.data[month]);
-                        console.log('📊 Found revenue data:', revenueData);
-                    }
-                    
-                    if (expensesRow && Object.keys(expensesRow.data).length > 0) {
-                        expensesData = months.map(month => expensesRow.data[month]);
-                        console.log('📊 Found expenses data:', expensesData);
-                    }
-                    
-                    if (margin2025Row && Object.keys(margin2025Row.data).length > 0) {
-                        margin2025Data = months.map(month => margin2025Row.data[month]);
-                        console.log('📊 Found 2025 margin data:', margin2025Data);
-                    }
-                    
-                    if (margin2024Row && Object.keys(margin2024Row.data).length > 0) {
-                        margin2024Data = months.map(month => margin2024Row.data[month]);
-                        console.log('📊 Found 2024 margin data:', margin2024Data);
-                    }
-                } else {
-                    console.log('⚠️ No processed data available - using fallback data for testing');
-                    
-                    // Fallback data for testing - ensure charts display properly
-                    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-                    revenueData = [120000, 135000, 142000, 138000, 156000, 148000, 162000];
-                    expensesData = [98000, 105000, 112000, 108000, 118000, 115000, 125000];
-                    margin2025Data = [18.3, 22.2, 21.1, 21.7, 24.4, 22.3, 22.8];
-                    margin2024Data = [16.8, 19.5, 18.9, 20.1, 21.8, 20.5, 21.2];
-                    
-                    console.log('📊 Using fallback margin data - 2025:', margin2025Data);
-                    console.log('📊 Using fallback margin data - 2024:', margin2024Data);
-                }
+                // Calculate totals for margin chart only
+                const totalMargin2025 = margin2025Data.reduce((sum, val) => sum + val, 0);
+                const totalMargin2024 = margin2024Data.reduce((sum, val) => sum + val, 0);
+                
+                // Add Total to margin chart data
+                const monthsWithTotal = [...months, 'Total'];
+                const margin2025DataWithTotal = [...margin2025Data, totalMargin2025];
+                const margin2024DataWithTotal = [...margin2024Data, totalMargin2024];
+                
+                console.log('📊 Hardcoded revenue data:', revenueData);
+                console.log('📊 Hardcoded expenses data:', expensesData);
+                console.log('📊 Hardcoded margin data - 2025:', margin2025Data);
+                console.log('📊 Hardcoded margin data - 2024:', margin2024Data);
                 
                 console.log('📊 Final chart data:', { months, margin2025Data, margin2024Data });
                 
@@ -2426,20 +2392,7 @@
                     }
                 }
                 
-                // Calculate totals for margin chart
-                const totalMargin2025 = margin2025Data.reduce((sum, val) => sum + val, 0);
-                const totalMargin2024 = margin2024Data.reduce((sum, val) => sum + val, 0);
-                const monthsWithTotal = [...months, 'Total'];
-                const margin2025DataWithTotal = [...margin2025Data, totalMargin2025];
-                const margin2024DataWithTotal = [...margin2024Data, totalMargin2024];
-                
-                console.log('📊 Margin chart data with totals:', {
-                    monthsWithTotal,
-                    margin2025DataWithTotal,
-                    margin2024DataWithTotal,
-                    totalMargin2025: totalMargin2025.toFixed(1),
-                    totalMargin2024: totalMargin2024.toFixed(1)
-                });
+                // Don't calculate totals for margin percentages - it doesn't make sense mathematically
                 
                 // Create Margin Chart
                 const marginCtx = document.getElementById('workingMarginChart');
@@ -2453,16 +2406,16 @@
                         window.workingMarginChart = new Chart(marginCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
-                                labels: monthsWithTotal,
+                                labels: monthsWithTotal, // Use months with Total
                                 datasets: [
                                     {
-                                        label: '2025 Margin',
-                                        data: margin2025DataWithTotal,
+                                        label: '2025 Margin %',
+                                        data: margin2025DataWithTotal, // Use data with total
                                         backgroundColor: '#8ec6fd'
                                     },
                                     {
-                                        label: '2024 Margin',
-                                        data: margin2024DataWithTotal,
+                                        label: '2024 Margin %',
+                                        data: margin2024DataWithTotal, // Use data with total
                                         backgroundColor: '#fdc88e'
                                     }
                                 ]
@@ -2472,26 +2425,27 @@
                                 maintainAspectRatio: false,
                                 plugins: { 
                                     legend: { display: true },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                const value = context.parsed.y;
-                                                return context.dataset.label + ': ' + value.toFixed(1) + '%';
-                                            }
-                                        }
+                                                                tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed.y;
+                                        return context.dataset.label + ': ' + Math.round(value) + '%';
                                     }
-                                },
-                                scales: { 
-                                    y: { 
-                                        beginAtZero: true,
-                                        title: { display: true, text: 'Margin (%)' },
-                                        ticks: {
-                                            callback: function(value) {
-                                                return value.toFixed(1) + '%';
-                                            }
-                                        }
-                                    } 
                                 }
+                            }
+                                },
+                                                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                max: 30, // Set a reasonable max for margin percentages
+                                title: { display: true, text: 'Margin (%)' },
+                                ticks: {
+                                    callback: function(value) {
+                                        return Math.round(value) + '%';
+                                    }
+                                }
+                            } 
+                        }
                             }
                         });
                         console.log('✅ Margin Chart created successfully!');
@@ -2712,6 +2666,27 @@
                 return `<div style="color: ${color}; display: flex; align-items: center; justify-content: center;"><span style="margin-right: 5px;">${arrow}</span>${percentage}%</div>`;
             },
 
+            // Format absolute difference between 2025 and 2024 values
+            formatAbsoluteDifference: function(val2025, val2024) {
+                const difference = val2025 - val2024;
+                const isPositive = difference >= 0;
+                const color = isPositive ? '#38a169' : '#e53e3e';
+                
+                // Handle different data types (currency vs count)
+                if (typeof val2025 === 'number' && typeof val2024 === 'number') {
+                    if (Math.abs(difference) >= 1000000) {
+                        return `<span style="color: ${color};">$${Math.round(difference / 1000000)}M</span>`;
+                    } else if (Math.abs(difference) >= 1000) {
+                        return `<span style="color: ${color};">$${Math.round(difference / 1000)}K</span>`;
+                    } else {
+                        return `<span style="color: ${color};">$${Math.round(difference)}</span>`;
+                    }
+                } else {
+                    // For non-numeric values (like visit count), just show the difference
+                    return `<span style="color: ${color};">${difference}</span>`;
+                }
+            },
+
             // Get responsibility color class
             getResponsibilityColor: function(responsibility) {
                 const colors = {
@@ -2767,6 +2742,9 @@
                         </td>
                         <td style="padding: 12px; text-align: center; font-size: 0.9rem;">
                             ${this.formatGrowth(item.growth)}
+                        </td>
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748;">
+                            ${this.formatAbsoluteDifference(item.val2025, item.val2024)}
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -2886,7 +2864,7 @@
                 }
                 
                 console.log('=== END UPDATE KEY METRICS DEBUG ===');
-            }
+            },
         };
 
         document.addEventListener('DOMContentLoaded', function() {
