@@ -2403,6 +2403,25 @@
                     }
                 }
                 
+                // Calculate totals for margin chart
+                let totalMargin2025 = 0;
+                let totalMargin2024 = 0;
+                let monthsWithTotal = [...months];
+                let margin2025DataWithTotal = [...margin2025Data];
+                let margin2024DataWithTotal = [...margin2024Data];
+                
+                if (margin2025Data.length > 0 && margin2024Data.length > 0) {
+                    totalMargin2025 = margin2025Data.reduce((sum, val) => sum + val, 0);
+                    totalMargin2024 = margin2024Data.reduce((sum, val) => sum + val, 0);
+                    
+                    // Add Total to months array and append totals to data arrays
+                    monthsWithTotal.push('Total');
+                    margin2025DataWithTotal.push(totalMargin2025);
+                    margin2024DataWithTotal.push(totalMargin2024);
+                    
+                    console.log('📊 Added Total column to margin chart - 2025: ' + totalMargin2025.toFixed(1) + '%, 2024: ' + totalMargin2024.toFixed(1) + '%');
+                }
+                
                 // Create Margin Chart
                 const marginCtx = document.getElementById('workingMarginChart');
                 if (marginCtx && typeof Chart !== 'undefined') {
@@ -2415,16 +2434,16 @@
                         window.workingMarginChart = new Chart(marginCtx.getContext('2d'), {
                             type: 'bar',
                             data: {
-                                labels: months,
+                                labels: monthsWithTotal,
                                 datasets: [
                                     {
                                         label: '2025 Margin',
-                                        data: margin2025Data,
+                                        data: margin2025DataWithTotal,
                                         backgroundColor: '#8ec6fd'
                                     },
                                     {
                                         label: '2024 Margin',
-                                        data: margin2024Data,
+                                        data: margin2024DataWithTotal,
                                         backgroundColor: '#fdc88e'
                                     }
                                 ]
