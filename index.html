@@ -2137,6 +2137,7 @@
             },
 
             loadStatusSummaryData: function() {
+                console.log('🚀 loadStatusSummaryData function called!');
                 const fileName = 'ZNC07 Status Summary Source File.xlsx';
                 const sources = [
                     `/${fileName}`,
@@ -2891,6 +2892,7 @@
             window.dashboard.init();
             // Automatically load pre-loaded data
             window.dashboard.loadPreloadedData();
+            console.log('About to call loadStatusSummaryData...');
             window.dashboard.loadStatusSummaryData();
             window.dashboard.loadFinancialPerformanceData();
         });
