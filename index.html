@@ -2298,14 +2298,76 @@
             createWorkingCharts: function() {
                 console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
-                // Use simple, hardcoded data that will definitely work
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-                const revenueData = [120000, 135000, 142000, 138000, 156000, 148000, 162000];
-                const expensesData = [98000, 105000, 112000, 108000, 118000, 115000, 125000];
-                const margin2025Data = [18.3, 22.2, 21.1, 21.7, 24.4, 22.3, 22.8];
-                const margin2024Data = [16.8, 19.5, 18.9, 20.1, 21.8, 20.5, 21.2];
+                // Initialize data arrays
+                let months = [];
+                let revenueData = [];
+                let expensesData = [];
+                let margin2025Data = [];
+                let margin2024Data = [];
                 
-                console.log('📊 Chart data:', { months, margin2025Data, margin2024Data });
+                // Try to use processed data if available
+                if (this.statusSummaryData && this.statusSummaryData.length > 0) {
+                    console.log('🎯 Using processed Status Summary data...');
+                    console.log('📊 Raw statusSummaryData:', this.statusSummaryData);
+                    
+                    // Find specific data rows
+                    const revenueRow = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Gross Profit') || 
+                        row.label.includes('2025 Revenue')
+                    );
+                    const expensesRow = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Total Expenses') || 
+                        row.label.includes('2025 Expenses')
+                    );
+                    const margin2025Row = this.statusSummaryData.find(row => 
+                        row.label.includes('2025 Margin')
+                    );
+                    const margin2024Row = this.statusSummaryData.find(row => 
+                        row.label.includes('2024 Margin')
+                    );
+                    
+                    console.log('🔍 Found rows:', {
+                        revenueRow: revenueRow?.label,
+                        expensesRow: expensesRow?.label,
+                        margin2025Row: margin2025Row?.label,
+                        margin2024Row: margin2024Row?.label
+                    });
+                    
+                    if (revenueRow && Object.keys(revenueRow.data).length > 0) {
+                        months = Object.keys(revenueRow.data);
+                        revenueData = months.map(month => revenueRow.data[month]);
+                        console.log('📊 Found revenue data:', revenueData);
+                    }
+                    
+                    if (expensesRow && Object.keys(expensesRow.data).length > 0) {
+                        expensesData = months.map(month => expensesRow.data[month]);
+                        console.log('📊 Found expenses data:', expensesData);
+                    }
+                    
+                    if (margin2025Row && Object.keys(margin2025Row.data).length > 0) {
+                        margin2025Data = months.map(month => margin2025Row.data[month]);
+                        console.log('📊 Found 2025 margin data:', margin2025Data);
+                    }
+                    
+                    if (margin2024Row && Object.keys(margin2024Row.data).length > 0) {
+                        margin2024Data = months.map(month => margin2024Row.data[month]);
+                        console.log('📊 Found 2024 margin data:', margin2024Data);
+                    }
+                } else {
+                    console.log('⚠️ No processed data available - using fallback data for testing');
+                    
+                    // Fallback data for testing - ensure charts display properly
+                    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                    revenueData = [120000, 135000, 142000, 138000, 156000, 148000, 162000];
+                    expensesData = [98000, 105000, 112000, 108000, 118000, 115000, 125000];
+                    margin2025Data = [18.3, 22.2, 21.1, 21.7, 24.4, 22.3, 22.8];
+                    margin2024Data = [16.8, 19.5, 18.9, 20.1, 21.8, 20.5, 21.2];
+                    
+                    console.log('📊 Using fallback margin data - 2025:', margin2025Data);
+                    console.log('📊 Using fallback margin data - 2024:', margin2024Data);
+                }
+                
+                console.log('📊 Final chart data:', { months, margin2025Data, margin2024Data });
                 
                 // Create Revenue & Expenses Chart
                 const revenueCtx = document.getElementById('workingRevenueChart');
