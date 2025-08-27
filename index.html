@@ -2311,96 +2311,33 @@
 
 
 
-            // Create Status Summary charts with improved data handling
-            createWorkingCharts: async function() {
+            // Create Status Summary charts with hardcoded data
+            createWorkingCharts: function() {
                 console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
                 // Hardcoded data for charts using your provided values
-                let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-                let revenueData = [];
-                let expensesData = [];
-                let margin2025Data = [];
-                let margin2024Data = [];
-                
-                try {
-                    // Load Revenue & Expense Chart Data
-                    const revenueExpenseResponse = await fetch('ZNC07 Revenue Expense Chart Data.xlsx');
-                    if (revenueExpenseResponse.ok) {
-                        const revenueExpenseArrayBuffer = await revenueExpenseResponse.arrayBuffer();
-                        const revenueExpenseWorkbook = XLSX.read(revenueExpenseArrayBuffer, { type: 'array' });
-                        const revenueExpenseSheet = revenueExpenseWorkbook.Sheets[revenueExpenseWorkbook.SheetNames[0]];
-                        const revenueExpenseData = XLSX.utils.sheet_to_json(revenueExpenseSheet, { header: 1 });
-                        
-                        // Extract months from row 1 (columns B-I)
-                        const revenueMonths = revenueExpenseData[0].slice(1, 9);
-                        
-                        // Extract data from rows 2-3
-                        // Row 2: 2025 Gross Profit (columns B-I)
-                        const revenueDataWithTotal = revenueExpenseData[1].slice(1, 9);
-                        // Row 3: 2025 Total Expenses (columns B-I)
-                        const expensesDataWithTotal = revenueExpenseData[2].slice(1, 9);
-                        
-                        console.log('📊 Loaded revenue-expense data:', { months, revenueData, expensesData });
-                    }
-                    
-                    // Load Margin Chart Data
-                    const marginResponse = await fetch('ZNC07 Margin Chart Data.xlsx');
-                    if (marginResponse.ok) {
-                        const marginArrayBuffer = await marginResponse.arrayBuffer();
-                        const marginWorkbook = XLSX.read(marginArrayBuffer, { type: 'array' });
-                        const marginSheet = marginWorkbook.Sheets[marginWorkbook.SheetNames[0]];
-                        const marginData = XLSX.utils.sheet_to_json(marginSheet, { header: 1 });
-                        
-                        // Extract months from row 1 (columns B-H)
-                        const marginMonths = marginData[0].slice(1, 8);
-                        
-                        // Extract margin data from rows 2-3
-                        // Row 2: 2025 Margin (columns B-H)
-                        margin2025Data = marginData[1].slice(1, 8);
-                        // Row 3: 2024 Margin (columns B-H)
-                        margin2024Data = marginData[2].slice(1, 8);
-                        
-                        // Get totals from column I
-                        const totalMargin2025 = marginData[1][8]; // Column I, Row 2
-                        const totalMargin2024 = marginData[2][8]; // Column I, Row 3
-                        
-                        // Add Total to margin chart data
-                        const monthsWithTotal = [...marginMonths, 'Total'];
-                        const margin2025DataWithTotal = [...margin2025Data, totalMargin2025];
-                        const margin2024DataWithTotal = [...margin2024Data, totalMargin2024];
-                        
-                        console.log('📊 Loaded margin data:', { 
-                            months: marginMonths, 
-                            margin2025Data, 
-                            margin2024Data, 
-                            totalMargin2025, 
-                            totalMargin2024 
-                        });
-                        
-                        // Create Margin Chart
-                        this.createMarginChart(monthsWithTotal, margin2025DataWithTotal, margin2024DataWithTotal);
-                    }
-                    
-                    // Create Revenue & Expenses Chart
-                    this.createRevenueExpenseChart(revenueMonths, revenueDataWithTotal, expensesDataWithTotal);
-                    
-                } catch (error) {
-                console.error('❌ Error loading chart data:', error);
-                   // Fallback to default charts if data loading fails
-                   const defaultMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Total'];
-                   const defaultRevenue = [167402, 171035, 153822, 168961, 140398, 142988, 143332, 1087941];
-                   const defaultExpenses = [182261, 146301, 154918, 147354, 181116, 145214, 138261, 1095429];
-                   const defaultMargin2025 = [-9, 14, -1, 13, -29, -2, 4, -1];
-                   const defaultMargin2024 = [-1, -1, -7, -12, -10, -9, -8, -7];
+                const defaultMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Total'];
+                const defaultRevenue = [167402, 171035, 153822, 168961, 140398, 142988, 143332, 1087941];
+                const defaultExpenses = [182261, 146301, 154918, 147354, 181116, 145214, 138261, 1095429];
+                const defaultMargin2025 = [-9, 14, -1, 13, -29, -2, 4, -1];
+                const defaultMargin2024 = [-1, -1, -7, -12, -10, -9, -8, -7];
     
-                   console.log('Using default data for charts...');
-                   this.createRevenueExpenseChart(defaultMonths, defaultRevenue, defaultExpenses);
-                   this.createMarginChart(
-                       defaultMonths, 
-                       defaultMargin2025, 
-                       defaultMargin2024
-                   );
-}
+                console.log('Using hardcoded data for charts...');
+                console.log('Chart data:', { 
+                    months: defaultMonths, 
+                    revenue: defaultRevenue, 
+                    expenses: defaultExpenses, 
+                    margin2025: defaultMargin2025, 
+                    margin2024: defaultMargin2024 
+                });
+                
+                // Create Revenue & Expenses Chart
+                this.createRevenueExpenseChart(defaultMonths, defaultRevenue, defaultExpenses);
+                
+                // Create Margin Chart
+                this.createMarginChart(defaultMonths, defaultMargin2025, defaultMargin2024);
+                
+                console.log('=== STATUS SUMMARY CHARTS COMPLETED ===');
             },
 
             // Load financial performance data
