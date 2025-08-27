@@ -2316,15 +2316,17 @@
                 console.log('=== CREATING STATUS SUMMARY CHARTS ===');
                 
                 // Hardcoded data for charts using your provided values
-                const defaultMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                const revenueExpenseMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
                 const defaultRevenue = [167402, 171035, 153822, 168961, 140398, 142988, 143332];
                 const defaultExpenses = [182261, 146301, 154918, 147354, 181116, 145214, 138261];
+                const marginMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Total'];
                 const defaultMargin2025 = [-9, 14, -1, 13, -29, -2, 4, -1];
                 const defaultMargin2024 = [-1, -1, -7, -12, -10, -9, -8, -7];
     
                 console.log('Using hardcoded data for charts...');
                 console.log('Chart data:', { 
-                    months: defaultMonths, 
+                    revenueExpenseMonths: revenueExpenseMonths, 
+                    marginMonths: marginMonths,
                     revenue: defaultRevenue, 
                     expenses: defaultExpenses, 
                     margin2025: defaultMargin2025, 
@@ -2332,10 +2334,10 @@
                 });
                 
                 // Create Revenue & Expenses Chart
-                this.createRevenueExpenseChart(defaultMonths, defaultRevenue, defaultExpenses);
+                this.createRevenueExpenseChart(revenueExpenseMonths, defaultRevenue, defaultExpenses);
                 
                 // Create Margin Chart
-                this.createMarginChart(defaultMonths, defaultMargin2025, defaultMargin2024);
+                this.createMarginChart(marginMonths, defaultMargin2025, defaultMargin2024);
                 
                 console.log('=== STATUS SUMMARY CHARTS COMPLETED ===');
             },
