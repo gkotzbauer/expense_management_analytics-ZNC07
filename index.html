@@ -2331,14 +2331,14 @@
                         const revenueExpenseSheet = revenueExpenseWorkbook.Sheets[revenueExpenseWorkbook.SheetNames[0]];
                         const revenueExpenseData = XLSX.utils.sheet_to_json(revenueExpenseSheet, { header: 1 });
                         
-                        // Extract months from row 1 (columns B-H)
-                        months = revenueExpenseData[0].slice(1, 8);
+                        // Extract months from row 1 (columns B-I)
+                        const revenueMonths = revenueExpenseData[0].slice(1, 9);
                         
-                        // Extract data from rows 2-5
-                        // Row 2: 2025 Gross Profit (columns B-H)
-                        revenueData = revenueExpenseData[1].slice(1, 8);
-                        // Row 3: 2025 Total Expenses (columns B-H)
-                        expensesData = revenueExpenseData[2].slice(1, 8);
+                        // Extract data from rows 2-3
+                        // Row 2: 2025 Gross Profit (columns B-I)
+                        const revenueDataWithTotal = revenueExpenseData[1].slice(1, 9);
+                        // Row 3: 2025 Total Expenses (columns B-I)
+                        const expensesDataWithTotal = revenueExpenseData[2].slice(1, 9);
                         
                         console.log('📊 Loaded revenue-expense data:', { months, revenueData, expensesData });
                     }
@@ -2378,11 +2378,11 @@
                         });
                         
                         // Create Margin Chart
-                        this.createMarginChart(marginMonths, margin2025DataWithTotal, margin2024DataWithTotal);
+                        this.createMarginChart(monthsWithTotal, margin2025DataWithTotal, margin2024DataWithTotal);
                     }
                     
                     // Create Revenue & Expenses Chart
-                    this.createRevenueExpenseChart(months, revenueData, expensesData);
+                    this.createRevenueExpenseChart(revenueMonths, revenueDataWithTotal, expensesDataWithTotal);
                     
                 } catch (error) {
                 console.error('❌ Error loading chart data:', error);
