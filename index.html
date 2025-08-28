@@ -2346,6 +2346,8 @@
             loadFinancialPerformanceData: async function() {
                 console.log('🚀 loadFinancialPerformanceData function called!');
                 console.log('=== LOADING FINANCIAL PERFORMANCE DATA ===');
+                console.log('🔍 Current working directory:', window.location.href);
+                console.log('🔍 Trying to load financial data...');
                 
                 // Use the same pattern as other data loads - try multiple sources
                 const sources = [
@@ -2357,8 +2359,10 @@
                 
                 for (const source of sources) {
                     try {
-                        console.log('Trying to load from:', source);
+                        console.log('🔍 Trying to load from:', source);
+                        console.log('🔍 Full URL:', new URL(source, window.location.href).href);
                         const response = await fetch(source);
+                        console.log('🔍 Response status:', response.status, response.ok);
                         if (response.ok) {
                             this.financialPerformanceData = await response.json();
                             console.log('Successfully loaded from:', source);
