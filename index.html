@@ -2342,82 +2342,130 @@
                 console.log('=== STATUS SUMMARY CHARTS COMPLETED ===');
             },
 
-            // Load financial performance data
-            loadFinancialPerformanceData: async function() {
+            // Load financial performance data (hardcoded to avoid file loading issues)
+            loadFinancialPerformanceData: function() {
                 console.log('🚀 loadFinancialPerformanceData function called!');
                 console.log('=== LOADING FINANCIAL PERFORMANCE DATA ===');
-                console.log('🔍 Current working directory:', window.location.href);
-                console.log('🔍 Trying to load financial data...');
                 
-                // Use the same pattern as other data loads - try multiple sources
-                const sources = [
-                    'financial-performance-data.json',
-                    './financial-performance-data.json',
-                    '/financial-performance-data.json',
-                    'public/financial-performance-data.json'
+                // Hardcoded financial performance data from your Excel file
+                this.financialPerformanceData = [
+                    {
+                        "Metric_ID": "TOTAL_EXPENSES",
+                        "Metric_Name": "Total Expenses",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Team",
+                        "Value_2024_Jan_July": 1235165.53,
+                        "Value_2025_Jan_July": 1095429.51,
+                        "Growth_Rate_Decimal": -0.11313141162545236,
+                        "Growth_Rate_Percentage": -0.11313141162545236
+                    },
+                    {
+                        "Metric_ID": "TOTAL_REVENUE",
+                        "Metric_Name": "Total Revenue",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Team",
+                        "Value_2024_Jan_July": 1157638.64,
+                        "Value_2025_Jan_July": 1087941.57,
+                        "Growth_Rate_Decimal": -0.060206240178714,
+                        "Growth_Rate_Percentage": -0.060206240178714
+                    },
+                    {
+                        "Metric_ID": "VISIT_COUNT",
+                        "Metric_Name": "Visit Count",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "RCM/Marketing",
+                        "Value_2024_Jan_July": 7171.0,
+                        "Value_2025_Jan_July": 6741.0,
+                        "Growth_Rate_Decimal": -0.05996374285315856,
+                        "Growth_Rate_Percentage": -0.05996374285315856
+                    },
+                    {
+                        "Metric_ID": "STANDARD_COMMITMENTS",
+                        "Metric_Name": "Standard Commitments",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Owner Controlled",
+                        "Value_2024_Jan_July": 50753.18,
+                        "Value_2025_Jan_July": 42709.43,
+                        "Growth_Rate_Decimal": -0.15848760609680024,
+                        "Growth_Rate_Percentage": -0.15848760609680024
+                    },
+                    {
+                        "Metric_ID": "VARIABLE_OPERATIONAL_COSTS",
+                        "Metric_Name": "Variable Operational Costs",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Ops - Clinical Administrator Controlled",
+                        "Value_2024_Jan_July": 710873.33,
+                        "Value_2025_Jan_July": 558095.32,
+                        "Growth_Rate_Decimal": -0.2149159400873852,
+                        "Growth_Rate_Percentage": -0.2149159400873852
+                    },
+                    {
+                        "Metric_ID": "MARKETING_ADVERTISING",
+                        "Metric_Name": "Marketing & Advertising",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Owner Controlled",
+                        "Value_2024_Jan_July": 14847.88,
+                        "Value_2025_Jan_July": 22777.14,
+                        "Growth_Rate_Decimal": 0.5340331414316387,
+                        "Growth_Rate_Percentage": 0.5340331414316387
+                    },
+                    {
+                        "Metric_ID": "REVENUE_PROPORTIONAL",
+                        "Metric_Name": "Revenue Proportional",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "% of visits/revenue",
+                        "Value_2024_Jan_July": 71738.15,
+                        "Value_2025_Jan_July": 69619.01,
+                        "Growth_Rate_Decimal": -0.029539930985117396,
+                        "Growth_Rate_Percentage": -0.029539930985117396
+                    },
+                    {
+                        "Metric_ID": "SUPPLY_PER_VISIT",
+                        "Metric_Name": "Supply $ per Visit",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Ops - Clinical Administrator Controlled",
+                        "Value_2024_Jan_July": 72790.88,
+                        "Value_2025_Jan_July": 87455.3,
+                        "Growth_Rate_Decimal": 0.20145957845268525,
+                        "Growth_Rate_Percentage": 0.20145957845268525
+                    },
+                    {
+                        "Metric_ID": "TOTAL_EXPENSE_PER_VISIT",
+                        "Metric_Name": "Total Expense per visit",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Ops - Clinical Administrator Controlled",
+                        "Value_2024_Jan_July": 172.24453074884954,
+                        "Value_2025_Jan_July": 162.502523364486,
+                        "Growth_Rate_Decimal": -0.056559168189603694,
+                        "Growth_Rate_Percentage": -0.056559168189603694
+                    },
+                    {
+                        "Metric_ID": "REVENUE_PER_VISIT",
+                        "Metric_Name": "Revenue per Visit",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "RCM/Marketing",
+                        "Value_2024_Jan_July": 161.43336215311672,
+                        "Value_2025_Jan_July": 161.39171784601692,
+                        "Growth_Rate_Decimal": -0.000257965928135118,
+                        "Growth_Rate_Percentage": -0.000257965928135118
+                    },
+                    {
+                        "Metric_ID": "PROFIT_PER_VISIT",
+                        "Metric_Name": "Profit per Visit",
+                        "Category": "YOY Expense & Profitability Analysis",
+                        "Responsibility": "Team",
+                        "Value_2024_Jan_July": -10.811168595732823,
+                        "Value_2025_Jan_July": -1.1108055184690784,
+                        "Growth_Rate_Decimal": -0.8972538899349406,
+                        "Growth_Rate_Percentage": 0.8972538899349406
+                    }
                 ];
                 
-                for (const source of sources) {
-                    try {
-                        console.log('🔍 Trying to load from:', source);
-                        console.log('🔍 Full URL:', new URL(source, window.location.href).href);
-                        const response = await fetch(source);
-                        console.log('🔍 Response status:', response.status, response.ok);
-                        if (response.ok) {
-                            this.financialPerformanceData = await response.json();
-                            console.log('Successfully loaded from:', source);
-                            console.log('Financial Performance Data loaded:', this.financialPerformanceData);
-                            
-                            // Debug: Log the actual column names from the first row
-                            if (this.financialPerformanceData.length > 0) {
-                                console.log('Available columns in financial performance data:', Object.keys(this.financialPerformanceData[0]));
-                                console.log('First row sample:', this.financialPerformanceData[0]);
-                                
-                                // Check if we have the expected categories
-                                const categories = [...new Set(this.financialPerformanceData.map(row => row.Category))];
-                                console.log('Available categories in data:', categories);
-                                
-                                const yoyRows = this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis');
-                                const cashflowRows = this.financialPerformanceData.filter(row => row.Category === 'Remaining Year Cashflow Projections');
-                                
-                                console.log('YOY rows found:', yoyRows.length);
-                                console.log('Cashflow rows found:', cashflowRows.length);
-                                
-                                if (yoyRows.length > 0) {
-                                    console.log('Sample YOY row:', yoyRows[0]);
-                                }
-                                if (cashflowRows.length > 0) {
-                                    console.log('Sample cashflow row:', cashflowRows[0]);
-                                }
-                            } else {
-                                console.log('No data rows found in financial performance file');
-                            }
-                            
-                            // Set the most recent month column from the financial data if not already set
-                            if (!this.mostRecentMonthColumn) {
-                                // Try to find month columns in the financial data
-                                if (this.financialPerformanceData.length > 0) {
-                                    const firstRow = this.financialPerformanceData[0];
-                                    const columns = Object.keys(firstRow);
-                                    const monthColumns = columns.filter(col => 
-                                        /^(Jan|Feb|Mar|Apr|May|June|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}$/i.test(col)
-                                    );
-                                    if (monthColumns.length > 0) {
-                                        this.mostRecentMonthColumn = monthColumns[monthColumns.length - 1];
-                                        console.log('Set mostRecentMonthColumn from financial data:', this.mostRecentMonthColumn);
-                                    }
-                                }
-                            }
-                            
-                            this.renderFinancialPerformanceSection();
-                            return; // Exit after successful load
-                        }
-                    } catch (error) {
-                        console.log('Failed to load from', source, ':', error);
-                    }
-                }
+                console.log('✅ Financial Performance Data loaded (hardcoded):', this.financialPerformanceData);
+                console.log('📊 YOY rows found:', this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis').length);
                 
-                console.error('Failed to load financial performance data from all sources');
+                // Render the section immediately
+                this.renderFinancialPerformanceSection();
             },
 
 
