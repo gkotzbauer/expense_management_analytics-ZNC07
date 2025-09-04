@@ -554,13 +554,14 @@
                         <table style="width: 100%; border-collapse: collapse;" id="cashflowTable">
                             <thead style="background: #f7fafc;">
                                 <tr>
-                                    <th style="padding: 12px; text-align: left; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Month</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2023/24 Visit Avg</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">2025 Visit Projection</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Expenses</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Revenue</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Expected Profit</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">Cash Position</th>
+                                    <th style="padding: 12px; text-align: left; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; min-width: 80px;">Month</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">2023/24<br>Visit Avg</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">2025 Visit<br>Projection</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">Expected<br>Expenses</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">Expected<br>Revenue</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">Expected<br>Profit</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 120px;">End of Month<br>Visit Status</th>
+                                    <th style="padding: 12px; text-align: right; font-size: 0.8rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; word-wrap: break-word; max-width: 100px;">Cash<br>Position</th>
                                 </tr>
                             </thead>
                             <tbody style="background: white;">
@@ -2793,7 +2794,7 @@
                 console.log('📊 YOY rows found:', this.financialPerformanceData.filter(row => row.Category === 'YOY Expense & Profitability Analysis').length);
                 
                 // Render the section immediately
-                this.renderFinancialPerformanceSection();
+                            this.renderFinancialPerformanceSection();
             },
 
 
@@ -2848,7 +2849,7 @@
                         if (month) {
                             let cashflowItem = cashflowData.find(item => item.month === month);
                             if (!cashflowItem) {
-                                cashflowItem = { month: month, visitAvg: 0, visitProj: 0, expenses: 0, revenue: 0, profit: 0, cashPosition: 0 };
+                                cashflowItem = { month: month, visitAvg: 0, visitProj: 0, expenses: 0, revenue: 0, profit: 0, visitStatus: 0, cashPosition: 0 };
                                 cashflowData.push(cashflowItem);
                                 console.log(`Created new cashflow item for month: ${month}`);
                             }
@@ -2869,6 +2870,9 @@
                             } else if (row.Metric_Name.includes('Expected Profit')) {
                                 cashflowItem.profit = isNaN(row.Value_2025_Jan_July) ? 0 : parseFloat(row.Value_2025_Jan_July) || 0;
                                 console.log(`Set profit for ${month}: ${cashflowItem.profit}`);
+                            } else if (row.Metric_Name.includes('Visit Status')) {
+                                cashflowItem.visitStatus = isNaN(row.Value_2025_Jan_July) ? 0 : Math.round(parseFloat(row.Value_2025_Jan_July)) || 0;
+                                console.log(`Set visitStatus for ${month}: ${cashflowItem.visitStatus}`);
                             } else if (row.Metric_Name.includes('Cash Position')) {
                                 cashflowItem.cashPosition = isNaN(row.Value_2025_Jan_July) ? 0 : parseFloat(row.Value_2025_Jan_July) || 0;
                                 console.log(`Set cashPosition for ${month}: ${cashflowItem.cashPosition}`);
@@ -2937,7 +2941,7 @@
                 const difference = val2025 - val2024;
                 const isPositive = difference >= 0;
                 const color = isPositive ? '#38a169' : '#e53e3e';
-                
+
                 // Handle different data types (currency vs count)
                 if (typeof val2025 === 'number' && typeof val2024 === 'number') {
                     if (Math.abs(difference) >= 1000000) {
@@ -3052,6 +3056,9 @@
                         </td>
                         <td style="padding: 12px; text-align: right; font-size: 0.9rem; ${item.profit < 0 ? 'color: #e53e3e; font-weight: 700;' : 'color: #38a169; font-weight: 700;'}">
                             ${this.formatCurrency(item.profit)}
+                        </td>
+                        <td style="padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748; font-weight: 600;">
+                            ${this.formatVisitCount(item.visitStatus)}
                         </td>
                         <td style="${styleNegativeValue(item.cashPosition, 'padding: 12px; text-align: right; font-size: 0.9rem; color: #2d3748; font-weight: 700;')}">
                             ${this.formatCurrency(item.cashPosition)}
